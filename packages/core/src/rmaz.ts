@@ -31,10 +31,10 @@ let event: any
 
 let sync = false
 
-let onStartQueue = makeQueue<Fun>(),
-     updateQueue = makeQueue<updateFun>(),
+let updateQueue = makeQueue<updateFun>(),
+     writeQueue = makeQueue<Fun>(),
+    onStartQueue = makeQueue<Fun>(),
    onAccessQueue = makeQueue<Fun>(),
-      writeQueue = makeQueue<Fun>(),
    onFinishQueue = makeQueue<Fun>()
 
 let nativeRma =

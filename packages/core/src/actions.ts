@@ -8,7 +8,6 @@ import {
 import type { ResolverMap } from '../config/resolver'
 import type { Controller } from './Controller'
 
-
 export type EngineClass<Key extends MIDIKey> = {
     new (controller: Controller, args: any[], key: Key): Engine<Key>
 }
@@ -20,7 +19,7 @@ export type ConfigClass<Key extends MIDIKey> = {
 export type Action = {
     key: MIDIKey
     engine: EngineClass<MIDIKey>
-    config: ConfigClass<MIDIKey>
+    config: any//ConfigClass<MIDIKey>
 }
 
 export const EngineMap = new Map<MIDIKey, EngineClass<any>>()

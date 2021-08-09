@@ -16,11 +16,8 @@ export abstract class CoordEngine<Key extends CoordinatesKey> extends BaseEngine
     }
 
     intent(v: any) {
+        const {state} = this
         this.state.axis = this.state.axis || selectAxis(v)
-
-        this.state._blocked =
-            ((this.config.lockDirection || !!this.config.axis) && !this.state.axis) ||
-            (!!this.config.axis && this.config.axis !== this.state.axis)
 
         if (this.state._blocked) return
     }

@@ -1,6 +1,6 @@
 import { Controller } from './Controller'
 import  {
-    GestureKey
+    MIDIKey
 } from './types'
 
 // export interface BaseEngine {
@@ -9,7 +9,7 @@ import  {
 //     intent?(): void
 // }
 
-export class BaseEngine<Key extends GestureKey> {
+export class BaseEngine<Key extends MIDIKey> {
     readonly _ctrl: Controller
     readonly _args: any[]
     readonly _key: Key
@@ -29,6 +29,7 @@ export class BaseEngine<Key extends GestureKey> {
         if (this.reset) this.reset()
     }
 
+    // shorthands
     get state () {
         return this._ctrl.state[this._key]!
     }
@@ -42,15 +43,19 @@ export class BaseEngine<Key extends GestureKey> {
     }
 
     get eventStore () {
-        return this._ctrl.gestureEventStores[this._key]!
+        return this._ctrl.eventStores[this._key]!
     }
 
     get timeoutStore () {
-        return this._ctrl.gestureTimeoutStore[this._key]!
+        return this._ctrl.timeoutStore[this._key]!
     }
 
-    get handler () {
-        return this._ctrl.handlers[this._key]!
+    get engine () {
+        return this._ctrl.engines[this._key]!
+    }
+
+    get config () {
+        return this._ctrl.config
     }
 
     init () {
@@ -67,11 +72,6 @@ export class BaseEngine<Key extends GestureKey> {
         // state.xxx = event.xxx
     }
 
-    compute (event?: any) {
-        const { state, config, shared } = this
-        // state.xxx = event.xxx
-    }
-
     emit () {
         const { state, shard, config } = this
     }
@@ -79,5 +79,15 @@ export class BaseEngine<Key extends GestureKey> {
     clean () {
         this.eventStore.clean()
         this.timeoutStore.clean()
+    }
+
+    change () {}
+
+    input (access) {
+
+    }
+
+    output () {
+
     }
 }

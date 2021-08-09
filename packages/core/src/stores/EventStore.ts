@@ -17,14 +17,14 @@ export class EventStore {
         element: EventTarget,
         device: string,
         action: string,
-        handler: (event: any) => void,
+        engine: (event: any) => void,
         options?: AddEventListenerOptions
     ) {
         const type = toDomEventType(device, action)
         const eventOptions = { ...this._ctrl.config.shared.eventOptions, ...options }
-        element.addEventListener(type, handler, eventOptions)
+        element.addEventListener(type, engine, eventOptions)
         this._listeners.push(() =>
-            element.removeEventListener(type, handler, eventOptions)
+            element.removeEventListener(type, engine, eventOptions)
         )
     }
 
