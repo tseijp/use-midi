@@ -1,9 +1,14 @@
-import type { Controller } from '../Controller'
+import { Controller } from '../Controller'
 import { toDomEventType } from '../utils'
 
+export interface EventStore {
+
+}
+
 export class EventStore {
-    private _listeners: (() => void)[] = []
     private _ctrl: Controller
+    private _listeners: (() => void)[] = []
+
     constructor(ctrl: Controller) {
         this._ctrl = ctrl
     }

@@ -1,7 +1,7 @@
 import { Controller } from './Controller'
 import  {
     GestureKey
-} from '../types'
+} from './types'
 
 // export interface BaseEngine {
 //     init?(): void

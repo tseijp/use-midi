@@ -1,12 +1,10 @@
-import { EventStore } from './EventStore'
-import { TimeoutStore } from './TimeoutStore'
-import {
-    GestureKey
-} from './types'
+import { GestureKey } from './types'
+import { EventStore, TimeoutStore } from './stores'
 
 export class Controller {
     public gestures = new Set<GestureKey>()
-    private _targetEventStore = new EventStore(this)
+    private _eventStore = new EventStore(this)
+    private _timeoutStore = new TimeoutStore(this)
     public gestureEventStores: { [key in GestureKey]?: EventStore } = {}
     public gestureTimeoutStores: { [key in GestureKey]?: TimeoutStore } = {}
     public ahandlers = {}
@@ -26,7 +24,7 @@ export class Controller {
 
     effect () {
         if (this.config.shared.target) this.bind()
-        return () => this._targetEventStore.clean()
+        return () => void (this._eventStore.clean(), this._timeoutStore.clean())
     }
 
     bind (...args: any) {}

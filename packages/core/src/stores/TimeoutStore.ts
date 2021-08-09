@@ -1,5 +1,12 @@
+import {Controller} from '../Controller'
+
 export class TimeoutStore {
+    private _ctrl: Controller
     private _timeouts = new Map<string, number>()
+
+    constructor(ctrl: Controller) {
+        this._ctrl = ctrl
+    }
 
     add<FunctionType extends (...args: any) => any>(
         key: string,

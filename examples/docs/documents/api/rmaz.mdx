@@ -1,0 +1,67 @@
+# rmaz
+
+Coordinate `requestMIDIAccess` calls across your app and/or libraries.
+
+based on rafz: `requestAnimationFrame`
+
+raf => rma
+ts => event
+Frame => Access
+loop => change
+update == update
+advance == advance
+
+```js
+import { rma } from 'rmaz'
+
+// Schedule an access
+rma(midi => {})
+
+// Start an access midi
+rma(midi => true)
+
+// Cancel an update
+rma.cancel(fn)
+
+// Schedule a mutation
+rma.write(() => {})
+
+// Before any updates
+rma.onStart(() => {})
+
+// Before any mutations
+rma.onAccess(() => {})
+
+// After any mutations
+rma.onFinish(() => {})
+
+// Use a polyfill
+rma.use(require('@essentials/rma').rma)
+```
+
+
+## Basic Examples
+
+import { rma } from 'use-midi/src'
+export let midi;
+
+export function App () {
+    const [inputs, set] = React.useState([])
+    React.useEffect(() => {
+        rma(e => e && set(Array.from(e.inputs)))
+    }, [])
+    return inputs.map((input, i) =>
+      <div key={i}>
+        {input[0]}
+        <div>name: {input[1].name}</div>
+        <div>type: {input[1].type}</div>
+        <div>version: {input[1].version}</div>
+        <div>connection: {input[1].connection}</div>
+        {Object.keys(input[1]).map(key =>
+            <div key={key}>{key}</div>
+        )}
+      </div>
+    )
+}
+
+<App />

@@ -1,13 +1,13 @@
 import { CoordEngine } from './CoordEngine'
 
-export class InputEngine extends CoordEngine<'input'> {
+export class ButtonEngine extends CoordEngine<'button'> {
     ingKey = 'input'
 
     constructor (...args: [any, any, any]) {
         super(...args)
     }
 
-    reset (this: InputEngine) {
+    reset (this: ButtonEngine) {
         super.reset()
         const {state} = this
         // state.xxx = false

@@ -1,5 +1,5 @@
 import { BaseEngine } from './BaseEngine'
-import { CoordinatesKey, Vector2 } from '../types'
+import { CoordinatesKey } from '../types'
 
 
 export abstract class CoordEngine<Key extends CoordinatesKey> extends BaseEngine<Key> {
@@ -15,7 +15,7 @@ export abstract class CoordEngine<Key extends CoordinatesKey> extends BaseEngine
         this.state.lastOffset = [0, 0]
     }
 
-    intent(v: Vector2) {
+    intent(v: any) {
         this.state.axis = this.state.axis || selectAxis(v)
 
         this.state._blocked =
