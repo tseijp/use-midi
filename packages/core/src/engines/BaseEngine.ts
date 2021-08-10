@@ -1,7 +1,7 @@
-import { Controller } from './Controller'
+import { Controller } from '../Controller'
 import  {
     MIDIKey
-} from './types'
+} from '../types'
 
 // export interface BaseEngine {
 //     init?(): void

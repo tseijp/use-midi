@@ -1,6 +1,8 @@
 export type IngKey =
-| 'input'
-| 'output'
+    | 'input'
+    | 'output'
+
+export type MIDIKey = Exclude<keyof State, 'shared'>
 
 export type MIDIEvent = any // todo
 
@@ -58,6 +60,9 @@ export interface GenericState {
     args?: any
 }
 
+export interface ButtonState extends GenericState {
+
+}
 
 export interface FaderState extends GenericState {
     axis?: 'vertical' | 'horizontal'
@@ -73,6 +78,10 @@ export interface NoteState extends GenericState {
 
 export interface State {
     shared: SharedState
+    button?: ButtonState
     fader?: FaderState
     note?: NoteState
 }
+
+export type FullState<Key extends MIDIKey> =
+    GenericState & NonNullable<State[Key]>

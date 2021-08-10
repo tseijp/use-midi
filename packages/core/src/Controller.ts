@@ -1,4 +1,4 @@
-import { MIDIKey, Handlers, NativeHanlers, UserMIDIConfig, Config } from './Config'
+import { MIDIKey, Props, NativeProps, Config } from './types'
 import { EventStore, TimeoutStore } from './stores'
 import { EngineMap, ConfigMap } from './actions'
 import { eachProp } from './utils'
@@ -10,15 +10,15 @@ export class Controller {
     public eventStores: { [key in MIDIKey]?: EventStore } = {}
     public timeoutStores: { [key in MIDIKey]?: TimeoutStore } = {}
     public engines = {}
-    public handlers = {}
-    public nativeHandlers = {}
+    public props = {}
+    public nativeProps = {}
     public config = {} as any
     public state = {
         shared: {}
     } as any
 
     constructor () {
-        
+
     }
 
     clean () {
@@ -37,12 +37,12 @@ export class Controller {
 
     }
 
-    applyHandlers (handlers: Handlers, nativeHandlers?: NativeHanlers) {
-        this.handlers = handlers
-        this.nativeHandlers = nativeHandlers
+    applyProps (props: Props, nativeProps?: NativeProps) {
+        this.props = props
+        this.nativeProps = nativeProps
     }
 
-    applyConfig (config: UserMIDIConfig, key?: MIDIKey) {
+    applyConfig (config: Config, key?: MIDIKey) {
         const {enabled, ...other} = config
         const _config: any = {shared: {enabled}}
         if (key) {

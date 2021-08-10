@@ -27,7 +27,7 @@ export interface Queue<T extends Function = any> {
     flush: (arg?: any) => void
 }
 
-let event: any
+let ts = -1
 
 let sync = false
 
@@ -75,24 +75,24 @@ rma.advance = () => {
 }
 
 function start () {
-    if (!event && rma.status !== 'demand')
-        event = {}
+    if (ts < 0 && rma.status !== 'demand')
+        ts = 0
         nativeRma().then(change).catch(rma.catch)
 }
 
-function change (e: any) {
-    if (event) {
-        event = e
-        rma.fun(update)
+function change (event?: any) {
+    if (~ts) {
         event.onstatechange = (e: any) => change(e)
+        rma.fun(update)
     }
 }
 
 function update () {
-    let prevEvent = event
+    let prevTs = ts
+    ts = rma.now()
 
     onStartQueue.flush()
-    updateQueue.flush(prevEvent)
+    updateQueue.flush(prevTs)
     onAccessQueue.flush()
     writeQueue.flush()
     onFinishQueue.flush()

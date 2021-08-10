@@ -1,10 +1,7 @@
-import {useMidi} from './useMidi'
-import {
-    Config,
-    Engines
-} from '../types'
+import {useMidi} from './hooks'
+import {Props, Config} from '../types'
 
-export type MidiComponentProps = unknown & Engines & {
+export type MidiComponentProps = unknown & Props & {
     children: (bind: any) => JSX.Element | null
     config: Config | {}
 }
