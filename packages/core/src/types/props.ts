@@ -1,7 +1,7 @@
-import { MIDIKey, FullState, State, EventTypes } from './state'
+import { MidiKey, FullState, State, EventTypes } from './state'
 
 export type Prop <
-    Key extends MIDIKey,
+    Key extends MidiKey,
     EventType = EventTypes<Key>
 > = (
     state: Omit<FullState<Key>, 'event'> & { event: EventType }
@@ -31,6 +31,6 @@ export type NativeProps = {
     ) => void
 }
 
-export type MIDIProps = Partial<NativeProps & Props>
+export type MidiProps = Partial<NativeProps & Props>
 
-export type InternalProps = {[Key in MIDIKey]?: Prop<Key, any>}
+export type InternalProps = {[Key in MidiKey]?: Prop<Key, any>}

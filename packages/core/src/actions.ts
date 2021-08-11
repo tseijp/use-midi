@@ -1,43 +1,47 @@
-import { MIDIKey } from './types'
+import { MidiKey } from './types'
 import {
     ButtonEngine,
     FaderEngine,
     BaseEngine as Engine
  } from './engines'
+import {each} from './utils'
 
-import type { ResolverMap } from '../config/resolver'
 import type { Controller } from './Controller'
 
-export type EngineClass<Key extends MIDIKey> = {
+export type EngineClass<Key extends MidiKey> = {
     new (controller: Controller, args: any[], key: Key): Engine<Key>
 }
 
-export type ConfigClass<Key extends MIDIKey> = {
+export type ConfigClass<Key extends MidiKey> = {
     new (controller: Controller, args: any[], key: Key): any
 }
 
 export type Action = {
-    key: MIDIKey
-    engine: EngineClass<MIDIKey>
-    config: any//ConfigClass<MIDIKey>
+    key: MidiKey
+    engine: EngineClass<MidiKey>
+    config: ConfigClass<MidiKey>
 }
 
-export const EngineMap = new Map<MIDIKey, EngineClass<any>>()
-export const ConfigMap = new Map<MIDIKey, ResolverMap>()
+export const EngineMap = new Map<MidiKey, EngineClass<any>>()
+export const ConfigMap = new Map<MidiKey, ConfigClass<any>>()//ResolverMap>()
 
-export function registerAction(action: Action) {
-    EngineMap.set(action.key, action.engine)
-    ConfigMap.set(action.key, action.config)
+export const Actions = {
+    button: {
+        engine: ButtonEngine,
+        config: {} as any
+    },
+    fader: {
+        engine: FaderEngine,
+        config: {} as any
+    },
+    note: {
+        engine: FaderEngine,
+        config: {} as any
+    }
 }
-
-export const ButtonAction = {
-    key: 'button',
-    engine: ButtonEngine,
-    config: {}
-}
-
-export const FaderAction = {
-    key: 'fader',
-    engine: FaderEngine,
-    config: {}
+export function registerAction (...midiKeys: MidiKey[]) {
+    each(midiKeys, key => {
+        EngineMap.set(key, Actions[key].engine)
+        ConfigMap.set(key, Actions[key].config)
+    })
 }

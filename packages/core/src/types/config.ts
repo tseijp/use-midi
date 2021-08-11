@@ -1,4 +1,4 @@
-import {MIDIKey} from './state'
+import {MidiKey} from './state'
 
 export interface GenericConfig {
     // TODO
@@ -11,7 +11,7 @@ export interface GenericConfig {
     enabled?: boolean
 }
 
-export interface MIDIConfig {
+export interface MidiConfig {
     // TODO
     enables?: boolean
 
@@ -19,11 +19,11 @@ export interface MIDIConfig {
     channel?: number
 }
 
-export interface FaderConfig extends MIDIConfig {}
+export interface FaderConfig extends MidiConfig {}
 
-export interface ButtonConfig extends MIDIConfig {}
+export interface ButtonConfig extends MidiConfig {}
 
-export interface NoteConfig extends MIDIConfig {}
+export interface NoteConfig extends MidiConfig {}
 
 type FullConfig = {
     shared?: GenericConfig
@@ -32,7 +32,7 @@ type FullConfig = {
     note?: NoteConfig
 }
 
-export type Config <Key extends (MIDIKey|null)=null> = GenericConfig &
-    Key extends MIDIKey
+export type Config <Key extends (MidiKey|null)=null> = GenericConfig &
+    Key extends MidiKey
         ? FullConfig[Key]
         : FullConfig

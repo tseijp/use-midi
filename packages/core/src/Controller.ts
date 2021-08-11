@@ -1,14 +1,14 @@
-import { MIDIKey, Props, NativeProps, Config } from './types'
+import { MidiKey, Props, NativeProps, Config } from './types'
 import { EventStore, TimeoutStore } from './stores'
 import { EngineMap, ConfigMap } from './actions'
 import { eachProp } from './utils'
 
 export class Controller {
-    public keys = new Set<MIDIKey>()
+    public keys = new Set<MidiKey>()
     private _eventStore = new EventStore(this)
     private _timeoutStore = new TimeoutStore(this)
-    public eventStores: { [key in MIDIKey]?: EventStore } = {}
-    public timeoutStores: { [key in MIDIKey]?: TimeoutStore } = {}
+    public eventStores: { [key in MidiKey]?: EventStore } = {}
+    public timeoutStores: { [key in MidiKey]?: TimeoutStore } = {}
     public engines = {}
     public props = {}
     public nativeProps = {}
@@ -17,7 +17,7 @@ export class Controller {
         shared: {}
     } as any
 
-    constructor () {
+    constructor (props: Props) {
 
     }
 
@@ -42,7 +42,7 @@ export class Controller {
         this.nativeProps = nativeProps
     }
 
-    applyConfig (config: Config, key?: MIDIKey) {
+    applyConfig (config: Config, key?: MidiKey) {
         const {enabled, ...other} = config
         const _config: any = {shared: {enabled}}
         if (key) {

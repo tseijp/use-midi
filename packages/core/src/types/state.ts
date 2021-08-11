@@ -2,9 +2,9 @@ export type IngKey =
     | 'input'
     | 'output'
 
-export type MIDIKey = Exclude<keyof State, 'shared'>
+export type MidiKey = Exclude<keyof State, 'shared'>
 
-export type MIDIEvent = any // todo
+export type MidiEvent = any // todo
 
 export type EventTypes = any // TODO
 
@@ -17,13 +17,13 @@ export interface GenericState {
     _active: boolean
     _enabled: boolean
 
-    // Raw MIDI Event Object
-    event: MIDIEvent
+    // Raw Midi Event Object
+    event: MidiEvent
 
     // Raw Targe tObject
     target: EventTarget
 
-    // The number of MIDI channel
+    // The number of Midi channel
     channel: number
 
     // Raw input number
@@ -32,10 +32,10 @@ export interface GenericState {
     // Raw output number
     outputs: number[]
 
-    // Current raw values of the MIDI
+    // Current raw values of the Midi
     values: number[]
 
-    // Raw values when the MIDI started
+    // Raw values when the Midi started
     initial: number[]
 
     // True when its the first event
@@ -44,7 +44,7 @@ export interface GenericState {
     // True when its the last event
     last: boolean
 
-    // True when the MIDI is active
+    // True when the Midi is active
     active: boolean
 
     // The timestamp of the current event
@@ -53,7 +53,7 @@ export interface GenericState {
     // The timestamp of the current event
     timeStamp: number
 
-    // Elapsed tie of the current MIDI
+    // Elapsed tie of the current Midi
     elapsedTime: number
 
     // The arguments when you bind
@@ -83,5 +83,5 @@ export interface State {
     note?: NoteState
 }
 
-export type FullState<Key extends MIDIKey> =
+export type FullState<Key extends MidiKey> =
     GenericState & NonNullable<State[Key]>

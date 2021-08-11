@@ -39,8 +39,8 @@ let updateQueue = makeQueue<updateFun>(),
 
 let nativeRma =
     typeof navigator !== 'undefined' &&
-    typeof (navigator as any).requestMIDIAccess === 'function'
-        ? () => (navigator as any).requestMIDIAccess({sysex: 0xF0})
+    typeof (navigator as any).requestMidiAccess === 'function'
+        ? () => (navigator as any).requestMidiAccess({sysex: 0xF0})
         : () => {}
 
 export const rma: Rmaz = fun => schedule(fun, updateQueue)

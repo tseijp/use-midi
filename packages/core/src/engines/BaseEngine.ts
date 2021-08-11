@@ -1,6 +1,6 @@
 import { Controller } from '../Controller'
 import  {
-    MIDIKey
+    MidiKey
 } from '../types'
 
 // export interface BaseEngine {
@@ -9,7 +9,7 @@ import  {
 //     intent?(): void
 // }
 
-export class BaseEngine<Key extends MIDIKey> {
+export class BaseEngine<Key extends MidiKey> {
     readonly _ctrl: Controller
     readonly _args: any[]
     readonly _key: Key
