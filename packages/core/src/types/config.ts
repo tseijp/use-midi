@@ -19,9 +19,9 @@ export interface MidiConfig {
     channel?: number
 }
 
-export interface FaderConfig extends MidiConfig {}
-
 export interface ButtonConfig extends MidiConfig {}
+
+export interface FaderConfig extends MidiConfig {}
 
 export interface NoteConfig extends MidiConfig {}
 
@@ -30,9 +30,7 @@ type FullConfig = {
     button?: ButtonConfig
     fader?: FaderConfig
     note?: NoteConfig
+    full?: FullConfig
 }
 
-export type Config <Key extends (MidiKey|null)=null> = GenericConfig &
-    Key extends MidiKey
-        ? FullConfig[Key]
-        : FullConfig
+export type Config <Key extends MidiKey|'full'='full'> = GenericConfig & FullConfig[Key]

@@ -1,6 +1,5 @@
 export * from './stores'
 export * from './types'
-export * from './rmaz'
 export * from './utils'
 export * from './targets'
 export * from './Controller'

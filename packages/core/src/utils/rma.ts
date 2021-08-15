@@ -1,17 +1,45 @@
-export type Fun = () => boolean | void
+/*
+MIT License
 
-export type updateFun = (access?: any) => boolean | void
+Copyright (c) 2018-present Paul Henschel, react-spring, all contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+type Fun = () => boolean | void
+
+type AnyFun = (...args: any) => any
+
+type VoidFn = (...args: any[]) => undefined | void
+
+type UpdateFun = (ts?: number) => boolean | void
 
 export interface Rmaz {
-    (update: updateFun): void
+    (update: UpdateFun): void
     write: (fun: Fun) => void
     onStart: (fun: Fun) => void
     onAccess: (fun: Fun) => void
     onFinish: (fun: Fun) => void
 
-    cancel: (fun: Fun) => void
-    sync: (fun: Fun) => void
-    throttle: (fun: Fun) => void
+    cancel: (fun: AnyFun) => void
+    sync: (fun: VoidFn) => void
+    throttle: (fun: VoidFn) => void
 
     use: (fun: Fun) => void
     now: () => number
@@ -19,6 +47,10 @@ export interface Rmaz {
     catch: (error: Error) => void
     advance: () => void
     status: 'always' | 'demand'
+
+    access?: any
+    inputs?: any
+    outputs?: any
 }
 
 export interface Queue<T extends Function = any> {
@@ -29,9 +61,16 @@ export interface Queue<T extends Function = any> {
 
 let ts = -1
 
+
 let sync = false
 
-let updateQueue = makeQueue<updateFun>(),
+let sysex = true
+
+let software = true
+
+let access: any
+
+let updateQueue = makeQueue<UpdateFun>(),
      writeQueue = makeQueue<Fun>(),
     onStartQueue = makeQueue<Fun>(),
    onAccessQueue = makeQueue<Fun>(),
@@ -39,8 +78,8 @@ let updateQueue = makeQueue<updateFun>(),
 
 let nativeRma =
     typeof navigator !== 'undefined' &&
-    typeof (navigator as any).requestMidiAccess === 'function'
-        ? () => (navigator as any).requestMidiAccess({sysex: 0xF0})
+    typeof (navigator as any).requestMIDIAccess === 'function'
+        ? () => (navigator as any).requestMIDIAccess({sysex, software})
         : () => {}
 
 export const rma: Rmaz = fun => schedule(fun, updateQueue)
@@ -61,12 +100,19 @@ rma.sync = fun => {
     sync = false
 }
 
-rma.throttle = fun => fun() // TODO
+rma.throttle = fun => {
+    fun() // TODO
+}
+
 rma.use = fun => (nativeRma = fun)
 rma.now = typeof performance != 'undefined' ? () => performance.now() : Date.now
 rma.fun = fun => fun()
 rma.catch = console.error
 rma.status = 'always'
+
+setHidden('access', () => access)
+setHidden('inputs', () => access?.inputs)
+setHidden('outputs', () => access?.outputs)
 
 rma.advance = () => {
     if (rma.status !== 'demand')
@@ -75,14 +121,17 @@ rma.advance = () => {
 }
 
 function start () {
-    if (ts < 0 && rma.status !== 'demand')
+    if (ts < 0) {
         ts = 0
-        nativeRma().then(change).catch(rma.catch)
+        if (rma.status !== 'demand')
+            nativeRma().then(change, rma.catch)
+    }
 }
 
-function change (event?: any) {
+function change (e?: any) {
     if (~ts) {
-        event.onstatechange = (e: any) => change(e)
+        e.onstatechange = change
+        access = e.target || e
         rma.fun(update)
     }
 }
@@ -121,6 +170,10 @@ function makeQueue<T extends Function>(): Queue<T> {
                 current.forEach(fun => fun(arg) && next.add(fun))
                 current = next
             }
-        },
+        }
     }
+}
+
+function setHidden (key: any, fun: AnyFun) {
+    Object.defineProperty(rma, key, {get () {return fun()}})
 }

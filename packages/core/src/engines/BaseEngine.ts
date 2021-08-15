@@ -47,7 +47,7 @@ export class BaseEngine<Key extends MidiKey> {
     }
 
     get timeoutStore () {
-        return this._ctrl.timeoutStore[this._key]!
+        return this._ctrl.timeoutStores[this._key]!
     }
 
     get engine () {

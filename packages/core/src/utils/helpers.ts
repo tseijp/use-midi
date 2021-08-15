@@ -33,7 +33,6 @@ export function flush(queue: any, iterator: any) {
     }
 }
 
-
 type IsType<U> = <T>(arg: T & any) => arg is Narrow<T, U>
 type Narrow<T, U> = [T] extends [any] ? U : [T] extends [U] ? Extract<T, U> : U
 

@@ -10,14 +10,14 @@ export class Recognizer {
     constructor (
         target: EventTarget,
         props: Props,
-        config: GenericConfig,
+        config: Config | {},
         key?: MidiKey,
         nativeProps?: NativeProps
     ) {
         this._key = key
         this._ctrl = new Controller(props)
         this._ctrl.applyProps(props, nativeProps)
-        this._ctrl.applyConfig({ ...config, target }, this._key)
+        this._ctrl.applyConfig({ ...config as any, target }, this._key)
         this._ctrl.effect()
     }
     destroy () {
@@ -25,14 +25,25 @@ export class Recognizer {
     }
 }
 
-export class Fader <EventType = EventTypes['fader']>extends Recognizer {
+export class Fader <EventType = EventTypes['fader']> extends Recognizer {
     constructor (
       target: Element,
-      fader: Prop<'fader', EventType>,
+      onFader: Prop<'fader', EventType>,
       config: Config<'fader'> | {} = {}
     ) {
         registerAction('fader')
-        super(target, { fader }, config, 'fader')
+        super(target, { onFader }, config, 'fader')
+    }
+}
+
+export class Button <EventType = EventTypes['button']> extends Recognizer {
+    constructor (
+      target: Element,
+      onButton: Prop<'fader', EventType>,
+      config: Config<'button'> | {} = {}
+    ) {
+        registerAction('button')
+        super(target, { onButton }, config, 'button')
     }
 }
 

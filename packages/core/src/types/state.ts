@@ -6,7 +6,11 @@ export type MidiKey = Exclude<keyof State, 'shared'>
 
 export type MidiEvent = any // todo
 
-export type EventTypes = any // TODO
+export type EventTypes = {
+    button: UIEvent
+    fader: UIEvent
+    note: UIEvent
+}
 
 export type EventTarget = any // todo
 
@@ -18,7 +22,7 @@ export interface GenericState {
     _enabled: boolean
 
     // Raw Midi Event Object
-    event: MidiEvent
+    event: UIEvent
 
     // Raw Targe tObject
     target: EventTarget

@@ -26,13 +26,13 @@ export function useFader<
     EventType = EventTypes['button'],
     UserConfig extends Config<'fader'> = Config<'fader'>
 >(
-    fader: Prop<'fader', EventType>,
+    onFader: Prop<'fader', EventType>,
     config?: UserConfig | {}
 ): any
 
-export function useFader (fader: any, config: any={}) {
+export function useFader (onFader: any, config: any={}) {
     registerAction('fader')
-    return useRecognizers({ fader }, config, 'fader')
+    return useRecognizers({ onFader }, config, 'fader')
 }
 
 export function useButton <
@@ -43,12 +43,12 @@ export function useButton <
     config?: UserConfig | {}
 ): any
 
-export function useButton (button: any, config: any) {
+export function useButton (onButton: any, config: any) {
     registerAction('button')
-    return useRecognizers({ button }, config, 'button')
+    return useRecognizers({ onButton }, config, 'button')
 }
 
-export function useMidi <UserConfig extends Config = Config>(
+export function useMidi <UserConfig extends Config = Config> (
     props: Props,
     config?: Config | {}
 ): any
@@ -58,27 +58,26 @@ export function useMidi (props: any, config: any={}) {
     return useRecognizers<Config>(props, config)
 }
 
-export function Fader <State extends object>(
+export function UseFader <State extends object> (
     props: Props & {
         children: (bind: any) => JSX.Element | null
         config: Config | {}
     }
 ): JSX.Element | null
 
-export function Fader (props: any) {
+export function UseFader (props: any) {
     const {children, config, ...other} = props
     return children(useFader(other, config))
 }
 
-
-export function Midi<State extends object>(
+export function UseMidi <State extends object> (
     props: Props & {
         children: (bind: any) => JSX.Element | null
         config: Config | {}
     }
 ): JSX.Element | null
 
-export function Midi(props: any) {
+export function UseMidi(props: any) {
     const {children, config, ...other} = props
     return children(useMidi(other, config))
 }

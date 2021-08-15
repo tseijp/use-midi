@@ -8,8 +8,8 @@ export type Prop <
 ) => any | void
 
 export type Props = {
-    onFader: Prop<'fader'>
-    onButton: Prop<'button'>
+    onFader?: Prop<'fader'>
+    onButton?: Prop<'button'>
 }
 
 type ReactDOMAttributes = React.DOMAttributes<EventTarget>

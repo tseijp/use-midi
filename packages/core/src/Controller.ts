@@ -1,24 +1,24 @@
 import { MidiKey, Props, NativeProps, Config } from './types'
-import { EventStore, TimeoutStore } from './stores'
+import { UpdateStore, TimeoutStore } from './stores'
 import { EngineMap, ConfigMap } from './actions'
 import { eachProp } from './utils'
 
 export class Controller {
     public keys = new Set<MidiKey>()
-    private _eventStore = new EventStore(this)
+    private _updateStore = new UpdateStore(this)
     private _timeoutStore = new TimeoutStore(this)
-    public eventStores: { [key in MidiKey]?: EventStore } = {}
+    public eventStores: { [key in MidiKey]?: UpdateStore } = {}
     public timeoutStores: { [key in MidiKey]?: TimeoutStore } = {}
-    public engines = {}
+    public engines = {} as any
+    public nativeProps? = {}
     public props = {}
-    public nativeProps = {}
     public config = {} as any
     public state = {
         shared: {}
     } as any
 
     constructor (props: Props) {
-
+        this.props = props
     }
 
     clean () {
@@ -30,11 +30,11 @@ export class Controller {
 
     effect () {
         if (this.config.shared.target) this.bind()
-        return () => void (this._eventStore.clean(), this._timeoutStore.clean())
+        return () => void (this._updateStore.clean(), this._timeoutStore.clean())
     }
 
     bind (...args: any) {
-
+        
     }
 
     applyProps (props: Props, nativeProps?: NativeProps) {
