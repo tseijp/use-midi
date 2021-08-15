@@ -22,25 +22,12 @@ export function useRecognizers (props: any, config: any={}, key?: any, nativePro
     return undefined as any
 }
 
-export function useFader<
-    EventType = EventTypes['button'],
-    UserConfig extends Config<'fader'> = Config<'fader'>
->(
-    onFader: Prop<'fader', EventType>,
-    config?: UserConfig | {}
-): any
-
-export function useFader (onFader: any, config: any={}) {
-    registerAction('fader')
-    return useRecognizers({ onFader }, config, 'fader')
-}
-
 export function useButton <
     EventType = EventTypes['button'],
-    UserConfig extends Config<'button'> = Config<'button'>
+    C extends Config<'button'> = Config<'button'>
 > (
     button: Prop<'button', EventType>,
-    config?: UserConfig | {}
+    config?: C | {}
 ): any
 
 export function useButton (onButton: any, config: any) {
@@ -48,7 +35,33 @@ export function useButton (onButton: any, config: any) {
     return useRecognizers({ onButton }, config, 'button')
 }
 
-export function useMidi <UserConfig extends Config = Config> (
+export function useFader<
+    EventType = EventTypes['button'],
+    C extends Config<'fader'> = Config<'fader'>
+>(
+    onFader: Prop<'fader', EventType>,
+    config?: C | {}
+): any
+
+export function useFader (onFader: any, config: any={}) {
+    registerAction('fader')
+    return useRecognizers({ onFader }, config, 'fader')
+}
+
+export function useNote<
+    EventType = EventTypes['note'],
+    C extends Config<'note'> = Config<'note'>
+>(
+    onNote: Prop<'note', EventType>,
+    config?: C | {}
+): any
+
+export function useNote (onNote: any, config: any={}) {
+    registerAction('note')
+    return useRecognizers({ onNote }, config, 'note')
+}
+
+export function useMidi <C extends Config = Config> (
     props: Props,
     config?: Config | {}
 ): any

@@ -1,0 +1,140 @@
+---
+sidebar_label: Launchpad examples
+---
+# Launchpad examples 
+
+import styled, {css} from 'styled-components'
+
+ref: https://codepen.io/Maki-Gobou/pen/yPXZvv
+
+<Container>
+  <Launchpad>
+    <List top>
+      {["▲", "▼", "◀", "▶", "Sess", "Note", "Devi", "User"].map(key =>
+        <button key={key}>{key}</button>
+      )}
+    </List>
+    <List right>
+      {[...Array(8)].map((_, key) =>
+          <button key={key}>▷</button>
+      )}
+    </List>
+    <List bottom>
+      {[...Array(8)].map((_, key) =>
+          <button key={key}>▲</button>
+      )}
+    </List >
+    <List left>
+      {["Shift", "Click", "Undo", "Dele", "Quar", "Dupi", "Doub", "◯"].map(key =>
+        <button key={key}>{key}</button>
+      )}
+    </List >
+    <Center>
+      {[...Array(8*8)].map((_, key) =>
+        <button/>
+      )}
+    </Center>
+  </Launchpad>
+</Container>
+
+export const Container = styled.div`
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  height: 100vh;
+  background: #eee;
+  color: #aaa;
+`
+
+export const Launchpad = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 696px;
+  height: 696px;
+  user-select: none;
+  border-radius: 10px;
+  border: 4px solid #111;
+  background: #222;
+  box-shadow:
+    0 25px 50px #aaa,
+    0 2px 8px #555,
+    0 0 1px 0 #a0a0a0 inset;
+  box-sizing: border-box;
+}
+:after {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  transform: rotate(45deg);
+  border: 2px solid #222;
+  background: #222;
+  box-shadow:
+    0 0 0 3px #111 inset,
+    11px 0 0 2px #222 inset,
+    14px 0px 0 2px #111 inset;
+}
+`
+
+export const List = styled.div`
+  display: flex;
+  position: absolute;
+ ${props => props.top && css`
+    width: 510px;
+    top: 34px;
+  `}
+  ${props => props.right && css`
+    flex-direction: column;
+    height: 510px;
+    right: 34px;
+  `}
+  ${props => props.bottom && css`
+    width: 510px;
+    bottom: 34px;
+  `}
+  ${props => props.left && css`
+    flex-direction: column;
+    height: 510px;
+    left: 34px;
+  `}
+> button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  width: 40px;
+  height: 40px;
+  border: 3px solid;
+  border-radius: 50%;
+  box-shadow: 1px 1px 5px #000;
+  box-sizing: border-box;
+  background: #111;
+  cursor: pointer;
+  color: #aaa;
+}
+> button:active {
+  color: #cfecff;
+  box-shadow: 0 0 16px #4976DF;
+}
+`
+
+export const Center = styled.div`
+  display: grid;
+  grid-gap: 10px;
+  grid-template: repeat(8, 54px) / repeat(8, 54px);
+}
+> button {
+  color: #aaa;
+  border-radius: 4px;
+  background: radial-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .6));
+  cursor: pointer;
+}
+> button:active {
+  box-shadow: 0 0 32px #739dff;
+  background: radial-gradient(#cfecff, #cfecff);
+}
+`

@@ -17,7 +17,7 @@ export class Recognizer {
         this._key = key
         this._ctrl = new Controller(props)
         this._ctrl.applyProps(props, nativeProps)
-        this._ctrl.applyConfig({ ...config as any, target }, this._key)
+        this._ctrl.applyConfig({ ...config as any, target }, key)
         this._ctrl.effect()
     }
     destroy () {

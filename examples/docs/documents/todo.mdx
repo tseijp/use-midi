@@ -1,0 +1,64 @@
+# TODO
+
+## React SyntheticEvent
+
+## Widgets
+```
+onchangevalue: onMIDI x onChange
+
+outputs: onOutput
+M => t => U
+I    h    S
+D    i    E
+I <= s <= R
+    inputs
+    onInput
+```
+
+onFader, onFaderInput, onFaderOutput (-----( ))
+- vertical unipolar fader
+- vertical bipolar fader
+- horizontal unipolar fader
+- horizontal bipolar fader
+
+onProgram, onProgramInput, onProgramOutput [0]
+onControl, onControlInput, onControlOutput [1]
+
+- program change
+- cc button
+
+onNote, onNoteInput, onNoteOutput [0] [0][0][0] [1][2][3][4]
+onNotes, onDrums, onChromaticKey, onScaleKey
+- chromatic keyboard
+- scale keyboard
+- drum grid
+- midi note
+
+
+## Settings
+All
+- MIDI Channel (1 ~ 16)
+
+Controll Change Button
+- CC number
+- On value(~ 127)
+- Off value(0 ~)
+
+CC Button, MIDI Note
+- Pad mode (Momentary, Toggle, Trigger)
+
+Keyboard
+- Octave (-2 ~ 8)
+
+Program change
+- Program number
+
+Drum Grid, MIDI Note
+- Note (C, C#, ...B)
+
+
+
+```js
+useClick(state => {})
+useChange(state => {})
+```

@@ -1,0 +1,95 @@
+---
+sidebar_position: 2
+sidebar_label: Rmaz
+---
+
+# rmaz
+
+Coordinate `requestMIDIAccess` calls across your app and/or libraries.
+
+based on rafz: `requestAnimationFrame`
+
+- raf => rma
+- loop => change
+- frame => access
+- animation => midi
+
+```js
+import { rma } from 'rmaz'
+
+// Schedule an update
+rma(ts => {})
+
+// Start an update loop
+rma(ts => true)
+
+// Cancel an update
+rma.cancel(fn)
+
+// Schedule a mutation
+rma.write(() => {})
+
+// Before any updates
+rma.onStart(() => {})
+
+// Before any mutations
+rma.onAccess(() => {})
+
+// After any mutations
+rma.onFinish(() => {})
+
+// Use a polyfill
+rma.use(require('@essentials/rma').rma)
+```
+
+
+## Basic Examples
+
+import { rma } from 'use-midi/src'
+export let midi;
+
+export function App () {
+    const [value, setValue] = React.useState(0)
+    React.useEffect(() => {
+        rma(ts => {
+            console.log(rma.event)
+            setValue(p => p+1)
+            rma.inputs.forEach(input => {
+                input.onmidimessage = e => {
+                    rma.outputs.forEach(output => {
+                        output.send(e.data, e.timestamp)
+                    })
+                }
+            })
+            return true
+        })
+    }, [])
+    const handleClick = () => {
+        // rma.outputs?.forEach((output, i) => {
+        //     output.send([0, 0, 0])
+        // });
+    }
+    return (
+        <>
+          <h4>inputs</h4>
+          <button onClick={handleClick}>add value {value}</button>
+          {Array.from(rma.inputs || []).map((v, i) =>
+            <div key={i}>
+              <h5>{v[0]}</h5>
+              <div>name: {v[1].name}</div>
+              <div>type: {v[1].type}</div>
+            </div>
+        )}
+          <h4>outputs</h4>
+          {Array.from(rma.outputs || []).map((v, i) =>
+            <div key={i}>
+              <h5>{v[0]}</h5>
+              <div>name: {v[1].name}</div>
+              <div>type: {v[1].type}</div>
+            </div>
+        )}
+        </>
+    )
+}
+
+<App />

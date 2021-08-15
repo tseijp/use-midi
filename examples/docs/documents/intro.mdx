@@ -2,10 +2,29 @@
 sidebar_position: 0
 sidebar_label: Introduction
 ---
+# Introduction to React UseMidi
 
-# Introduction
+UseMidi is designed as a the foundation for React design systems and component libraries.
+It sets you up for success in creating accesible, interactive, performant UI
+that support the custom look and feel of you
 
-Let's discover **use-midi in less than 5 minutes**.
+## Modern React #
+Made with modern React APIs including function components and hooks.
+Ready for use with modern React APIs including Concurrent Mode and Server Components.
+
+## Modular views and behaviors #
+UseMidi exports a number of individual modules to support a variety of use cases.
+Your application can use as many or as few of these modules as needed.
+The library is designed for incremental adoption strategies.
+
+```js
+// React DOM element DOES have event callback props
+<div onClick={onClick} />
+
+// UseMidi element DOES NOT have event callback props
+const bind = useClick(state => {});
+<View {...bind()}/>
+```
 
 ## Installation
 
@@ -30,3 +49,47 @@ yarn docs
 ```
 
 Your site starts at [http://localhost:3000](http://localhost:3000).
+
+## Simple example
+
+import styled from 'styled-components'
+
+export const StyledComponent = styled.div`
+width: 100%;
+height: 25rem;
+border-radius: .5rem;
+background: pink;
+div {
+    width: 25rem;
+    height: 25rem;
+    color: black;
+    margin: auto;
+};
+`
+
+import {useNote} from 'use-midi/src'
+export function SimpleExample (props) {
+    const bind = useNote(state => {
+        if (state.first)
+            state.send([0x000, 0x888, 0xfff], 10)
+    })
+    return <div />
+}
+
+<StyledComponent>
+  <SimpleExample/>
+</StyledComponent>
+
+The following example makes a `<div/>`
+
+```js
+import { useNote } from 'use-midi'
+
+function ClickButton () {
+    const bind = useNote(state => {
+        if (state.first)
+            state.send([0x000, 0x888, 0xfff], 10)
+    })
+    return <div {...bind()}/>
+}
+```

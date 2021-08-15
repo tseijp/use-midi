@@ -35,15 +35,20 @@ yarn i
 yarn start
 ```
 
-- open browser and visit [localhost:3000](http://localhost:3000)
-- Now you can go to our [demo](http://tsei.jp/rmix), and try its usage.
+- open browser and visit [localhost:3000][host]
+- Now you can go to our [demo][demo], and try its usage.
 
 
 ### Documentation and Examples
 
-More info about the project can be found [here](https://tsei.jp/rmix/docs/intro.md).
+More info about the project can be found [here][docs].
 
-Examples and tutorials can be found [here](https://tsei.jp/rmix/examples/intro.md).
+Examples and tutorials can be found [here][exam]
+
+[host]: http://localhost:3000
+[demo]: https://tseijp.github.io/use-midi
+[docs]: https://tseijp.github.io/use-midi/documents/intro.md
+[exam]: https://tseijp.github.io/use-midi/documents/intro.md
 
 <br/>
 <hr/>
@@ -57,9 +62,9 @@ import React from 'react'
 import { useMidi } from 'use-midi'
 
 export function App () {
-  const ref = React.useRef()
-
-  const bind = useMidi(() => {/*~~~*/})
+  const bind = useMidi(() => {
+      click: state => {/*~*/}
+  })
 
   return (
     <button {...bind()}/>
