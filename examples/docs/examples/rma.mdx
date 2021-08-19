@@ -8,14 +8,15 @@ import {rma, each} from 'use-midi/src'
 export default function () {
     const [i, setI] = React.useState('not-selected')
     const [o, setO] = React.useState('not-selected')
-    const [data, setData] = React.useState([0, 0, 0])
     const [is, setIs] = React.useState([])
     const [os, setOs] = React.useState([])
     const [log, setLog] = React.useState([])
+    const [data, setData] = React.useState([0, 0, 0])
     React.useEffect(() => {
         setLog(p => [...p, `run effect`])
         rma(() => {
             setLog(p => [...p, `run rma`])
+            console.log(rma.event)
             const inputs = [...rma.inputs.keys()]
             const outputs = [...rma.outputs.keys()]
             void (setIs(inputs), setOs(outputs))
@@ -30,11 +31,12 @@ export default function () {
         console.log(input, output)
         input.onmidimessage = e => {
             output.send(e.data)
+            console.log(e)
             setLog(p => [...p, "onmidimessage " + e.data])
         }
     }
-    const handleChange = (index=0) => e => {
-        setData(p => p.map((v, k) => k===index? e.target.value: v))
+    const handleChange = (index=0) => {
+        return e => setData(p => p.map((v, k) => k===index? e.target.value: v))
     }
     return (
         <div>

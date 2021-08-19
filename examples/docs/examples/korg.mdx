@@ -6,33 +6,53 @@ import styled, {ThemeProvider, css} from 'styled-components'
 
 ref: https://codepen.io/johnmeade-webdev/pen/jOEaMyX
 
-<ThemeProvider theme={{color: 'black'}}>
-  <ControllerHardware>
-    {[...Array(7)].map((_, key) =>
-      <ControllerSection key={key}>
-        <div>
-          <Button>S</Button>
-          <Button>M</Button>
-          <Button>R</Button>
-        </div>
-        <div>
-          <Knob>
-            <KnobDial/>
-          </Knob>
-          <SliderIncs>
-            <SliderIncsLeft/>
-            <SliderIncsRight/>
-            <Slider>
-              <SliderTop/>
-              <SliderCenter/>
-              <SliderBotton/>
-            </Slider>
-          </SliderIncs>
-        </div>
-      </ControllerSection>
-    )}
-  </ControllerHardware>
-</ThemeProvider>
+<PickColor>
+  {color =>
+    <ThemeProvider theme={{color}}>
+      <ControllerHardware>
+        {["0", "1", "2", "3", "4", "5", "6"].map(key =>
+          <ControllerSection key={key}>
+            <div>
+              <Button>S</Button>
+              <Button>M</Button>
+              <Button>R</Button>
+            </div>
+            <div>
+              <Knob>
+                <KnobDial/>
+              </Knob>
+              <SliderIncs>
+                <SliderIncsLeft/>
+                <SliderIncsRight/>
+                <Slider>
+                  <SliderTop/>
+                  <SliderCenter/>
+                  <SliderBotton/>
+                </Slider>
+              </SliderIncs>
+            </div>
+          </ControllerSection>
+        )}
+      </ControllerHardware>
+    </ThemeProvider>
+  }
+</PickColor>
+
+
+export function PickColor (props) {
+    const [color, set] = React.useState('black')
+    const {children, ...other} = props
+    return (
+      <div {...other}>
+        <input
+          type="color"
+          value={color}
+          onChange={e => set(e.target.value)}
+        />
+        {children(color)}
+      </div>
+    )
+}
 
 ### Examples
 
@@ -45,7 +65,6 @@ const bind = useRange(state => {
         state.send(data)
     }
 }, {portname: 'MIDI'})
-// <Slider {...bind()}/>
 
 const bind = useClick(state => {
     if (state.input) {
@@ -65,13 +84,13 @@ export const ControllerHardware = styled.div`
   padding: 2rem;
   width: 56rem;
   border-radius: 1rem;
-  background: ${_ => _.theme.color};
+  background: ${_ => _.theme.color || 'black'};
   box-shadow: 5px 5px 10px rgba(0, 0, 0, .75);
 `
 
 export const ControllerSection = styled.div`
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 `
 
 export const Button = styled.button`
@@ -110,7 +129,7 @@ export const Knob = styled.div`
   background: -webkit-radial-gradient(circle, rgba(0,0,0,1) 38%, rgba(103,98,98,1) 61%, rgba(0,0,0,1) 96%);
   background: radial-gradient(circle, rgba(0,0,0,1) 38%, rgba(103,98,98,1) 61%, rgba(0,0,0,1) 96%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#000000",GradientType=1);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#000000",GradientType=1);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#000000",GradientType=1);
 `
 
 export const KnobDial = styled.div`

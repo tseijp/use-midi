@@ -1,7 +1,9 @@
 ---
 sidebar_position: 2
-sidebar_label: Midi config
+sidebar_label: MIDI config
 ---
+
+# MIDI config
 
 React `UseMidi` offers different config to configure the MIDI.
 

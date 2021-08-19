@@ -1,7 +1,7 @@
 ---
 sidebar_label: Launchpad examples
 ---
-# Launchpad examples 
+# Launchpad examples
 
 import styled, {css} from 'styled-components'
 
@@ -11,31 +11,38 @@ ref: https://codepen.io/Maki-Gobou/pen/yPXZvv
   <Launchpad>
     <List top>
       {["▲", "▼", "◀", "▶", "Sess", "Note", "Devi", "User"].map(key =>
-        <button key={key}>{key}</button>
+        <Button key={key}>{key}</Button>
       )}
     </List>
     <List right>
-      {[...Array(8)].map((_, key) =>
-          <button key={key}>▷</button>
+      {["0", "1", "2", "3", "4", "5", "6", "7"].map(i =>
+        <Button key={i}>▷</Button>
       )}
     </List>
     <List bottom>
-      {[...Array(8)].map((_, key) =>
-          <button key={key}>▲</button>
+      {["0", "1", "2", "3", "4", "5", "6", "7"].map(i =>
+        <Button key={i}>▲</Button>
       )}
-    </List >
+    </List>
     <List left>
       {["Shift", "Click", "Undo", "Dele", "Quar", "Dupi", "Doub", "◯"].map(key =>
-        <button key={key}>{key}</button>
+        <Button key={key}>{key}</Button>
       )}
-    </List >
+    </List>
     <Center>
-      {[...Array(8*8)].map((_, key) =>
-        <button/>
+      {["0", "1", "2", "3", "4", "5", "6", "7"].map(j =>
+        ["0", "1", "2", "3", "4", "5", "6", "7"].map(i =>
+          <Button key={j + "-" + i}></Button>
+        )
       )}
     </Center>
   </Launchpad>
 </Container>
+
+export function Button (props) {
+    const bind = useButton(state => {})
+    return <button {...props} {...bind()}/>
+}
 
 export const Container = styled.div`
   border-radius: 0.5rem;
@@ -59,10 +66,7 @@ export const Launchpad = styled.div`
   border-radius: 10px;
   border: 4px solid #111;
   background: #222;
-  box-shadow:
-    0 25px 50px #aaa,
-    0 2px 8px #555,
-    0 0 1px 0 #a0a0a0 inset;
+  box-shadow: 0 25px 50px #aaa, 0 2px 8px #555, 0 0 1px 0 #a0a0a0 inset;
   box-sizing: border-box;
 }
 :after {
@@ -126,7 +130,6 @@ export const Center = styled.div`
   display: grid;
   grid-gap: 10px;
   grid-template: repeat(8, 54px) / repeat(8, 54px);
-}
 > button {
   color: #aaa;
   border-radius: 4px;

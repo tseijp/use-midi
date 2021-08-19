@@ -9,7 +9,7 @@ import  {
 //     intent?(): void
 // }
 
-export class BaseEngine<Key extends MidiKey> {
+export abstract class BaseEngine<Key extends MidiKey> {
     readonly _ctrl: Controller
     readonly _args: any[]
     readonly _key: Key
@@ -28,6 +28,8 @@ export class BaseEngine<Key extends MidiKey> {
         if (this.init) this.init()
         if (this.reset) this.reset()
     }
+
+    abstract bind (...args: any): any
 
     // shorthands
     get state () {
@@ -64,30 +66,34 @@ export class BaseEngine<Key extends MidiKey> {
 
     reset () {
         const { state, shared, config, _args } = this
-        // state.xxx = [0, 0]
+        state.values = []
     }
 
-    start (event: any) {
+    start (event: any) { // MIDIStateChagneEvent
         const {state, config} = this
-        // state.xxx = event.xxx
+        if (!state._active) {
+            this.reset()
+            state._active = true
+            state.target = event.target
+            state.initial = state.values
+        }
+        state.startTime = state.timeStamp = event.timeStamp
+    }
+
+    compute (event: any) {
+        const {state, config} = this
+        if (event) {
+            state
+            state.event = event
+        }
     }
 
     emit () {
-        const { state, shard, config } = this
+        const { state, shared, config } = this
     }
 
     clean () {
         this.eventStore.clean()
         this.timeoutStore.clean()
-    }
-
-    change () {}
-
-    input (access) {
-
-    }
-
-    output () {
-
     }
 }

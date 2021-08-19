@@ -1,7 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: Midi
+sidebar_label: MIDI
 ---
+
+### MIDI
 
 ### React
 
@@ -15,8 +17,8 @@ useMidi | Handles multiple midi in the one hooks
 With the exception of `useMidi` whitch is a special hook, all other hook share the same API:
 
 ```js
-const midi = useMidi(state => {/*~~~*/}, config)
-return <div {...midi(...args)}>
+const bind = useMidi(state => {/*~~~*/}, config)
+return <div {...bind(...args)}>
 ```
 
 - `state`

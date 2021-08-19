@@ -1,31 +1,34 @@
-import { CoordEngine } from './CoordEngine'
+import { BaseEngine } from './BaseEngine'
 
-export class ButtonEngine extends CoordEngine<'button'> {
-    ingKey = 'input'
+export class ButtonEngine extends BaseEngine<'button'> {
+    ingKey = 'button' as const
 
-    constructor (...args: [any, any, any]) {
-        super(...args)
-    }
-
-    reset (this: ButtonEngine) {
-        super.reset()
+    button (event: any) {
         const {state} = this
-        // state.xxx = false
-    }
-    setup () {
-
-    }
-
-    cancel () {
-
+        if (state._active) this.buttonStart(event)
+        else this.buttonChange(event)
+        this.timeoutStore.add('buttonEnd', this.buttonEnd.bind(this))
     }
 
-    clean () {
-        super.clean()
+    buttonStart (event: any) {
+        this.start(event)
+        this.compute(event)
+        this.emit()
+    }
+
+    buttonChange (event: any) {
+        this.compute(event)
+        this.emit()
+    }
+
+    buttonEnd (event?: any) {
+        if (!this.state._active) return
+        this.state._active = false
+        this.compute(event)
+        this.emit()
     }
 
     bind (fn: any) {
-        const {device} = this.config
-        // fn('xxx', 'YYY', this.xxxYYY.bind(this))
+        fn('button', '', this.button.bind(this))
     }
 }

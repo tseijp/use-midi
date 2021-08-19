@@ -48,7 +48,7 @@ export interface Rmaz {
     advance: () => void
     status: 'always' | 'demand'
 
-    access?: any
+    event?: any
     inputs?: any
     outputs?: any
 }
@@ -68,7 +68,7 @@ let sysex = true
 
 let software = true
 
-let access: any
+let event: any
 
 let updateQueue = makeQueue<UpdateFun>(),
      writeQueue = makeQueue<Fun>(),
@@ -110,9 +110,9 @@ rma.fun = fun => fun()
 rma.catch = console.error
 rma.status = 'always'
 
-setHidden('access', () => access)
-setHidden('inputs', () => access?.inputs)
-setHidden('outputs', () => access?.outputs)
+setHidden('event', () => event)
+setHidden('inputs', () => event?.target.inputs)
+setHidden('outputs', () => event?.target.outputs)
 
 rma.advance = () => {
     if (rma.status !== 'demand')
@@ -131,7 +131,7 @@ function start () {
 function change (e?: any) {
     if (~ts) {
         e.onstatechange = change
-        access = e.target || e
+        event = e.target? e: {target: e}
         rma.fun(update)
     }
 }

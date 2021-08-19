@@ -9,8 +9,6 @@ export class Controller {
     private _timeoutStore = new TimeoutStore(this)
     public eventStores: { [key in MidiKey]?: UpdateStore } = {}
     public timeoutStores: { [key in MidiKey]?: TimeoutStore } = {}
-    public engines = {} as any
-    public nativeProps? = {}
     public props = {}
     public config = {} as any
     public state = {
@@ -34,12 +32,34 @@ export class Controller {
     }
 
     bind (...args: any) {
-        
+        const sharedConfig = this.config.shared
+        const props: any = {}
+
+        let target
+        if (sharedConfig.target) {
+            target = sharedConfig.target()
+            if (!target) return
+        }
+
+        // const bindFunction = bindToProps(props, sharedConfig.eventOptions, !!target) // !!!
+
+        if (sharedConfig.enabled) {
+            for (const key of this.keys) {
+                if (this.config[key]!.enabled) {
+                    const Engine = EngineMap.get(key)!
+                    // new Engine(this, args, key)!.bind(bindFunction) // !!!
+                }
+            }
+        }
+
+        // if (!target) return props
+        // for (const handlerProp in props) {
+        //     this._targetStore.add(target, eventKey, '', props[handlerProp],) // !!!
+        // }
     }
 
-    applyProps (props: Props, nativeProps?: NativeProps) {
+    applyProps (props: Props) {
         this.props = props
-        this.nativeProps = nativeProps
     }
 
     applyConfig (config: Config, key?: MidiKey) {
@@ -49,12 +69,11 @@ export class Controller {
             const target = ConfigMap.get(key)
             _config[key] = {...target, ...other}
         } else {
-            eachProp(other, (prop, key) => {
-                const target = ConfigMap.get(key)
+            eachProp(other, (v, k) => {
+                const target = ConfigMap.get(k as any)
                 if (target)
-                    _config[key] = {...prop,  ...target}
+                    _config[k] = {...v,  ...target}
             })
-
         }
         this.config = _config
     }

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-sidebar_label: Midi State
+sidebar_label: Midi state
 ---
 
 # MIDI state
