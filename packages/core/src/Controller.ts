@@ -1,61 +1,50 @@
-import { MidiKey, Props, NativeProps, Config } from './types'
-import { UpdateStore, TimeoutStore } from './stores'
+import { MidiKey, Props, Config } from './types'
+import { EventStore, AccessStore } from './stores'
 import { EngineMap, ConfigMap } from './actions'
-import { eachProp } from './utils'
+import { each, eachProp } from './utils'
 
 export class Controller {
     public keys = new Set<MidiKey>()
-    private _updateStore = new UpdateStore(this)
-    private _timeoutStore = new TimeoutStore(this)
-    public eventStores: { [key in MidiKey]?: UpdateStore } = {}
-    public timeoutStores: { [key in MidiKey]?: TimeoutStore } = {}
-    public props = {}
+    public eventStores: { [key in MidiKey]?: EventStore } = {}
+    public accessStores: { [key in MidiKey]?: AccessStore } = {}
     public config = {} as any
+    public props = {}
     public state = {
         shared: {}
     } as any
 
     constructor (props: Props) {
         this.props = props
+        if (props.onButton) this.setup('button')
+        if (props.onFader) this.setup('fader')
+        if (props.onNote) this.setup('note')
     }
 
-    clean () {
-        for (const key of this.keys) {
-            this.eventStores[key]!.clean()
-            this.timeoutStores[key]!.clean()
-        }
+    /**
+     * setup stores from midi key
+     */
+    setup (key: MidiKey) {
+        this.keys.add(key)
+        this.eventStores[key] = new EventStore(this)
+        this.accessStores[key] = new AccessStore(this)
     }
 
+    /**
+     * Executes side effects on each render.
+     */
     effect () {
         if (this.config.shared.target) this.bind()
-        return () => void (this._updateStore.clean(), this._timeoutStore.clean())
     }
 
-    bind (...args: any) {
-        const sharedConfig = this.config.shared
-        const props: any = {}
 
-        let target
-        if (sharedConfig.target) {
-            target = sharedConfig.target()
-            if (!target) return
-        }
-
-        // const bindFunction = bindToProps(props, sharedConfig.eventOptions, !!target) // !!!
-
-        if (sharedConfig.enabled) {
-            for (const key of this.keys) {
-                if (this.config[key]!.enabled) {
-                    const Engine = EngineMap.get(key)!
-                    // new Engine(this, args, key)!.bind(bindFunction) // !!!
-                }
-            }
-        }
-
-        // if (!target) return props
-        // for (const handlerProp in props) {
-        //     this._targetStore.add(target, eventKey, '', props[handlerProp],) // !!!
-        // }
+    /**
+     * Cleans all side effects when the controller did unounted
+     */
+    clean () {
+        each(this.keys, key => {
+            this.eventStores[key]!.clean()
+            this.accessStores[key]!.clean()
+        })
     }
 
     applyProps (props: Props) {
@@ -76,5 +65,35 @@ export class Controller {
             })
         }
         this.config = _config
+    }
+
+    /**
+     * The bind function that can be returned
+     */
+    bind (...args: any) {
+        const shared = this.config.shared
+        // const props: any = {}
+
+        let target
+        if (shared.target) {
+            target = shared.target()
+            if (!target) return
+        }
+
+        // const bindFunction = bindToProps(props, shared.eventOptions, !!target) // !!!
+
+        if (shared.enabled) {
+            each(this.keys, key => {
+                if (this.config[key]!.enabled) {
+                    const Engine = EngineMap.get(key)!
+                    // new Engine(this, args, key)!.bind(bindFunction) // !!!
+                }
+            })
+        }
+
+        // if (!target) return props
+        // eachProp(props, prop => {
+        //     this._eventStore.add(target, eventKey, '', prop) // !!!
+        // })
     }
 }

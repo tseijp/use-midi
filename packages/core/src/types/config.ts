@@ -1,19 +1,16 @@
 import {MidiKey} from './state'
 
 export interface GenericConfig {
-    // TODO
-    target?: any
+    // Raw Midi Event Object
+    target?: EventTarget
 
-    // TODO
-    window?: any
-
-    // TODO
+    // True when the Midi is active
     enabled?: boolean
 }
 
 export interface MidiConfig {
     // TODO
-    enables?: boolean
+    enabled?: boolean
 
     // TODO
     channel?: number

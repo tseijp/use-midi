@@ -43,6 +43,8 @@ ref: https://codepen.io/Maki-Gobou/pen/mLqoQj
   </Piano>
 </Wrapper>
 
+import {useNote} from 'use-midi/src'
+
 export function Tut (props) {
     const bind = useNote(state => {})
     return <div {...props} {...bind()}/>

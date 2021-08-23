@@ -1,13 +1,25 @@
 import { Controller } from '../Controller'
-import  {
-    MidiKey
-} from '../types'
+import  { MidiKey } from '../types'
 
 // export interface BaseEngine {
 //     init?(): void
 //     setup?(): void
 //     intent?(): void
 // }
+
+export interface BaseEngine<Key extends MidiKey> {
+    /**
+     * initiarize engine
+     */
+    __init__?(): void
+
+    /**
+     * compute at a specific time
+     */
+    __first__?(): void
+    __change__?(): void
+    __last__?(): void
+}
 
 export abstract class BaseEngine<Key extends MidiKey> {
     readonly _ctrl: Controller
@@ -21,17 +33,29 @@ export abstract class BaseEngine<Key extends MidiKey> {
 
         if (!this.state) {
             this.state = {
-                values: [0, 0],
-                initial: [0, 0]
+                data: [0, 0],
+                init: [0, 0]
             } as any
         }
-        if (this.init) this.init()
-        if (this.reset) this.reset()
+        if (this.__init__)
+            this.__init__()
+        this.reset()
     }
+    /**
+     * event listeners are properly set by the  Controller.
+     */
+    abstract bind (
+        fn: (
+            device: string,
+            action: string,
+            handler: (event: any) => void,
+            options?: AddEventListenerOptions
+        ) => void
+    ): any
 
-    abstract bind (...args: any): any
-
-    // shorthands
+    /**
+     * shorthands of ctrl value
+     */
     get state () {
         return this._ctrl.state[this._key]!
     }
@@ -48,52 +72,101 @@ export abstract class BaseEngine<Key extends MidiKey> {
         return this._ctrl.eventStores[this._key]!
     }
 
-    get timeoutStore () {
-        return this._ctrl.timeoutStores[this._key]!
-    }
-
-    get engine () {
-        return this._ctrl.engines[this._key]!
+    get accessStore () {
+        return this._ctrl.accessStores[this._key]!
     }
 
     get config () {
         return this._ctrl.config
     }
 
-    init () {
-        this.reset()
-    }
 
+    /**
+     * reset state if init run
+     */
     reset () {
-        const { state, shared, config, _args } = this
-        state.values = []
+        const { state, shared, _key, _args } = this
+        shared[_key] = false
+        state.active = false
+        state.blocked = false
+        state.axis = undefined
+        state.memo = undefined
+        state.deltaTime = 0
+        state.timeStamp = 0
+        state.elapsedTime = 0
+        state.delta = [0, 0, 0]
+        state.direction = [0, 0, 0]
+        state.velocity = 0
+        state.movement = 0
+        state.command = 0
+        state.channel = 0
+        state.noteNum = 0
+        state.distance = 0
+        state.velocity = 0
+        state.args = _args
     }
 
-    start (event: any) { // MIDIStateChagneEvent
-        const {state, config} = this
-        if (!state._active) {
+    /**
+     * start of the midi access
+     * event: MIDIStateChagneEvent
+     */
+    start (event: any) {
+        const {state} = this
+        if (!state.active) {
             this.reset()
-            state._active = true
+            state.active = true
             state.target = event.target
-            state.initial = state.values
+            state.init = state.data = event.data
         }
         state.startTime = state.timeStamp = event.timeStamp
     }
 
+    /**
+     * calculate midi event data
+     * event: MIDIStateChagneEvent || MIDIMessageEvent
+     */
     compute (event: any) {
-        const {state, config} = this
+        const {state, shared, _key} = this
+        if (!state.active || state.blocked)  return
+        state.args = this._args
+        state.first = state.active && !state.active
+        state.last = !state.active && state.active
+        shared[_key] = state.active
+
         if (event) {
-            state
+            state.target = event.target
             state.event = event
+            state.type = event.type
+
+            if (state.first) this.__first__?.()
+            else if (state.last) this.__last__?.()
+            else this.__change__?.()
+
+            state.deltaTime = event.timeStamp - state.timeStamp
+            state.timeStamp = event.timeStamp
+            state.elapsedTime = state.timeStamp - state.startTime
+
+            if (!event.data) return
+            const [_m0, _m1, _m2] = state.movement
+            const [_p0, _p1, _p2] = state.data
+            const [_c0, _c1, _c2] = event.data
+            state.data = [_c0, _c1, _c2]
+            state.prev = [_p0, _p1, _p2]
+            state.delta = [_c0 - _p0, _c1 - _p1, _c2 - _p2]
+            state.sign = state.delta.map(Math.sign)
+            state.command = _c0 >> 4
+            state.channel = _c0 & 0xf
+            state.noteNum = _c1
+            state.distance += state.delta[0]
+            state.velocity = _c2? _c2 / 127: state.delta[0] / state.deltaTime
         }
     }
 
-    emit () {
-        const { state, shared, config } = this
-    }
-
+    /**
+     * engine did unmount
+     */
     clean () {
         this.eventStore.clean()
-        this.timeoutStore.clean()
+        this.accessStore.clean()
     }
 }

@@ -18,29 +18,23 @@ export interface SharedState {
 }
 
 export interface GenericState {
-    _active: boolean
-    _enabled: boolean
-
-    // Raw Midi Event Object
-    event: UIEvent
-
-    // Raw Targe tObject
+    // Raw Target Object
     target: EventTarget
 
-    // The number of Midi channel
-    channel: number
+    // Raw Midi Event Object
+    event: Event
 
-    // Raw input number
-    inputs: number[]
+    // Raw Midi Event type
+    type: string
 
-    // Raw output number
-    outputs: number[]
+    // True when the Midi is active
+    active: boolean
 
-    // Current raw values of the Midi
-    values: number[]
+    // False when theMidi is blocked
+    blocked: boolean
 
-    // Raw values when the Midi started
-    initial: number[]
+    // True when the Midi is active
+    enable: boolean
 
     // True when its the first event
     first: boolean
@@ -48,11 +42,11 @@ export interface GenericState {
     // True when its the last event
     last: boolean
 
-    // True when the Midi is active
-    active: boolean
-
     // The timestamp of the current event
     startTime: number
+
+    // The delta between current and previous event
+    deltaTime: number
 
     // The timestamp of the current event
     timeStamp: number
@@ -60,12 +54,39 @@ export interface GenericState {
     // Elapsed tie of the current Midi
     elapsedTime: number
 
+    // Raw values when the Midi started
+    init: number[]
+
+    // Current raw values of the Midi
+    data: number[]
+
+    // Previous raw values of the Midi
+    prev: number[]
+
+    // between current raw Midi values and previous values
+    delta: number[]
+
+    // direction of the delta values
+    sign: number[]
+
+    // The number of Midi command
+    command: number
+
+    // The number of Midi channel
+    channel: number
+
+    // The number of Midi note number
+    noteNum: number
+
+    // The number of Midi velocity number
+    velocity: number
+
     // The arguments when you bind
     args?: any
 }
 
 export interface ButtonState extends GenericState {
-
+    value: boolean
 }
 
 export interface FaderState extends GenericState {

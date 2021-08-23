@@ -1,34 +1,31 @@
 import { BaseEngine } from './BaseEngine'
 
 export class FaderEngine extends BaseEngine<'fader'> {
-    ingKey = 'fader' as const
+    _key = 'fader' as const
+
+    bind (fn: any) {
+        fn('fader', '', this.fader.bind(this))
+    }
 
     fader (event: any) {
         const {state} = this
-        if (state._active) this.faderStart(event)
+        if (state.active) this.faderStart(event)
         else this.faderChange(event)
-        this.timeoutStore.add('faderEnd', this.faderEnd.bind(this))
+        this.accessStore.add('faderEnd', this.faderEnd.bind(this))
     }
 
     faderStart (event: any) {
         this.start(event)
         this.compute(event)
-        this.emit()
     }
 
     faderChange (event: any) {
         this.compute(event)
-        this.emit()
     }
 
     faderEnd (event?: any) {
-        if (!this.state._active) return
-        this.state._active = false
+        if (!this.state.active) return
+        this.state.active = false
         this.compute(event)
-        this.emit()
-    }
-
-    bind (fn: any) {
-        fn('fader', '', this.fader.bind(this))
     }
 }
