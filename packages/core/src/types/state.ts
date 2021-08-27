@@ -15,6 +15,17 @@ export type EventTypes<Key extends MidiKey> = {
 export type EventTarget = any // todo
 
 export interface SharedState {
+    // Raw Target Object
+    target: EventTarget
+
+    // True when user gave permission to access MIDI devices
+    allowed: boolean
+
+    // True when user grant permission to access MIDI devices
+    requested: boolean
+
+    // True when Web MIDI API is supported by the browser
+    supported: boolean
 }
 
 export interface GenericState {
@@ -69,17 +80,17 @@ export interface GenericState {
     // direction of the delta values
     sign: number[]
 
-    // The number of Midi command
+    // The number of Recieved Midi command code.
     command: number
 
     // The number of Midi channel
     channel: number
 
-    // The number of Midi note number
-    noteNum: number
+    // The number of, the given Midi note number if recieved.
+    noteNum: number | undefined
 
-    // The number of Midi velocity number
-    velocity: number
+    // The number of the given Midi velocity number if recieved.
+    velocity: number | undefined
 
     // The arguments when you bind
     args?: any

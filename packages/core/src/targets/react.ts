@@ -1,25 +1,26 @@
 import React from 'react'
-import { Controller } from '../Controller'
 import { registerAction } from '../actions'
-import { EventTypes, MidiKey, Config, Prop, Props, NativeProps } from '../types'
+import { Controller, parseProps } from '../Controller'
+import { EventTypes, MidiKey, Config, Prop, Props, Native } from '../types'
+import { is } from '../utils'
 
 export function useRecognizers <Config> (
     props: Props,
     config?: Config | {},
     key?: MidiKey,
-    nativeProps?: NativeProps
+    native?: Native
 ): Controller['bind'] | undefined
 
-export function useRecognizers (props: any, config: any={}, key?: any) {
+export function useRecognizers (props: any, config: any={}, key?: any, native?: any) {
     const ctrl = React.useMemo(() => new Controller(props), [])
-    ctrl.applyProps(props)
+    ctrl.applyProps(props, native)
     ctrl.applyConfig(config, key)
     React.useEffect(ctrl.effect.bind(ctrl))
     React.useEffect(() => ctrl.clean.bind(ctrl), [])
 
-    if (typeof config.target === 'undefined')
-        return ctrl.bind.bind(ctrl)
-    return undefined
+    return is.und(config.target)
+        ? ctrl.bind.bind(ctrl)
+        : undefined
 }
 
 export function useButton <
@@ -66,9 +67,10 @@ export function useMidi <C extends Config = Config> (
     config?: Config | {}
 ): Controller['bind'] | undefined
 
-export function useMidi (props: any, config: any={}) {
+export function useMidi (_props: any, config: any={}) {
     registerAction('button', 'fader', 'note')
-    return useRecognizers<Config>(props, config)
+    const [props, native] = parseProps(_props)
+    return useRecognizers<Config>(props, config, undefined, native)
 }
 
 export function UseButton (

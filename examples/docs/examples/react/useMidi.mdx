@@ -9,8 +9,11 @@ import { Live } from '/components/Live'
 {`function App () {
   const bind = useMidi({})
   return (
-    <div>
-    </div>
+    <>
+      <div>type: {typeof bind}</div>
+      <div>bind: {bind + ""}</div>
+      <div>return: {bind() + ""}</div>
+    </>
   )
 }`}
 </Live>

@@ -9,7 +9,11 @@ import { Live } from '/components/Live'
 <Live {...{UseMidi}}>
 {`<UseMidi>
   {bind =>
-    <div {...bind()}/>
+    <>
+      <div>type: {typeof bind}</div>
+      <div>bind: {bind + ""}</div>
+      <div>return: {bind() + ""}</div>
+    </>
   }
 </UseMidi>`}
 </Live>

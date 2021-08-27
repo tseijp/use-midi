@@ -16,10 +16,10 @@
         "start": "lerna exec --scope @use-midi/docs -- yarn start",
         "build": "lerna exec --scope @use-midi/docs -- yarn build",
         "deploy": "lerna exec --scope @use-midi/docs -- yarn deploy",
-        "update": "lerna exec --scope use-midi -- yarn publish",
         "rollup": "lerna exec --scope use-midi -- rollup -c",
-        "watch": "lerna exec --scope use-midi -- jest --watch --runInBand",
+        "npm": "lerna exec --scope use-midi -- yarn publish",
         "cov": "lerna exec --scope use-midi -- jest --coverage",
+        "watch": "lerna exec --scope use-midi -- jest --watch --runInBand",
         "ls": "lerna exec --scope use-midi -- npm pack --dry-run"
     },
     "devDependencies": {

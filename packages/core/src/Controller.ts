@@ -1,13 +1,16 @@
 import { MidiKey, Props, Config } from './types'
 import { EventStore, AccessStore } from './stores'
 import { EngineMap, ConfigMap } from './actions'
-import { each, eachProp } from './utils'
+import { each, eachProp, chain } from './utils'
 
 export class Controller {
+    private _eventStore  = new AccessStore()
+    public eventStores: { [key in string]?: EventStore } = {}
+    public accessStores: { [key in string]?: AccessStore } = {}
     public keys = new Set<MidiKey>()
-    public eventStores: { [key in MidiKey]?: EventStore } = {}
-    public accessStores: { [key in MidiKey]?: AccessStore } = {}
+    public engine = {} as any
     public config = {} as any
+    public native = {} as any
     public props = {}
     public state = {
         shared: {}
@@ -21,12 +24,12 @@ export class Controller {
     }
 
     /**
-     * setup stores from midi key
+     * setup each stores from midi key
      */
     setup (key: MidiKey) {
         this.keys.add(key)
-        this.eventStores[key] = new EventStore(this)
-        this.accessStores[key] = new AccessStore(this)
+        this.eventStores[key] = new EventStore()
+        this.accessStores[key] = new AccessStore()
     }
 
     /**
@@ -34,8 +37,8 @@ export class Controller {
      */
     effect () {
         if (this.config.shared.target) this.bind()
+        return () => this._eventStore.clean()
     }
-
 
     /**
      * Cleans all side effects when the controller did unounted
@@ -47,53 +50,98 @@ export class Controller {
         })
     }
 
-    applyProps (props: Props) {
+    /**
+     * Attaches props and config
+     */
+    applyProps (props: Props, native: any) {
         this.props = props
+        this.native = native
     }
 
-    applyConfig (config: Config, key?: MidiKey) {
-        const {enabled, ...other} = config
-        const _config: any = {shared: {enabled}}
-        if (key) {
-            const target = ConfigMap.get(key)
-            _config[key] = {...target, ...other}
-        } else {
-            eachProp(other, (v, k) => {
-                const target = ConfigMap.get(k as any)
-                if (target)
-                    _config[k] = {...v,  ...target}
-            })
-        }
-        this.config = _config
+    applyConfig (config: Config, midiKey?: MidiKey) {
+        this.config = parseConfig(config, midiKey)
     }
 
     /**
-     * The bind function that can be returned
+     * The bind function that can be returned by hooks
      */
     bind (...args: any) {
-        const shared = this.config.shared
-        // const props: any = {}
-
-        let target
-        if (shared.target) {
-            target = shared.target()
-            if (!target) return
+        const props: any = {}
+        const {keys, eventStores, engine, native, config, state} = this
+        const target = config.shared.target || state.shared.target
+        const bindFn = (_type='', prop: (e: any) => void, isNative=false) => {
+            const type = isNative? _type: _type // TODO
+            props[type] = props[type] || []
+            props[type].push(prop)
         }
 
-        // const bindFunction = bindToProps(props, shared.eventOptions, !!target) // !!!
-
-        if (shared.enabled) {
-            each(this.keys, key => {
-                if (this.config[key]!.enabled) {
+        /**
+         * initialize engine and bind
+         */
+        if (config.shared.enabled)
+            each(keys, key => {
+                if (config[key]!.enabled) {
                     const Engine = EngineMap.get(key)!
-                    // new Engine(this, args, key)!.bind(bindFunction) // !!!
+                    engine[key] = new Engine(this, args, key)
+                    engine[key].bind(bindFn)
                 }
             })
-        }
+
+        eachProp(native, (prop, key) => bindFn(
+            key,
+            event => prop({...state.shared, event, args}),
+            true
+        ))
+
+        eachProp(props, (prop, key) => (props[key] = chain(...prop)))
 
         // if (!target) return props
-        // eachProp(props, prop => {
-        //     this._eventStore.add(target, eventKey, '', prop) // !!!
-        // })
+
+        /**
+         * register each handler to stores
+         */
+        eachProp(props, (prop, key) => eventStores[key]?.add(target, key, prop))
     }
 }
+
+function parseConfig (config: any, midiKey?: MidiKey) {
+    const {enabled, target, ...other} = config
+    const _config: any = {shared: {enabled, target}}
+    if (midiKey) {
+        const target = ConfigMap.get(midiKey)
+        _config[midiKey] = {...target, ...other}
+    } else {
+        eachProp(other, (cfg, key) => {
+            const target = ConfigMap.get(key as any)
+            if (target)
+                _config[key] = {...target, ...cfg}
+        })
+    }
+    return _config
+}
+
+const RE_NOT_NATIVE = /^on(Note|Fader|Button)/
+
+export function parseProps(_props: Props) {
+    const props: any = {}
+    const other: any = {}
+    eachProp(_props, (prop, key) => {
+        if (RE_NOT_NATIVE.test(key))
+            props[key] = prop
+        else other[key] = prop
+    })
+    return [props, other]
+}
+
+// function bindToProps (props: any) {
+//     return (
+//         device: string,
+//         action: string,
+//         handler: (event: any) => void,
+//         // options: AddEventListenerOptions = {},
+//     ) => {
+//         const type = 'on' + device + action
+//         props[type] = props[type] || []
+//         props[type].push(handler)
+//     }
+// }

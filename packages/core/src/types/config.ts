@@ -14,6 +14,12 @@ export interface MidiConfig {
 
     // TODO
     channel?: number
+
+    // True when use the sysex option requesting MIDI access
+    sysex: boolean
+
+    // True when use debug mode
+    debug: boolean
 }
 
 export interface ButtonConfig extends MidiConfig {}

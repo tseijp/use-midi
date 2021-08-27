@@ -1,5 +1,4 @@
 import { promises as fs } from 'fs'
-import { resolve } from 'path'
 import pkg from './package.json'
 import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'

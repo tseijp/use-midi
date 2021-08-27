@@ -1,23 +1,26 @@
 import { Props } from '../types'
 import { registerAction } from '../actions'
-import { Prop, MidiKey, EventTypes, Config } from '../types'
-import { Controller } from '../Controller'
+import { Controller, parseProps } from '../Controller'
+import { Prop, MidiKey, EventTypes, Config, Native } from '../types'
 
 export class Recognizer {
     readonly _key?: MidiKey
     readonly _ctrl: Controller
+
     constructor (
         target: EventTarget,
         props: Props | {},
         config: Config | {},
         key?: MidiKey,
+        native?: Native
     ) {
         this._key = key
         this._ctrl = new Controller(props)
-        this._ctrl.applyProps(props)
-        this._ctrl.applyConfig({ ...config as any, target }, key)
+        this._ctrl.applyProps(props, native)
+        this._ctrl.applyConfig({ ...config, target }, key)
         this._ctrl.effect()
     }
+
     destroy () {
         this._ctrl.clean()
     }
@@ -48,10 +51,11 @@ export class Button <EventType = EventTypes<'button'>> extends Recognizer {
 export class Midi extends Recognizer {
     constructor (
         target: HTMLElement,
-        props: Props,
+        _props: Props,
         config: Config | {} = {}
     ) {
+        const [props, native] = parseProps(_props)
         registerAction('button', 'fader', 'note')
-        super(target, props, config, undefined)
+        super(target, props, config, undefined, native)
     }
 }

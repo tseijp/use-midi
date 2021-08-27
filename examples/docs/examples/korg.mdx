@@ -38,22 +38,6 @@ ref: https://codepen.io/johnmeade-webdev/pen/jOEaMyX
   }
 </PickColor>
 
-
-export function PickColor (props) {
-    const [color, set] = React.useState('black')
-    const {children, ...other} = props
-    return (
-      <div {...other}>
-        <input
-          type="color"
-          value={color}
-          onChange={e => set(e.target.value)}
-        />
-        {children(color)}
-      </div>
-    )
-}
-
 ### Examples
 
 ```js
@@ -75,6 +59,21 @@ const bind = useClick(state => {
 })
 // <Button {...bind()}/>
 ```
+
+export function PickColor (props) {
+    const [color, set] = React.useState('black')
+    const {children, ...other} = props
+    return (
+      <div {...other}>
+        <input
+          type="color"
+          value={color}
+          onChange={e => set(e.target.value)}
+        />
+        {children(color)}
+      </div>
+    )
+}
 
 export const ControllerHardware = styled.div`
   align-items: center;

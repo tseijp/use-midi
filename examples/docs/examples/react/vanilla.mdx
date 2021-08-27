@@ -1,0 +1,22 @@
+---
+sidebar_label: Vanilla
+---
+
+import { Midi } from 'use-midi/src'
+
+export default function () {
+    const onButton = state => {}
+    const onFader = state => {}
+    const onNote = state => {}
+    const [state, set] = React.useState()
+    React.useEffect(() => {
+        const target = document.createElement('div')
+        const props = {onButton, onFader, onNote}
+        const midi = new Midi(target, props)
+        set(midi)
+        return midi.destroy
+    }, [])
+    return (
+        <div></div>
+    )
+}

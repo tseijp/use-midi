@@ -61,7 +61,7 @@ export default function () {
                 <li>state: {target.state}</li>
               </ul>
             )
-        }, [o])}
+          }, [o])}
           <select value={i} onChange={e => setI(e.target.value)}>
             <option value="not-selected">Please select a input device</option>
             {is?.map(key => <option key={key} value={key}>{key.slice(0, 25)}...</option>)}
