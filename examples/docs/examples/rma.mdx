@@ -6,79 +6,68 @@ sidebar_label: Rma Example
 import {rma, each} from 'use-midi/src'
 
 export default function () {
-    const [i, setI] = React.useState('not-selected')
-    const [o, setO] = React.useState('not-selected')
-    const [is, setIs] = React.useState([])
-    const [os, setOs] = React.useState([])
+    const [state, set] = React.useState([0, 0].fill({key: '', keys: []}))
     const [log, setLog] = React.useState([])
     const [data, setData] = React.useState([0, 0, 0])
     React.useEffect(() => {
-        setLog(p => [...p, `run effect`])
         rma(() => {
-            setLog(p => [...p, `run rma`])
-            console.log(rma.event)
-            const inputs = [...rma.inputs.keys()]
-            const outputs = [...rma.outputs.keys()]
-            void (setIs(inputs), setOs(outputs))
-            void (setI(inputs[0]), setO(outputs[0]))
+            setLog(p => [...p, `rma update`])
+            const is = [...rma.inputs.keys()],
+                  os = [...rma.outputs.keys()]
+            set([{key: is[0], keys: is}, {key: os[0], keys: os}])
+            each(is, i => rma.inputs.get(i).onmidimessage = e => {
+                setLog(p => [...p, 'midimessage' + e.data])
+            })
             return true
         })
     }, [])
     const handleClick = () => {
-        setLog(p => [...p, `clicked`])
-        const input = rma.inputs.get(i)
-        const output = rma.outputs.get(o)
-        console.log(input, output)
-        input.onmidimessage = e => {
-            output.send(e.data)
-            console.log(e)
-            setLog(p => [...p, "onmidimessage " + e.data])
-        }
+        rma.outputs.get(state[1].key)?.send(data)
+        setLog(p => [...p, `clicked` + data])
     }
-    const handleChange = (index=0) => {
-        return e => setData(p => p.map((v, k) => k===index? e.target.value: v))
-    }
+    const handleChange = (index=0) => e => setData(prevData => {
+        return prevData.map((v, k) => k===index? e.target.value: v)
+    })
+    const handleSelect = (index=0) => e => set(prevState => {
+        if (e.target.value ==='not-selected') return prevState
+        return prevState.map((v, k) => k===index? {...v, key: e.target.value}: v)
+    })
     return (
         <div>
-          <p>input: {i}</p>
-          {React.useMemo(() => {
-            const target = rma.inputs?.get(i)
-            return target && (
-              <ul>
-                <li>name: {target.name}</li>
-                <li>type: {target.type}</li>
-                <li>state: {target.state}</li>
-              </ul>
-            )
-          }, [i])}
-          <p>output: {o}</p>
-          {React.useMemo(() => {
-            const target = rma.outputs?.get(o)
-            return target &&  (
-              <ul>
-                <li>name: {target.name}</li>
-                <li>type: {target.type}</li>
-                <li>state: {target.state}</li>
-              </ul>
-            )
-          }, [o])}
-          <select value={i} onChange={e => setI(e.target.value)}>
-            <option value="not-selected">Please select a input device</option>
-            {is?.map(key => <option key={key} value={key}>{key.slice(0, 25)}...</option>)}
-          </select>
-          <select value={o} onChange={e => setO(e.target.value)}>
-            <option value="not-selected">Please select a output device</option>
-            {os?.map(key => <option key={key} value={key}>{key.slice(0, 25)}...</option>)}
-          </select>
+          {React.useMemo(() =>
+            state.map(({key, keys}, index) => {
+              const target = rma.inputs?.get(key) ||
+                             rma.outputs?.get(key)
+              return target && (
+                <div key={key}>
+                  <p>{index}: {key}</p>
+                  <ul key={key}>
+                    <li>name: {target.name}</li>
+                    <li>type: {target.type}</li>
+                    <li>state: {target.state}</li>
+                  </ul>
+                  <select value={key} onChange={handleSelect(index)}>
+                    <option value="not-selected">
+                      Please select a input device
+                    </option>
+                    {keys.map(k =>
+                      <option key={k} value={k}>
+                        {k.slice(0, 20)}
+                      </option>
+                    )}
+                  </select>
+              </div>
+              )
+            })
+          , [state])}
           <div>
-            <input type="number" min="0" max="255" value={data[0]} onChange={handleChange(0)}/>
-            <input type="number" min="0" max="255" value={data[1]} onChange={handleChange(1)}/>
-            <input type="number" min="0" max="255" value={data[2]} onChange={handleChange(2)}/>
+            {[0, 1, 2].map(i =>
+              <input key={i} type="number" min="0" max="255"
+                value={data[i]} onChange={handleChange(i)}/>
+            )}
             <button onClick={handleClick}>send data</button>
           </div>
-          <ul>
-            {log.map((l, key) => <li key={key}>{l}</li>)}
-          </ul>
+          <ul>{log.map((l, i) => <li key={i}>{l}</li>)}</ul>
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import { each } from './utils'
 import { rma } from './rma'
+
 export class EventStore {
     private _listeners: (() => void)[] = []
 

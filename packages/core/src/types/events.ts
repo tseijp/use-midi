@@ -1,7 +1,5 @@
 import { MidiKey } from './state'
 
-export type MidiEvent = any // todo
-
 export type FullEventTypes = {
     button: MIDIMessageEvent & MIDIConnectionEvent
     fader: MIDIMessageEvent & MIDIConnectionEvent
@@ -10,8 +8,7 @@ export type FullEventTypes = {
 }
 
 export type EventTypes<Key extends MidiKey|'full'='full'> =
-MIDIMessageEvent & MIDIConnectionEvent
-    // NonNullable<FullEventTypes[Key]>
+    NonNullable<FullEventTypes[Key]>
 
 // Type definitions for Web MIDI API 2.0
 // Project: http://www.w3.org/TR/webmidi/
@@ -130,3 +127,5 @@ export interface MIDIConnectionEvent extends Event {
      */
     port: MIDIPort;
 }
+
+const tmp:MIDIMessageEvent & MIDIConnectionEvent = {} as any

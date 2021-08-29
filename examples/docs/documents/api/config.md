@@ -3,36 +3,35 @@ sidebar_position: 2
 sidebar_label: MIDI config
 ---
 
-# MIDI config
+# MIDI Config
 
 React `UseMidi` offers different config to configure the MIDI.
 
-## Structure of the config object
+## Shared Shared config
 
-Depending on whether you use midi hooks or if you use the `useMidi` hook,
-you will need to structure the config config object differently.
-
-```js
-useXXX(state => {}, {...genericConfig, ...faderConfig})
-
-useMidi(state => {}, {...genericConfig, fader: faderConfig})
-```
-
-## Generic config
-
-Config | Description
-:- | :-
-target |
-window |
+| Config       | Description                                |
+| ------------ | ------------------------------------------ |
+| `enabled`    | True when the Midi is active               |
+| `sysex`      | True when use the sysex option requesting MIDI access |
+| `debug`      | True when use debug mode                   |
+| `target`     | Raw Midi Event Object                      |
+| `device`     | Select MIDI Device Key                     |
 
 ## MIDI config
 
-Config | Description
-:- | :-
-enable |
-from
+| Config       | Description                                |
+| ------------ | ------------------------------------------ |
+| `enable`     | True when the Midi is active               |
 
+## Structure of the config object
 
-## onChange Config
+Depending on whether you suse midi hooks or if you use the `useMidi` hook,
+you will need to structure the config object differently.
 
-## onClick Config|
+```js
+useFader(state => {}, {...sharedConfig, ...faderConfig})
+
+useNote({onFader: state => {}}, {...sharedConfig, fader: faderConfig})
+```
+
+[config]: https://github.com/tseijp/use-midi/blob/master/packages/core/src/types/config.ts

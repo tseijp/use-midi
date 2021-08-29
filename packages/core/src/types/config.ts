@@ -5,15 +5,15 @@ interface SharedConfig {
     enabled?: boolean
 
     // True when use the sysex option requesting MIDI access
-    sysex: boolean
+    sysex?: boolean
 
     // True when use debug mode
-    debug: boolean
+    debug?: boolean
 
     // Raw Midi Event Object
     target?: EventTarget
 
-    // select MIDI Device Key
+    // Select MIDI Device Key
     device?: string | ((event: any) => string)
 }
 

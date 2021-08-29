@@ -19,11 +19,11 @@ export interface SharedState {
 }
 
 export interface GenericState {
-    // Raw Target Object
-    target: EventTarget
-
     // Raw Midi Event Object
     event: Event
+
+    // Raw Event Target Object
+    target: EventTarget
 
     // Raw Midi Event type
     type: string
@@ -31,11 +31,11 @@ export interface GenericState {
     // True when the Midi is active
     active: boolean
 
-    // False when theMidi is blocked
+    // True when the Midi is blocked
     blocked: boolean
 
     // True when the Midi is active
-    enable: boolean
+    enabled: boolean
 
     // True when its the first event
     first: boolean
@@ -43,7 +43,7 @@ export interface GenericState {
     // True when its the last event
     last: boolean
 
-    // The timestamp of the current event
+    // The start time of the current event
     startTime: number
 
     // The delta between current and previous event
@@ -64,22 +64,22 @@ export interface GenericState {
     // Previous raw values of the Midi
     prev: number[]
 
-    // between current raw Midi values and previous values
+    // Between current raw Midi values and previous values
     delta: number[]
 
-    // direction of the delta values
+    // Direction of the delta values
     sign: number[]
 
-    // The number of Recieved Midi command code.
+    // The number of recieved Midi command code
     command: number
 
-    // The number of Midi channel
+    // The number of recieved Midi channel number
     channel: number
 
-    // The number of, the given Midi note number if recieved.
+    // The number of Midi note number if recieved
     noteNum: number | undefined
 
-    // The number of the given Midi velocity number if recieved.
+    // The number of Midi velocity number if recieved
     velocity: number | undefined
 
     // The arguments when you bind

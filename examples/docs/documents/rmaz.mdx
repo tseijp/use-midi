@@ -49,37 +49,22 @@ import { rma } from 'use-midi/src'
 export let midi;
 
 export function App () {
-    const [value, setValue] = React.useState(0)
     React.useEffect(() => {
-        rma(ts => {
+        rma(() => {
             console.log(rma.event)
-            setValue(p => p+1)
-            rma.inputs.forEach(input => {
-                input.onmidimessage = e => {
-                    rma.outputs.forEach(output => {
-                        output.send(e.data, e.timestamp)
-                    })
-                }
-            })
             return true
         })
     }, [])
-    const handleClick = () => {
-        // rma.outputs?.forEach((output, i) => {
-        //     output.send([0, 0, 0])
-        // });
-    }
     return (
         <>
           <h4>inputs</h4>
-          <button onClick={handleClick}>add value {value}</button>
           {Array.from(rma.inputs || []).map((v, i) =>
             <div key={i}>
               <h5>{v[0]}</h5>
               <div>name: {v[1].name}</div>
               <div>type: {v[1].type}</div>
             </div>
-        )}
+          )}
           <h4>outputs</h4>
           {Array.from(rma.outputs || []).map((v, i) =>
             <div key={i}>
@@ -87,7 +72,7 @@ export function App () {
               <div>name: {v[1].name}</div>
               <div>type: {v[1].type}</div>
             </div>
-        )}
+          )}
         </>
     )
 }

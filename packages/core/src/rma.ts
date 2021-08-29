@@ -78,7 +78,7 @@ let nativeRma =
     typeof navigator !== 'undefined' &&
     typeof (navigator as any).requestMIDIAccess === 'function'
         ? () => (navigator as any).requestMIDIAccess({sysex, software})
-        : () => rma.catch(new Error('Error: WebMIDIAPI is not supported'))
+        : () => void (rma.supported = false)
 
 export const rma: Rmaz = fun => schedule(fun, updateQueue)
 
@@ -115,14 +115,13 @@ function start () {
         ts = 0
         rma.requested = true
         if (!rma.demanded)
-            nativeRma()
-            .then(change, rma.catch)
-            .then(() => void (rma.allowed = true))
+            nativeRma().then(change, rma.catch)
     }
 }
 
 function change (e: any) {
     if (~ts) {
+        rma.allowed = true
         e.onstatechange = change
         event = e.target? e: {target: e}
         rma.fun(update)

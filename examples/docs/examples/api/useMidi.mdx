@@ -1,0 +1,21 @@
+---
+sidebar_label: useMidi
+---
+
+import { useMidi } from 'use-midi/src'
+import { Live } from '/components/Live'
+
+<Live {...{useMidi}}>
+{`function App () {
+  const device = e => {
+    const inputs = Array.from(e.target.inputs.keys())
+    return inputs[inputs.length - 1]
+  }
+  const bind = useMidi({
+    onButton: state => console.log(state),
+    onFader: state => console.log(state),
+    onNote: state => console.log(state)
+  }, {device})
+  return <div />
+}`}
+</Live>

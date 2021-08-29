@@ -1,0 +1,14 @@
+---
+sidebar_label: useNote
+---
+
+import { useNote, rma } from 'use-midi/src'
+import { Live } from '/components/Live'
+
+<Live {...{rma, useNote}}>
+{`function App () {
+  const device = e => e.target.inputs.keys().next().value
+  const bind = useNote(state => console.log(state), {device})
+  return <div />
+}`}
+</Live>

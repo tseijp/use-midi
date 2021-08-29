@@ -1,4 +1,6 @@
-# use midi
+# @use-midi
+
+@use-midi is a library that let you bind midi events to any component.
 
 [![ version ](
     https://img.shields.io/npm/v/use-midi)](
@@ -22,6 +24,10 @@
 ### Installation
 
 ```shell
+#Yarn
+yarn add use-midi
+
+#NPM
 npm install use-midi
 ```
 
@@ -57,17 +63,51 @@ Examples and tutorials can be found [here][exam]
 
 ### What does it look like?
 
+[![](
+    https://)](
+    https://)
+
+
+<details>
+  <summary>Vanilla javascript</summary>
+
 ```js
-import React from 'react'
-import { useMidi } from 'use-midi'
+import { useNote } from 'use-midi'
 
-export function App () {
-  const bind = useMidi(() => {
-      click: state => {/*~*/}
-  })
+function Example() {
+   // Set the note hook
+  const bind = useNote((state) => {/**/})
 
-  return (
-    <button {...bind()}/>
-  )
+  // Bind it to a component
+  return <div {...bind()} />
 }
 ```
+
+</details>
+
+<details>
+<summary>Vanilla javascript</summary>
+
+```js
+// script.js
+const target = document.getElementById('drag')
+const noteMidi = new NoteMidi(target, (state) => {/**/})
+
+// when you want to remove the listener
+noteMidi.destroy()
+```
+
+</details>
+
+### Available hooks
+
+use-midi exports several hooks that can handle different midi:
+
+| Hook         | Description                                |
+| ------------ | ------------------------------------------ |
+| `useButton`  | Handles the button midi                    |
+| `useFader`   | Handles the fader midi                     |
+| `useNote`    | Handles the note midi                      |
+| `useMidi`    | Handles multiple midi in the one hooks     |
+
+#### [More on the full documentation website...](https://tseijp.github.io/use-midi/)

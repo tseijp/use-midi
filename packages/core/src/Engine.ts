@@ -1,7 +1,7 @@
+import { MidiKey } from './types'
 import { Controller } from './Controller'
-import { MidiKey, EventTypes } from './types'
 
-export interface Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
+export interface Engine<Key extends MidiKey> {
     /**
      * initiarize engine
      */
@@ -15,7 +15,7 @@ export interface Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
     __last__?(): void
 }
 
-export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
+export abstract class Engine<Key extends MidiKey> {
     readonly _ctrl: Controller
     readonly _args: any[]
     readonly _key: Key
@@ -29,10 +29,6 @@ export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
 
     set state (state: any) {
         this._ctrl.state[this._key] = state
-    }
-
-    get eventStore () {
-        return this._ctrl.eventStores[this._key]!
     }
 
     get config () {
@@ -61,8 +57,7 @@ export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
         bindFn: (
             device: string,
             action: string,
-            prop: (event: EventType) => void,
-            // opts?: AddEventListenerOptions
+            prop: (event: any) => void,
             isNative?: boolean
         ) => void
     ): any
@@ -71,8 +66,8 @@ export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
      * reset state if init run
      */
     reset () {
-        const { state, _key, _args } = this
-        state.shared[_key] = false
+        const { state, _args } = this
+        // state.shared[_key] = false
         state.active = false
         state.blocked = false
         state.first = true
@@ -97,7 +92,7 @@ export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
      * start of the midi access
      * event: MIDIStateChagneEvent
      */
-    start (event?: EventType) {
+    start (event?: any) {
         const { state } = this
         if (!state.active) {
             this.reset()
@@ -113,7 +108,7 @@ export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
      * calculate midi event data
      * event: MIDIStateChagneEvent || MIDIMessageEvent
      */
-    compute (event?: EventType) {
+    compute (event?: any) {
         const { state, _key } = this
         if (!state.active || state.blocked) return
         state.args = this._args
@@ -152,21 +147,5 @@ export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
         state.noteNum = _c1
         state.distance += state.delta[0]
         state.velocity = _c2? _c2 / 127: state.delta[0] / state.deltaTime
-    }
-
-    /**
-     * Fires the midi handler.
-     */
-    emit () {
-        const { state } = this
-        if (!state._active) this.clean()
-    }
-
-    /**
-     * Cleans store when controller did unmount
-     */
-    clean () {
-        this.eventStore.clean()
-        // this.timeoutStore.clean() // TODO
     }
 }

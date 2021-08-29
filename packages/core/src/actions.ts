@@ -1,7 +1,7 @@
 import {each} from './utils'
 import { MidiKey } from './types'
 import { Engine } from './Engine'
-import { ButtonEngine, FaderEngine } from './engines'
+import { ButtonEngine, FaderEngine, NoteEngine } from './engines'
 import type { Controller } from './Controller'
 
 export type EngineClass<Key extends MidiKey> = {
@@ -32,7 +32,7 @@ export const Actions = {
         config: {} as any
     },
     note: {
-        engine: FaderEngine,
+        engine: NoteEngine,
         config: {} as any
     }
 }
