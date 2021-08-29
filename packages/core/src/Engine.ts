@@ -1,13 +1,7 @@
 import { Controller } from './Controller'
-import  { MidiKey } from './types'
+import { MidiKey, EventTypes } from './types'
 
-// export interface Engine {
-//     init?(): void
-//     setup?(): void
-//     intent?(): void
-// }
-
-export interface Engine<Key extends MidiKey> {
+export interface Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
     /**
      * initiarize engine
      */
@@ -21,7 +15,7 @@ export interface Engine<Key extends MidiKey> {
     __last__?(): void
 }
 
-export abstract class Engine<Key extends MidiKey> {
+export abstract class Engine<Key extends MidiKey, EventType = EventTypes<Key>> {
     readonly _ctrl: Controller
     readonly _args: any[]
     readonly _key: Key
@@ -37,16 +31,8 @@ export abstract class Engine<Key extends MidiKey> {
         this._ctrl.state[this._key] = state
     }
 
-    get shared () {
-        return this._ctrl.state.shared
-    }
-
     get eventStore () {
         return this._ctrl.eventStores[this._key]!
-    }
-
-    get accessStore () {
-        return this._ctrl.accessStores[this._key]!
     }
 
     get config () {
@@ -75,7 +61,7 @@ export abstract class Engine<Key extends MidiKey> {
         bindFn: (
             device: string,
             action: string,
-            prop: (event: any) => void,
+            prop: (event: EventType) => void,
             // opts?: AddEventListenerOptions
             isNative?: boolean
         ) => void
@@ -85,8 +71,8 @@ export abstract class Engine<Key extends MidiKey> {
      * reset state if init run
      */
     reset () {
-        const { state, shared, _key, _args } = this
-        shared[_key] = false
+        const { state, _key, _args } = this
+        state.shared[_key] = false
         state.active = false
         state.blocked = false
         state.first = true
@@ -111,7 +97,7 @@ export abstract class Engine<Key extends MidiKey> {
      * start of the midi access
      * event: MIDIStateChagneEvent
      */
-    start (event: any) {
+    start (event?: EventType) {
         const { state } = this
         if (!state.active) {
             this.reset()
@@ -127,13 +113,13 @@ export abstract class Engine<Key extends MidiKey> {
      * calculate midi event data
      * event: MIDIStateChagneEvent || MIDIMessageEvent
      */
-    compute (event: any) {
-        const { state, shared, _key } = this
+    compute (event?: EventType) {
+        const { state, _key } = this
         if (!state.active || state.blocked) return
         state.args = this._args
         state.first = state.active && !state.active
         state.last = !state.active && state.active
-        shared[_key] = state.active
+        state.shared[_key] = state.active
 
         /**
          * calclate event on all event handlers
@@ -145,7 +131,7 @@ export abstract class Engine<Key extends MidiKey> {
         state.target = event.target
         state.event = event
         state.type = event.type
-        state.send = event.send || (() => {})
+        // state.send = event.target.send || (() => {})
         state.deltaTime = event.timeStamp - state.timeStamp
         state.timeStamp = event.timeStamp
         state.elapsedTime = state.timeStamp - state.startTime
@@ -167,6 +153,7 @@ export abstract class Engine<Key extends MidiKey> {
         state.distance += state.delta[0]
         state.velocity = _c2? _c2 / 127: state.delta[0] / state.deltaTime
     }
+
     /**
      * Fires the midi handler.
      */
@@ -180,6 +167,6 @@ export abstract class Engine<Key extends MidiKey> {
      */
     clean () {
         this.eventStore.clean()
-        this.accessStore.clean()
+        // this.timeoutStore.clean() // TODO
     }
 }

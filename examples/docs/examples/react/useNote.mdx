@@ -5,11 +5,30 @@ sidebar_label: useNote
 import { useNote, rma } from 'use-midi/src'
 import { Live } from '/components/Live'
 
-<Live {...{useNote}}>
+<Live {...{rma, useNote}}>
 {`function App () {
-  const bind = useNote(state => {}, {})
+  const [inputs, setInputs] = React.useState({inputs: []})
+  const [target, setTarget] = React.useState()
+  const bind = useNote(state => {}, {target})
+  const handleChange = e => setInputs(p => ({...p, input: e.target.value}))
+  React.useEffect(() => {
+    rma(() => {
+      const inputs = [...rma.inputs.keys()]
+      setInputs({input: inputs[0], inputs})
+      return true
+    })
+  }, [])
+  console.log(inputs)
   return (
-    <button {...bind()}>click</button>
+    <>
+      <button>click</button>
+      <select value={inputs.input} onChange={handleChange}>
+        <option value="not-selected">Please select a input device</option>
+        {inputs.inputs.map(key =>
+          <option key={key} value={key}>{key.slice(0, 25)}...</option>
+        )}
+      </select>
+    </>
   )
 }`}
 </Live>

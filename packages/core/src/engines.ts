@@ -4,10 +4,10 @@ export class ButtonEngine extends Engine<'button'> {
     _key = 'button' as const
 
     bind (bindFn: any) {
-        bindFn('midimessage', this.button.midimessage(this))
+        bindFn('midimessage', this.button.bind(this))
     }
 
-    midimessage (event: any) {
+    button (event: any) {
         if (!this.state.active)
             this.start(event)
         this.compute(event)

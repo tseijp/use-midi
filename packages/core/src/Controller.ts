@@ -1,20 +1,17 @@
-import { MidiKey, Props, Config } from './types'
+import { each, eachProp, chain, is } from './utils'
 import { EventStore, AccessStore } from './stores'
+import { MidiKey, Props, Config } from './types'
 import { EngineMap, ConfigMap } from './actions'
-import { each, eachProp, chain } from './utils'
 
 export class Controller {
-    private _eventStore  = new AccessStore()
+    public accessStore = new AccessStore()
     public eventStores: { [key in string]?: EventStore } = {}
-    public accessStores: { [key in string]?: AccessStore } = {}
     public keys = new Set<MidiKey>()
     public engine = {} as any
     public config = {} as any
     public native = {} as any
-    public props = {}
-    public state = {
-        shared: {}
-    } as any
+    public props = {} as any
+    public state = {shared: {}} as any
 
     constructor (props: Props) {
         this.props = props
@@ -29,7 +26,6 @@ export class Controller {
     setup (key: MidiKey) {
         this.keys.add(key)
         this.eventStores[key] = new EventStore()
-        this.accessStores[key] = new AccessStore()
     }
 
     /**
@@ -37,17 +33,14 @@ export class Controller {
      */
     effect () {
         if (this.config.shared.target) this.bind()
-        return () => this._eventStore.clean()
+        return () => this.accessStore.clean()
     }
 
     /**
      * Cleans all side effects when the controller did unounted
      */
     clean () {
-        each(this.keys, key => {
-            this.eventStores[key]!.clean()
-            this.accessStores[key]!.clean()
-        })
+        each(this.keys, key => this.eventStores[key]!.clean())
     }
 
     /**
@@ -67,8 +60,8 @@ export class Controller {
      */
     bind (...args: any) {
         const props: any = {}
-        const {keys, eventStores, engine, native, config, state} = this
-        const target = config.shared.target || state.shared.target
+        const { keys, eventStores, accessStore, engine, native, config, state } = this
+        let { target, device } = config.shared
         const bindFn = (_type='', prop: (e: any) => void, isNative=false) => {
             const type = isNative? _type: _type // TODO
             props[type] = props[type] || []
@@ -87,15 +80,22 @@ export class Controller {
                 }
             })
 
-        eachProp(native, (prop, key) => bindFn(
-            key,
-            event => prop({...state.shared, event, args}),
-            true
-        ))
+        eachProp(props, (prop, key) => void (props[key] = chain(...prop)))
 
-        eachProp(props, (prop, key) => (props[key] = chain(...prop)))
+        eachProp(native, (prop, key) => {
+            bindFn(key, event => prop({...state.shared, event, args}), true)
+        })
 
-        // if (!target) return props
+        /**
+         * register target
+         */
+        if (!target)
+            accessStore.add(event => {
+                if (is.fun(device))
+                    device = device(event)
+                target = event.inputs.get(device) || event.outputs.get(device)
+                return true
+            })
 
         /**
          * register each handler to stores
@@ -105,8 +105,8 @@ export class Controller {
 }
 
 function parseConfig (config: any, midiKey?: MidiKey) {
-    const {enabled, target, ...other} = config
-    const _config: any = {shared: {enabled, target}}
+    const {enabled, target, device, ...other} = config
+    const _config: any = {shared: {enabled, target, device}}
     if (midiKey) {
         const target = ConfigMap.get(midiKey)
         _config[midiKey] = {...target, ...other}
@@ -132,16 +132,3 @@ export function parseProps(_props: Props) {
     })
     return [props, other]
 }
-
-// function bindToProps (props: any) {
-//     return (
-//         device: string,
-//         action: string,
-//         handler: (event: any) => void,
-//         // options: AddEventListenerOptions = {},
-//     ) => {
-//         const type = 'on' + device + action
-//         props[type] = props[type] || []
-//         props[type].push(handler)
-//     }
-// }

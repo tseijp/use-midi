@@ -4,16 +4,6 @@ export type IngKey =
 
 export type MidiKey = Exclude<keyof State, 'shared'>
 
-export type MidiEvent = any // todo
-
-export type EventTypes<Key extends MidiKey> = {
-    button: any
-    fader: any
-    note: any
-}
-
-export type EventTarget = any // todo
-
 export interface SharedState {
     // Raw Target Object
     target: EventTarget

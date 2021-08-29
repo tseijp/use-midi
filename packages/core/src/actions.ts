@@ -1,11 +1,7 @@
-import { MidiKey } from './types'
-import {
-    ButtonEngine,
-    FaderEngine,
-    BaseEngine as Engine
- } from './engines'
 import {each} from './utils'
-
+import { MidiKey } from './types'
+import { Engine } from './Engine'
+import { ButtonEngine, FaderEngine } from './engines'
 import type { Controller } from './Controller'
 
 export type EngineClass<Key extends MidiKey> = {
@@ -23,6 +19,7 @@ export type Action = {
 }
 
 export const EngineMap = new Map<MidiKey, EngineClass<any>>()
+
 export const ConfigMap = new Map<MidiKey, ConfigClass<any>>()//ResolverMap>()
 
 export const Actions = {

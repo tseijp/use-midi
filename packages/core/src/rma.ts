@@ -46,11 +46,15 @@ export interface Rmaz {
     fun: (fun: Fun) => void
     catch: (error: Error) => void
     advance: () => void
-    status: 'always' | 'demand'
 
     event?: any
     inputs?: any
     outputs?: any
+
+    allowed: boolean
+    demanded: boolean
+    requested: boolean
+    supported: boolean
 }
 
 export interface Queue<T extends Function = any> {
@@ -60,16 +64,10 @@ export interface Queue<T extends Function = any> {
 }
 
 let ts = -1
-
-
 let sync = false
-
 let sysex = true
-
 let software = true
-
 let event: any
-
 let updateQueue = makeQueue<UpdateFun>(),
      writeQueue = makeQueue<Fun>(),
     onStartQueue = makeQueue<Fun>(),
@@ -80,7 +78,7 @@ let nativeRma =
     typeof navigator !== 'undefined' &&
     typeof (navigator as any).requestMIDIAccess === 'function'
         ? () => (navigator as any).requestMIDIAccess({sysex, software})
-        : () => {}
+        : () => rma.catch(new Error('Error: WebMIDIAPI is not supported'))
 
 export const rma: Rmaz = fun => schedule(fun, updateQueue)
 
@@ -89,33 +87,25 @@ rma.onStart = fun => schedule(fun, onStartQueue)
 rma.onAccess = fun => schedule(fun, onAccessQueue)
 rma.onFinish = fun => schedule(fun, onFinishQueue)
 
-rma.cancel = fun => {
-    updateQueue.delete(fun)
-    writeQueue.delete(fun)
-}
-
-rma.sync = fun => {
-    sync = true
-    rma.fun(fun)
-    sync = false
-}
-
-rma.throttle = fun => {
-    fun() // TODO
-}
+rma.sync = fun => void ( sync = true, rma.fun(fun), sync = false )
+rma.cancel = fun => void ( updateQueue.delete(fun), writeQueue.delete(fun) )
+rma.throttle = fun => rma.fun(fun) // TODO
 
 rma.use = fun => (nativeRma = fun)
 rma.now = typeof performance != 'undefined' ? () => performance.now() : Date.now
 rma.fun = fun => fun()
 rma.catch = console.error
-rma.status = 'always'
+rma.allowed = false
+rma.demanded = false
+rma.requested = false
+rma.supported = true
 
 setHidden('event', () => event)
 setHidden('inputs', () => event?.target.inputs)
 setHidden('outputs', () => event?.target.outputs)
 
 rma.advance = () => {
-    if (rma.status !== 'demand')
+    if (!rma.demanded)
         console.warn('Cannot call the manual advancement of rmaz')
     else update()
 }
@@ -123,12 +113,15 @@ rma.advance = () => {
 function start () {
     if (ts < 0) {
         ts = 0
-        if (rma.status !== 'demand')
-            nativeRma().then(change, rma.catch)
+        rma.requested = true
+        if (!rma.demanded)
+            nativeRma()
+            .then(change, rma.catch)
+            .then(() => void (rma.allowed = true))
     }
 }
 
-function change (e?: any) {
+function change (e: any) {
     if (~ts) {
         e.onstatechange = change
         event = e.target? e: {target: e}
@@ -175,5 +168,12 @@ function makeQueue<T extends Function>(): Queue<T> {
 }
 
 function setHidden (key: any, fun: AnyFun) {
-    Object.defineProperty(rma, key, {get () {return fun()}})
+    Object.defineProperty(rma, key, {
+        get () {
+            if (!rma.requested)
+                start()
+            if (rma.allowed)
+                return fun()
+        }
+    })
 }

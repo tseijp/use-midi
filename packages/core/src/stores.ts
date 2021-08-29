@@ -1,5 +1,5 @@
-import { rma } from './utils'
-
+import { each } from './utils'
+import { rma } from './rma'
 export class EventStore {
     private _listeners: (() => void)[] = []
 
@@ -10,23 +10,24 @@ export class EventStore {
         this._listeners.push(() => target.removeEventListener(...args))
     }
 
-    clean() {
-        this._listeners.forEach(remove => remove())
+    clean () {
+        each(this._listeners, fn => fn())
         this._listeners = []
     }
 }
 
 export class AccessStore {
-    private _access = new Map<string, any>()
+    private _listeners: (() => void)[] = []
 
-    add (key: string, callback: (ts: number|undefined) => void) {
-        rma(callback)
-        this._access.set(key, callback)
+    add (callback: (event: any) => void) {
+        const update = () => callback(rma.event)
+        this._listeners.push(() => rma.cancel(update))
+        rma(update)
     }
 
     clean () {
-        this._access.forEach(callback => void rma.cancel(callback))
-        this._access.clear()
+        each(this._listeners, fn => fn())
+        this._listeners = []
     }
 }
 
@@ -38,13 +39,13 @@ export class TimeoutStore {
         this._timeouts.set(key, window.setTimeout(callback, ms, ...args))
     }
 
-    remove(key: string) {
+    remove (key: string) {
         const timeout = this._timeouts.get(key)
         if (timeout) window.clearTimeout(timeout)
     }
 
-    clean() {
-        this._timeouts.forEach((timeout) => void window.clearTimeout(timeout))
+    clean () {
+        each(this._timeouts, timeout => void window.clearTimeout(timeout))
         this._timeouts.clear()
     }
 }
