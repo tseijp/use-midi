@@ -121,7 +121,7 @@ function start () {
         ts = 0
         rma.requested = true
         if (!rma.demanded)
-            nativeRma().then(change, rma.catch)
+            nativeRma()?.then?.(change, rma.catch)
     }
 }
 

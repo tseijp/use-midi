@@ -5,6 +5,7 @@
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import { Mesh } from './Mesh'
+
 export function Model (props: any) {
   const group = React.useRef()
   const { url, ...other } = props
