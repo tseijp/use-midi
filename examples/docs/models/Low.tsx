@@ -3,8 +3,8 @@
  */
 
 import React, { useRef } from 'react'
-import { Mesh } from './Mesh'
 import { useGLTF } from '@react-three/drei'
+import { Mesh } from './Mesh'
 
 export function Low (props: any) {
   const group = useRef()

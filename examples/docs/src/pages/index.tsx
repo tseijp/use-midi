@@ -7,8 +7,8 @@ import React, {Suspense} from 'react'
 import styled from 'styled-components'
 import Layout from '@theme/Layout'
 // import { Player } from '/components/Player'
-import { Low } from './Low'
-import { Model } from './Model'
+import { Low } from '/models/Low'
+import { Model } from '/models/Model'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import './styles.css'
@@ -22,6 +22,8 @@ export default function App () {
         onPointerUp: () => setPointer(true),
         onPointerDown: () => setPointer(false)
     }
+    if (typeof window === "undefined")
+        return null
     return (
       <Layout>
         <Canvas>
