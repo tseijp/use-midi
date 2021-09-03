@@ -49,6 +49,7 @@ export class NoteEngine extends Engine<'note'> {
 
     bind (bindFn: any) {
         bindFn('midimessage', this.note.bind(this))
+        bindFn('statechange', (e: any) => console.log(e))
     }
 
     note (event: any) {

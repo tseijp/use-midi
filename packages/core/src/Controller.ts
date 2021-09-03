@@ -21,7 +21,7 @@ export class Controller {
     }
 
     /**
-     * setup each stores from midi key
+     * Setup each stores from midi key
      */
     setup (key: MidiKey) {
         this.keys.add(key)
@@ -85,7 +85,7 @@ export class Controller {
         })
 
         /**
-         * register target and  each handler to stores
+         * register target and each handler to stores
          */
         accessStore.add(event => {
             const { inputs, outputs } = event.target
@@ -93,6 +93,7 @@ export class Controller {
                 device = device(event)
             if (!target)
                 target = inputs?.get(device) || outputs?.get(device)
+
             eachProp(props, (prop, key) => {
                 eventStore.add(target, key, prop)
             })

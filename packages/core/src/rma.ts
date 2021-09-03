@@ -55,6 +55,10 @@ export interface Rmaz {
     demanded: boolean
     requested: boolean
     supported: boolean
+    options: {
+        sysex: boolean,
+        software: boolean
+    }
 }
 
 export interface Queue<T extends Function = any> {
@@ -63,11 +67,9 @@ export interface Queue<T extends Function = any> {
     flush: (arg?: any) => void
 }
 
-let ts = -1
-let sync = false
-let sysex = true
-let software = true
-let event: any
+let ts = -1,
+  sync = false,
+  event: any
 let updateQueue = makeQueue<UpdateFun>(),
      writeQueue = makeQueue<Fun>(),
     onStartQueue = makeQueue<Fun>(),
@@ -77,7 +79,7 @@ let updateQueue = makeQueue<UpdateFun>(),
 let nativeRma =
     typeof navigator !== 'undefined' &&
     typeof (navigator as any).requestMIDIAccess === 'function'
-        ? () => (navigator as any).requestMIDIAccess({sysex, software})
+        ? () => (navigator as any).requestMIDIAccess(rma.options)
         : () => void (rma.supported = false)
 
 export const rma: Rmaz = fun => schedule(fun, updateQueue)
@@ -99,6 +101,10 @@ rma.allowed = false
 rma.demanded = false
 rma.requested = false
 rma.supported = true
+rma.options = {
+    sysex: true,
+    software: true
+}
 
 setHidden('event', () => event)
 setHidden('inputs', () => event?.target.inputs)
