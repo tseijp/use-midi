@@ -1,26 +1,4 @@
-/*
-MIT License
-
-Copyright (c) 2018-present Paul Henschel, react-spring, all contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+/* MIT License */
 
 type Fun = () => boolean | void
 
@@ -30,7 +8,8 @@ type VoidFn = (...args: any[]) => undefined | void
 
 type UpdateFun = (ts?: number) => boolean | void
 
-export interface Rmaz {
+export interface Rma {
+    nativeRma: () => undefined | Promise<any>
     (update: UpdateFun): void
     write: (fun: Fun) => void
     onStart: (fun: Fun) => void
@@ -41,10 +20,11 @@ export interface Rmaz {
     sync: (fun: VoidFn) => void
     throttle: (fun: VoidFn) => void
 
-    use: (fun: Fun) => void
+    use: <T extends Rma['nativeRma']>(impl: T) => T
     now: () => number
     fun: (fun: Fun) => void
-    catch: (error: Error) => void
+    warn: (error: string) => void
+    error: (error: Error) => void
     advance: () => void
 
     event?: any
@@ -68,21 +48,22 @@ export interface Queue<T extends Function = any> {
 }
 
 let ts = -1,
-  sync = false,
-  event: any
-let updateQueue = makeQueue<UpdateFun>(),
-     writeQueue = makeQueue<Fun>(),
-    onStartQueue = makeQueue<Fun>(),
-   onAccessQueue = makeQueue<Fun>(),
-   onFinishQueue = makeQueue<Fun>()
+    sync = false,
+    event: any
 
-let nativeRma =
+let updateQueue = makeQueue<UpdateFun>(),
+writeQueue = makeQueue<Fun>(),
+onStartQueue = makeQueue<Fun>(),
+onAccessQueue = makeQueue<Fun>(),
+onFinishQueue = makeQueue<Fun>()
+
+export const rma: Rma = fun => schedule(fun, updateQueue)
+
+rma.nativeRma =
     typeof navigator !== 'undefined' &&
     typeof (navigator as any).requestMIDIAccess === 'function'
         ? () => (navigator as any).requestMIDIAccess(rma.options)
         : () => void (rma.supported = false)
-
-export const rma: Rmaz = fun => schedule(fun, updateQueue)
 
 rma.write = fun => schedule(fun, writeQueue)
 rma.onStart = fun => schedule(fun, onStartQueue)
@@ -93,10 +74,11 @@ rma.sync = fun => void ( sync = true, rma.fun(fun), sync = false )
 rma.cancel = fun => void ( updateQueue.delete(fun), writeQueue.delete(fun) )
 rma.throttle = fun => rma.fun(fun) // TODO
 
-rma.use = fun => (nativeRma = fun)
+rma.use = fun => (rma.nativeRma = fun)
 rma.now = typeof performance != 'undefined' ? () => performance.now() : Date.now
 rma.fun = fun => fun()
-rma.catch = console.error
+rma.warn = console.warn
+rma.error = console.error
 rma.allowed = false
 rma.demanded = false
 rma.requested = false
@@ -112,7 +94,7 @@ setHidden('outputs', () => event?.target.outputs)
 
 rma.advance = () => {
     if (!rma.demanded)
-        console.warn('Cannot call the manual advancement of rmaz')
+        rma.warn('Cannot call the manual advancement of rmaz')
     else update()
 }
 
@@ -121,7 +103,7 @@ function start () {
         ts = 0
         rma.requested = true
         if (!rma.demanded)
-            nativeRma()?.then?.(change, rma.catch)
+            rma.nativeRma()?.then?.(change, rma.error)
     }
 }
 
