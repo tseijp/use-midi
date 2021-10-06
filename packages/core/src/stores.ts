@@ -5,15 +5,15 @@ export class EventStore {
     private _listeners: (() => void)[] = []
 
     add (target: EventTarget, type: string, prop: any, opts?: any): void
-    add (target: any, type: string, prop: any) {
-        target["on" + type] = prop
-        this._listeners.push(() => target["on" + type] = undefined)
-    }
-
-    // add (target: any, ...args: any[]) {
-    //     target.addEventListener(...args)
-    //     this._listeners.push(() => target.removeEventListener(...args))
+    // add (target: any, type: string, prop: any) {
+    //     target["on" + type] = prop
+    //     this._listeners.push(() => target["on" + type] = undefined)
     // }
+
+    add (target: any, ...args: any[]) {
+        target.addEventListener(...args)
+        this._listeners.push(() => target.removeEventListener(...args))
+    }
 
     clean () {
         each(this._listeners, fn => fn())

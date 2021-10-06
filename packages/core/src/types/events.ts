@@ -31,6 +31,7 @@ export interface MIDIAccess extends EventTarget {
         listener: (this: this, e: MIDIConnectionEvent) => any,
         options?: boolean | AddEventListenerOptions,
     ): void;
+
     addEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,
