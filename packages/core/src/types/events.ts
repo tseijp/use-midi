@@ -128,5 +128,3 @@ export interface MIDIConnectionEvent extends Event {
      */
     port: MIDIPort;
 }
-
-const tmp:MIDIMessageEvent & MIDIConnectionEvent = {} as any

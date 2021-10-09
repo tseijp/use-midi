@@ -1,4 +1,4 @@
-import { EventStore, AccessStore, TimeoutStore } from 'use-midi'
+import { EventStore, AccessStore, TimeoutStore } from 'use-midi/src'
 
 describe('EventStore', () => {
     let store: any;

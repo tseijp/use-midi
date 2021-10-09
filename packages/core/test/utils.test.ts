@@ -1,4 +1,4 @@
-import { each, eachProp, chain, flush, is } from 'use-midi';
+import { each, eachProp, chain, flush, is } from 'use-midi/src';
 
 describe('each', () => {
     it('eachable array', () => {
