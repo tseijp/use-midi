@@ -8,8 +8,9 @@ type VoidFn = (...args: any[]) => undefined | void
 
 type UpdateFun = (ts?: number) => boolean | void
 
+type nativeRma = () => undefined | Promise<any>
+
 export interface Rma {
-    nativeRma: () => undefined | Promise<any>
     (update: UpdateFun): void
     write: (fun: Fun) => void
     onStart: (fun: Fun) => void
@@ -20,7 +21,7 @@ export interface Rma {
     sync: (fun: VoidFn) => void
     throttle: (fun: VoidFn) => void
 
-    use: <T extends Rma['nativeRma']>(impl: T) => T
+    use: <T extends nativeRma>(impl: T) => T
     now: () => number
     fun: (fun: Fun) => void
     warn: (error: string) => void
@@ -33,7 +34,6 @@ export interface Rma {
 
     allowed: boolean
     demanded: boolean
-    requested: boolean
     supported: boolean
     options: {
         sysex: boolean,
@@ -47,23 +47,19 @@ export interface Queue<T extends Function = any> {
     flush: (arg?: any) => void
 }
 
-let ts = -1,
-    sync = false,
-    event: any
-
-let updateQueue = makeQueue<UpdateFun>(),
-writeQueue = makeQueue<Fun>(),
-onStartQueue = makeQueue<Fun>(),
-onAccessQueue = makeQueue<Fun>(),
-onFinishQueue = makeQueue<Fun>()
-
 export const rma: Rma = fun => schedule(fun, updateQueue)
 
-rma.nativeRma =
-    typeof navigator !== 'undefined' &&
-    typeof (navigator as any).requestMIDIAccess === 'function'
+let ts = -1,
+    sync = false,
+    event: any,
+    writeQueue = makeQueue<Fun>(),
+    onStartQueue = makeQueue<Fun>(),
+    onAccessQueue = makeQueue<Fun>(),
+    onFinishQueue = makeQueue<Fun>(),
+    updateQueue = makeQueue<UpdateFun>(),
+    nativeRma = rma.supported
         ? () => (navigator as any).requestMIDIAccess(rma.options)
-        : () => void (rma.supported = false)
+        : () => {}
 
 rma.write = fun => schedule(fun, writeQueue)
 rma.onStart = fun => schedule(fun, onStartQueue)
@@ -74,15 +70,17 @@ rma.sync = fun => void ( sync = true, rma.fun(fun), sync = false )
 rma.cancel = fun => void ( updateQueue.delete(fun), writeQueue.delete(fun) )
 rma.throttle = fun => rma.fun(fun) // TODO
 
-rma.use = fun => (rma.nativeRma = fun)
+rma.use = fun => (nativeRma = fun)
 rma.now = typeof performance != 'undefined' ? () => performance.now() : Date.now
 rma.fun = fun => fun()
 rma.warn = console.warn
 rma.error = console.error
 rma.allowed = false
 rma.demanded = false
-rma.requested = false
-rma.supported = true
+rma.supported =
+    typeof navigator !== 'undefined' &&
+    typeof (navigator as any).requestMIDIAccess === 'function'
+
 rma.options = {
     sysex: true,
     software: true
@@ -101,9 +99,10 @@ rma.advance = () => {
 function start () {
     if (ts < 0) {
         ts = 0
-        rma.requested = true
-        if (!rma.demanded)
-            rma.nativeRma()?.then?.(change, rma.error)
+        if (!rma.demanded) {
+            rma.demanded = true
+            nativeRma()?.then(change, rma.error)
+        }
     }
 }
 
@@ -157,7 +156,7 @@ function makeQueue<T extends Function>(): Queue<T> {
 function setHidden (key: any, fun: AnyFun) {
     Object.defineProperty(rma, key, {
         get () {
-            if (!rma.requested)
+            if (!rma.demanded)
                 start()
             if (rma.allowed)
                 return fun()

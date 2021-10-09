@@ -1,4 +1,4 @@
-import { Engine } from 'use-midi'
+import { Engine } from 'use-midi/src'
 
 describe('Engine', () => {
     it('', () => {
