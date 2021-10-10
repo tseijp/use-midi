@@ -95,6 +95,7 @@ describe('is', () => {
         expect(is.und(undefined)).toBeTruthy()
         expect(is.num(0)).toBeTruthy()
         expect(is.str("")).toBeTruthy()
+        expect(is.bol(true)).toBeTruthy()
         expect(is.fun(() => {})).toBeTruthy()
         expect(is.obj({})).toBeTruthy()
     })
