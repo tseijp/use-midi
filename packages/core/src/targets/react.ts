@@ -73,50 +73,56 @@ export function useMidi (_props: any, config: any={}) {
     return useRecognizers<Config>(props, config, undefined, native)
 }
 
-export function UseButton (
-    props: Props & {
+export function UseButton <
+    EventType = EventTypes<'button'>,
+    C extends Config<'button'> = Config<'button'>
+> (
+    props: C & {
+        onButton: Prop<'button', EventType>,
         children: (bind: any) => null | JSX.Element
-        config: Config<'button'>
     }
 ): null | JSX.Element
 
 export function UseButton (props: any) {
-    const {children, config, ...other} = props
-    return children(useButton(other, config))
+    const {children, onButton, ...config} = props
+    return children(useButton(onButton, config))
 }
 
-export function UseFader (
-    props: Props & {
+export function UseFader <
+    EventType = EventTypes<'fader'>,
+    C extends Config<'fader'> = Config<'fader'>
+>(
+    props: C & Props & {
+        onFader: Prop<'fader', EventType>,
         children: (bind: any) => null | JSX.Element
-        config: Config<'fader'> | {}
     }
 ): null | JSX.Element
 
 export function UseFader (props: any) {
-    const {children, config, ...other} = props
-    return children(useFader(other, config))
+    const {children, onFader, ...config} = props
+    return children(useFader(onFader, config))
 }
 
-export function UseNote (
-    props: Props & {
+export function UseNote <
+    EventType = EventTypes<'fader'>,
+    C extends Config<'fader'> = Config<'fader'>
+>(
+    props: C & Props & {
+        onNote: Prop<'note', EventType>,
         children: (bind: any) => null | JSX.Element
-        config: Config<'note'> | {}
     }
 ): null | JSX.Element
 
 export function UseNote (props: any) {
-    const {children, config, ...other} = props
-    return children(useNote(other, config))
+    const {children, onNote, ...config} = props
+    return children(useNote(onNote, config))
 }
 
-export function UseMidi (
-    props: Props & {
-        children: (bind: any) => null | JSX.Element
-        config: Config | {}
-    }
+export function UseMidi <C extends Config = Config>(
+    props: Props & C & {children: (bind: any) => null | JSX.Element}
 ): null | JSX.Element
 
 export function UseMidi(props: any) {
-    const {children, config, ...other} = props
-    return children(useMidi(other, config))
+    const {children, onButton, onFader, onNote, ...config} = props
+    return children(useMidi({onButton, onFader, onNote}, config))
 }

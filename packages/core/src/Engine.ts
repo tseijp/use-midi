@@ -31,6 +31,10 @@ export abstract class Engine<Key extends MidiKey> {
         this._ctrl.state[this._key] = state
     }
 
+    get shared () {
+        return this._ctrl.state.shared
+    }
+
     get config () {
         return this._ctrl.config
     }
@@ -66,8 +70,8 @@ export abstract class Engine<Key extends MidiKey> {
      * reset state if init run
      */
     reset () {
-        const { state, _args } = this
-        // state.shared[_key] = false
+        const { state, shared, _args, _key } = this
+        shared[_key] = false
         state.active = false
         state.blocked = false
         state.first = true
@@ -78,8 +82,8 @@ export abstract class Engine<Key extends MidiKey> {
         state.elapsedTime = 0
         state.delta = [0, 0, 0]
         state.direction = [0, 0, 0]
+        state.movement = [0, 0, 0]
         state.velocity = 0
-        state.movement = 0
         state.command = 0
         state.channel = 0
         state.noteNum = 0
@@ -109,12 +113,12 @@ export abstract class Engine<Key extends MidiKey> {
      * event: MIDIStateChagneEvent || MIDIMessageEvent
      */
     compute (event?: any) {
-        const { state, _key } = this
+        const { state, shared, _key } = this
         if (!state.active || state.blocked) return
         state.args = this._args
         state.first = state.active && !state.active
         state.last = !state.active && state.active
-        state.shared[_key] = state.active
+        shared[_key] = state.active // !!
 
         /**
          * calclate event on all event handlers

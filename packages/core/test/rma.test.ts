@@ -1,6 +1,5 @@
 import { rma, MIDIAccess, MIDIConnectionEvent } from 'use-midi/src'
 
-
 describe('rma', () => {
     let timeStamp = 0
     const midiAccess = {onstatechange: null} as unknown as MIDIAccess

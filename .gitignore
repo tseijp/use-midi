@@ -2,8 +2,9 @@ node_modules
 dist
 .DS_Store
 *.log
-package-lock.json
+yarn.lock
 coverage
+package-lock.json
 
 index.cjs.js
 index.d.ts

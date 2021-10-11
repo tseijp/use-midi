@@ -32,7 +32,7 @@ export class Recognizer {
 
 export class Button <EventType = EventTypes<'button'>> extends Recognizer {
     constructor (
-        target:  | string | ((e: any) => string),
+        target: EventTarget | string | ((e: any) => string),
         onButton: Prop<'fader', EventType>,
         config: Config<'button'> | {} = {}
     ) {
@@ -43,7 +43,7 @@ export class Button <EventType = EventTypes<'button'>> extends Recognizer {
 
 export class Fader <EventType = EventTypes<'fader'>> extends Recognizer {
     constructor (
-        target:  | string | ((e: any) => string),
+        target: EventTarget | string | ((e: any) => string),
         onFader: Prop<'fader', EventType>,
         config: Config<'fader'> | {} = {}
     ) {
@@ -54,7 +54,7 @@ export class Fader <EventType = EventTypes<'fader'>> extends Recognizer {
 
 export class Note <EventType = EventTypes<'note'>> extends Recognizer {
     constructor (
-        target:  | string | ((e: any) => string),
+        target: EventTarget | string | ((e: any) => string),
         onNote: Prop<'note', EventType>,
         config: Config<'note'> | {} = {}
     ) {
@@ -65,7 +65,7 @@ export class Note <EventType = EventTypes<'note'>> extends Recognizer {
 
 export class Midi extends Recognizer {
     constructor (
-        target:  | string | ((e: any) => string),
+        target: EventTarget | string | ((e: any) => string),
         _props: Props | {} = {},
         config: Config | {} = {}
     ) {

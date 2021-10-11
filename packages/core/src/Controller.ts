@@ -9,11 +9,11 @@ export class Controller {
     public accessStore = new AccessStore()
     public engine = {} as any
     public native = {} as any
-    public props = {} as any
+    public props = {} as Props
     public state = {shared: {}} as any
     public config = {shared: {}} as any
 
-    constructor (props: Props) {
+    constructor (props: Props={}) {
         this.props = props
         if (props.onButton) this.keys.add('button')
         if (props.onFader) this.keys.add('fader')
@@ -21,11 +21,14 @@ export class Controller {
     }
 
     /**
-     * Setup each stores from midi key
+     * Setup each stores from midi key // TODO DELETE
+     *
+     *   setup (key: MidiKey) {
+     *       this.keys.add(key)
+     *       this.ctrl.eventStores[key] = new EventStore(ctrl)
+     *       this.ctrl.accessStores[key] = new AccessStore(ctrl)
+     *   }
      */
-    setup (key: MidiKey) {
-        this.keys.add(key)
-    }
 
     /**
      * Executes side effects on each render.
@@ -46,7 +49,7 @@ export class Controller {
     /**
      * Attaches props and config
      */
-    applyProps (props: Props, native: any) {
+    applyProps (props: Props, native: any={}) {
         this.props = props
         this.native = native
     }
