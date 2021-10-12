@@ -1,51 +1,60 @@
-import { createElement as el } from 'react'
-import { Button, Fader, Note, Midi, Props } from 'use-midi/src'
-import { useButton, useFader, useNote, useMidi } from 'use-midi/src'
-import { UseButton, UseFader, UseNote, UseMidi } from 'use-midi/src'
-import { renderHook, act } from '@testing-library/react-hooks'
 import renderer from 'react-test-renderer'
+import { renderHook, act } from '@testing-library/react-hooks'
+import {
+    Button, Fader, Note, Midi,
+    useButton, useFader, useNote, useMidi,
+    UseButton, UseFader, UseNote, UseMidi,
+    // MIDIAccess, MIDIConnectionEvent, rma,
+} from 'use-midi/src'
 
-describe('vannilla', () => {
+const hooks = {useButton, useFader, useNote, useMidi} as any
+const components = {UseButton, UseFader, UseNote, UseMidi} as any
+
+describe('targets', () => {
+    /**
+     * setup mock
+     */
     const fn = jest.fn()
-    const entries = Object.entries({ Button, Fader, Note })
-    const target = {} as EventTarget
-    it.each(entries)('vanilla: %s', (key, Class) => {
-        const instance = new Class(target, fn)
-        expect(key).toBeTruthy()
-        expect(instance).toBeTruthy()
-        instance.destroy()
-    })
-})
-
-describe('react', () => {
-    const hooks = Object.entries({useButton, useFader, useNote, useMidi})
-    const components = Object.entries({UseButton, UseFader, UseNote, UseMidi})
+    const fns = {onButton: fn, onFader: fn, onNote: fn}
     const children = jest.fn(() => <></>)
     const target = {}
-    const fn = jest.fn()
-    const propsMap = new Map<string, any>([
-        ['Button', {onButton: fn, target}],
-        ['Fader', {onFader: fn, target}],
-        ['Note', {onNote: fn, target}],
-        ['Midi', {onButton: fn, onFader: fn, onNote: fn}]
-    ])
 
-    it.each(hooks)('hook: %s', (key='', use: any) => {
-        const props = propsMap.get(key.replace('use', ''))
-        const { current } = renderHook(() => use(props)).result
-        expect(key).toBeTruthy()
-        expect(use).toBeTruthy()
-        expect(current).toBeTruthy()
-        act(() => {
-            // current.bind()
-        })
+    /**
+     * setup rma
+     */
+    // const midiAccess = {onstatechange: null} as unknown as MIDIAccess
+    // const connection = {target: midiAccess} as unknown as MIDIConnectionEvent
+    // const nativeRma = () => new Promise(resolve => resolve(midiAccess))
+    // beforeAll(() => void rma.use(nativeRma))
+
+    it.each`
+        index     | Class     | target   | props | config
+      ${'Button'} | ${Button} | ${{}}    | ${fn} | ${void 0}
+      ${'Fader'}  | ${Fader}  | ${'div'} | ${fn} | ${void 0}
+      ${'Note'}   | ${Note}   | ${void 0}| ${fn} | ${{}}
+      ${'Midi'}   | ${Midi}   | ${void 0}| ${fns}| ${{}}
+    `('class: $index', ({Class, target, props, config}) => {
+        const instance = new Class(target, props, config)
+        expect(instance).toBeTruthy()
+        expect(fn.mock.calls.length).toBe(0)
+        instance.destroy()
     })
 
-    it.each(components)('component: %s', (key='', Use: any) => {
-        const props = propsMap.get(key.replace('Use', ''))
-        const element = renderer.create(el(Use, props, children))
-        expect(key).toBeTruthy()
-        expect(element).toBeTruthy()
-        // expect(fn.mock.calls.length).toBe(1)
+    it.each`
+        index     | props
+      ${'Button'} | ${{onButton: fn, target}}
+      ${'Fader'}  | ${{onFader: fn, target}}
+      ${'Note'}   | ${{onNote: fn, target}}
+      ${'Midi'}   | ${{onButton: fn, onFader: fn, onNote: fn}}
+    `('react: $index', ({index, props}) => {
+        const use = hooks['use' + index]
+        const Use = components['Use' + index]
+        const { current } = renderHook(() => use(props)).result
+        const element = renderer.create(<Use {...{...props, children}}/>)
+        expect(current && element).toBeTruthy()
+        expect(children.mock.calls.length).toBe(1)
+        // act(() => {
+        //     midiAccess.onstatechange(connection)
+        // })
     })
 })

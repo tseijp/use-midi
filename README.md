@@ -20,6 +20,9 @@
 [![ license ](
     https://badgen.net/npm/license/use-midi)](
     https://www.npmjs.com/package/use-midi)
+[![ codecov ](
+    https://codecov.io/gh/tseijp/use-midi/coverage.svg)](
+    https://codecov.io/gh/tseijp/use-midi)
 
 ### Installation
 

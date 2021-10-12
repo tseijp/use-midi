@@ -10,8 +10,8 @@ export class Recognizer {
 
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        props: Props | {} = {},
-        config: Config | {} = {},
+        props: Props | {},
+        config: Config | {},
         key?: MidiKey,
         native?: Native
     ) {

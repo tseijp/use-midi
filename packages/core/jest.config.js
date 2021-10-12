@@ -15,10 +15,10 @@ module.exports = {
     moduleNameMapper: {'src/(.*)$': '<rootDir>/src/$1'},
     moduleFileExtensions: ['ts','tsx','js','jsx','json','node'],
     /**
-     * codecov config
+     * coverage config
      */
     coverageDirectory: '<rootDir>/coverage/',
-    collectCoverageFrom: ['<rootDir>/packages/core/src/**/*.ts', '!**/index.*'],
     coverageReporters: ['json', 'html', 'lcov', 'text', 'text-summary', 'clover'],
     coverageThreshold: {global: {statements: 95, functions: 95, branches: 95, lines: 95}},
+    collectCoverageFrom: ['<rootDir>/packages/core/src/**/*.ts', '!**/index.*'],
 };
