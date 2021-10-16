@@ -4,58 +4,57 @@
 
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
-import { Mesh } from './Mesh'
 
-export function Low (props: any) {
+export default function (props: any) {
   const group = useRef()
-  const { url, ...other } = props
-  const { nodes, materials } = useGLTF(url) as any
+  const { src, ...other } = props
+  const { nodes, materials } = useGLTF(src) as any
   return (
     <group ref={group} {...other} dispose={null}>
-      <Mesh geometry={nodes.node10.geometry} material={nodes.node10.material} />
-      <Mesh geometry={nodes.node11.geometry} material={nodes.node11.material} />
-      <Mesh geometry={nodes.node12.geometry} material={nodes.node12.material} />
-      <Mesh geometry={nodes.node13.geometry} material={materials.Beat_sync_rubber} />
-      <Mesh geometry={nodes.node14.geometry} material={materials.Black_Plastic11} />
-      <Mesh geometry={nodes.node15.geometry} material={materials.Black_Plastic3} />
-      <Mesh geometry={nodes.node16.geometry} material={nodes.node16.material} />
-      <Mesh geometry={nodes.node17.geometry} material={materials.Cue_Orange} />
-      <Mesh geometry={nodes.node18.geometry} material={materials.Cue_button3} />
-      <Mesh geometry={nodes.node19.geometry} material={materials.Cue_metal} />
-      <Mesh geometry={nodes.node20.geometry} material={materials.Diod} />
-      <Mesh geometry={nodes.node21.geometry} material={materials.Front_plastic} />
-      <Mesh geometry={nodes.node22.geometry} material={nodes.node22.material} />
-      <Mesh geometry={nodes.node23.geometry} material={materials.Grid} />
-      <Mesh geometry={nodes.node24.geometry} material={materials.Inside_plastic} />
-      <Mesh geometry={nodes.node25.geometry} material={materials.METAL_jack_gold} />
-      <Mesh geometry={nodes.node26.geometry} material={materials.Metal_jack} />
-      <Mesh geometry={nodes.node27.geometry} material={materials.Mid_plastic} />
-      <Mesh geometry={nodes.node28.geometry} material={materials.Orange_light} />
-      <Mesh geometry={nodes.node29.geometry} material={materials.Paint_red} />
-      <Mesh geometry={nodes.node3.geometry} material={materials.Back_plastic} />
-      <Mesh geometry={nodes.node30.geometry} material={materials.Paint_white} />
-      <Mesh geometry={nodes.node31.geometry} material={materials.Plastic22} />
-      <Mesh geometry={nodes.node32.geometry} material={nodes.node32.material} />
-      <Mesh geometry={nodes.node33.geometry} material={materials.Plastic_glossy} />
-      <Mesh geometry={nodes.node34.geometry} material={nodes.node34.material} />
-      <Mesh geometry={nodes.node35.geometry} material={materials.PlayPauseMetal} />
-      <Mesh geometry={nodes.node36.geometry} material={materials.Red_light} />
-      <Mesh geometry={nodes.node37.geometry} material={materials.Red_light2} />
-      <Mesh geometry={nodes.node38.geometry} material={materials.Reloop_button} />
-      <Mesh geometry={nodes.node39.geometry} material={materials.Rubber} />
-      <Mesh geometry={nodes.node4.geometry} material={materials.Blue_light} />
-      <Mesh geometry={nodes.node40.geometry} material={nodes.node40.material} />
-      <Mesh geometry={nodes.node41.geometry} material={nodes.node41.material} />
-      <Mesh geometry={nodes.node42.geometry} material={materials.Top_plastic} />
-      <Mesh geometry={nodes.node43.geometry} material={materials.Turn_plastic} />
-      <Mesh geometry={nodes.node44.geometry} material={nodes.node44.material} />
-      <Mesh geometry={nodes.node45.geometry} material={materials.rubber_FXSelect} />
-      <Mesh geometry={nodes.node46.geometry} material={materials.wire_005005005} />
-      <Mesh geometry={nodes.node5.geometry} material={materials.Dark_plastic} />
-      <Mesh geometry={nodes.node6.geometry} material={materials.Frame_plastic} />
-      <Mesh geometry={nodes.node7.geometry} material={nodes.node7.material} />
-      <Mesh geometry={nodes.node8.geometry} material={nodes.node8.material} />
-      <Mesh geometry={nodes.node9.geometry} material={nodes.node9.material} />
+      <mesh geometry={nodes.node10.geometry} material={nodes.node10.material} />
+      <mesh geometry={nodes.node11.geometry} material={nodes.node11.material} />
+      <mesh geometry={nodes.node12.geometry} material={nodes.node12.material} />
+      <mesh geometry={nodes.node13.geometry} material={materials.Beat_sync_rubber} />
+      <mesh geometry={nodes.node14.geometry} material={materials.Black_Plastic11} />
+      <mesh geometry={nodes.node15.geometry} material={materials.Black_Plastic3} />
+      <mesh geometry={nodes.node16.geometry} material={nodes.node16.material} />
+      <mesh geometry={nodes.node17.geometry} material={materials.Cue_Orange} />
+      <mesh geometry={nodes.node18.geometry} material={materials.Cue_button3} />
+      <mesh geometry={nodes.node19.geometry} material={materials.Cue_metal} />
+      <mesh geometry={nodes.node20.geometry} material={materials.Diod} />
+      <mesh geometry={nodes.node21.geometry} material={materials.Front_plastic} />
+      <mesh geometry={nodes.node22.geometry} material={nodes.node22.material} />
+      <mesh geometry={nodes.node23.geometry} material={materials.Grid} />
+      <mesh geometry={nodes.node24.geometry} material={materials.Inside_plastic} />
+      <mesh geometry={nodes.node25.geometry} material={materials.METAL_jack_gold} />
+      <mesh geometry={nodes.node26.geometry} material={materials.Metal_jack} />
+      <mesh geometry={nodes.node27.geometry} material={materials.Mid_plastic} />
+      <mesh geometry={nodes.node28.geometry} material={materials.Orange_light} />
+      <mesh geometry={nodes.node29.geometry} material={materials.Paint_red} />
+      <mesh geometry={nodes.node3.geometry} material={materials.Back_plastic} />
+      <mesh geometry={nodes.node30.geometry} material={materials.Paint_white} />
+      <mesh geometry={nodes.node31.geometry} material={materials.Plastic22} />
+      <mesh geometry={nodes.node32.geometry} material={nodes.node32.material} />
+      <mesh geometry={nodes.node33.geometry} material={materials.Plastic_glossy} />
+      <mesh geometry={nodes.node34.geometry} material={nodes.node34.material} />
+      <mesh geometry={nodes.node35.geometry} material={materials.PlayPauseMetal} />
+      <mesh geometry={nodes.node36.geometry} material={materials.Red_light} />
+      <mesh geometry={nodes.node37.geometry} material={materials.Red_light2} />
+      <mesh geometry={nodes.node38.geometry} material={materials.Reloop_button} />
+      <mesh geometry={nodes.node39.geometry} material={materials.Rubber} />
+      <mesh geometry={nodes.node4.geometry} material={materials.Blue_light} />
+      <mesh geometry={nodes.node40.geometry} material={nodes.node40.material} />
+      <mesh geometry={nodes.node41.geometry} material={nodes.node41.material} />
+      <mesh geometry={nodes.node42.geometry} material={materials.Top_plastic} />
+      <mesh geometry={nodes.node43.geometry} material={materials.Turn_plastic} />
+      <mesh geometry={nodes.node44.geometry} material={nodes.node44.material} />
+      <mesh geometry={nodes.node45.geometry} material={materials.rubber_FXSelect} />
+      <mesh geometry={nodes.node46.geometry} material={materials.wire_005005005} />
+      <mesh geometry={nodes.node5.geometry} material={materials.Dark_plastic} />
+      <mesh geometry={nodes.node6.geometry} material={materials.Frame_plastic} />
+      <mesh geometry={nodes.node7.geometry} material={nodes.node7.material} />
+      <mesh geometry={nodes.node8.geometry} material={nodes.node8.material} />
+      <mesh geometry={nodes.node9.geometry} material={nodes.node9.material} />
     </group>
   )
 }

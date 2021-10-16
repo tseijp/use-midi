@@ -58,7 +58,7 @@ module.exports = {
         docs: {
           path: 'documents',
           routeBasePath: 'documents',
-          sidebarPath: require.resolve('./sidebars.js'),
+          // sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/tseijp/use-midi/edit/master/examples/',
         },
       },

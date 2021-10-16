@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSpring, animated} from '@react-spring/three'
 
-export function Mesh (props: any) {
+export default function (props: any) {
     const { ...other } = props
     const [spring, set] = useSpring({x: 0, y: 0, z: 0}, [])
     const bind = () => ({
