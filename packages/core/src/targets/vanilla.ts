@@ -1,8 +1,7 @@
 import { is } from '../utils'
-import { Props } from '../types'
 import { registerAction } from '../actions'
 import { Controller, parseProps } from '../Controller'
-import { Prop, MidiKey, EventTypes, Config, Native } from '../types'
+import { Prop, Props, MidiKey, Events, Config, NativeProps } from '../types'
 
 export class Recognizer {
     readonly _key?: MidiKey
@@ -13,7 +12,7 @@ export class Recognizer {
         props: Props | {},
         config: Config | {},
         key?: MidiKey,
-        native?: Native
+        native?: NativeProps
     ) {
         this._key = key
         this._ctrl = new Controller(props)
@@ -30,10 +29,10 @@ export class Recognizer {
     }
 }
 
-export class Button <EventType = EventTypes<'button'>> extends Recognizer {
+export class Button <E = Events<'button'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onButton: Prop<'fader', EventType>,
+        onButton: Prop<'fader', E>,
         config: Config<'button'> | {} = {}
     ) {
         registerAction('button')
@@ -41,10 +40,10 @@ export class Button <EventType = EventTypes<'button'>> extends Recognizer {
     }
 }
 
-export class Fader <EventType = EventTypes<'fader'>> extends Recognizer {
+export class Fader <E = Events<'fader'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onFader: Prop<'fader', EventType>,
+        onFader: Prop<'fader', E>,
         config: Config<'fader'> | {} = {}
     ) {
         registerAction('fader')
@@ -52,10 +51,21 @@ export class Fader <EventType = EventTypes<'fader'>> extends Recognizer {
     }
 }
 
-export class Note <EventType = EventTypes<'note'>> extends Recognizer {
+export class Knob <E = Events<'knob'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onNote: Prop<'note', EventType>,
+        onKnob: Prop<'knob', E>,
+        config: Config<'knob'> | {} = {}
+    ) {
+        registerAction('knob')
+        super(target, { onKnob }, config, 'knob')
+    }
+}
+
+export class Note <E = Events<'note'>> extends Recognizer {
+    constructor (
+        target: EventTarget | string | ((e: any) => string),
+        onNote: Prop<'note', E>,
         config: Config<'note'> | {} = {}
     ) {
         registerAction('note')
@@ -70,7 +80,7 @@ export class Midi extends Recognizer {
         config: Config | {} = {}
     ) {
         const [props, native] = parseProps(_props)
-        registerAction('button', 'fader', 'note')
+        registerAction('button', 'fader', 'knob', 'note')
         super(target, props, config, undefined, native)
     }
 }

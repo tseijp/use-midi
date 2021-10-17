@@ -11,18 +11,38 @@ import { Low, High, Nano } from '../../models'
 import { LowHigh } from '../../components/LowHigh'
 import { Canvas } from '@react-three/fiber'
 import './styles.css'
-
+import { useButton, useFader, useNote, useMidi } from 'use-midi/src'
 
 export default function App () {
     const [pointer, setPointer] = React.useState(true)
-    const state = {
-        scale: [.025, .025, .025],
-        rotation: [Math.PI/4, 0, 0],
-        onPointerUp: () => setPointer(true),
-        onPointerDown: () => setPointer(false)
-    }
     if (typeof window === "undefined")
         return null
+
+    const button = useButton(state => {
+        const { args: [ref] } = state
+        console.log(ref)
+        if (ref?.current)
+            ref.current.position.y = 1//dragging? 1: hovering? .5: 0
+    })
+
+    const fader = useFader(state => {
+        const { args: [ref] } = state
+    })
+
+    const note = useNote(state => {
+        const { args: [ref] } = state
+    })
+
+    const knob = useNote(state => {
+        const { args: [ref] } = state
+    })
+
+    const native = useMidi({
+        onPointerUp: state => {
+            console.log(state)
+        }
+    })
+
     return (
       <Layout>
         <Canvas camera={{position: [0, .4, 0]}}>
@@ -32,7 +52,13 @@ export default function App () {
             src-high="img/assets/High.gltf"
           />
           */}
-          <LowHigh low={Nano} src="img/assets/Nano.gltf" position-z={-.2}/>
+          <LowHigh
+            button={button}
+            fader={fader}
+            note={note}
+            knob={knob}
+            native={native}
+            low={Nano} src="img/assets/Nano.gltf" position-z={-.2}/>
           <ambientLight position={[0, 0, 0]} intensity={0.5} />
           <spotLight position={[10, 10, 10]} intensity={2} penumbra={1} />
           <pointLight position={[0, -10, 0]} intensity={1.5} />

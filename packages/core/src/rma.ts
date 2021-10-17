@@ -1,5 +1,4 @@
 /* MIT License */
-
 type Fun = () => boolean | void
 
 type AnyFun = (...args: any) => any

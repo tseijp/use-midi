@@ -22,13 +22,18 @@ The library is designed for incremental adoption strategies.
 <div onClick={onClick} />
 
 // UseMidi element DOES NOT have event callback props
-const bind = onClocl(state => {});
+const bind = useButton(state => {});
 <View {...bind()}/>
 ```
 
 ## Installation
 
 To install the entire `use-midi` lib:
+```shell
+npm i use-midi
+```
+
+or
 
 ```shell
 yarn add use-midi
@@ -45,7 +50,7 @@ Run the development server:
 ```shell
 cd use-midi
 yarn init
-yarn docs
+yarn start
 ```
 
 Your site starts at [http://localhost:3000](http://localhost:3000).
@@ -55,42 +60,45 @@ Your site starts at [http://localhost:3000](http://localhost:3000).
 import styled from 'styled-components'
 
 export const StyledComponent = styled.div`
-width: 100%;
-height: 25rem;
-border-radius: .5rem;
-background: pink;
-div {
-    width: 25rem;
+    width: 100%;
     height: 25rem;
-    color: black;
-    margin: auto;
-};
+    border-radius: .5rem;
+    background: pink;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    button {
+        border-radius: 100rem;
+        width: 15rem;
+        height: 15rem;
+        color: black;
+    };
 `
 
-import {useNote} from 'use-midi/src'
+import { useButton } from 'use-midi/src'
 
-export function SimpleExample (props) {
-    const bind = useNote(state => {
+export function ClickButton (props) {
+    const bind = useButton(state => {
         if (state.first)
-            state.send([0x000, 0x888, 0xfff], 10)
+            state.send?.([0x000, 0x888, 0xfff], 10)
     })
-    return <div />
+    return <button {...bind}>Click Button and Send Data to MIDI</button>
 }
 
 <StyledComponent>
-  <SimpleExample/>
+  <ClickButton />
 </StyledComponent>
 
-The following example makes a `<div/>`
+The following example makes a `<button/>`
 
 ```js
-import { useNote } from 'use-midi'
+import { useButton } from 'use-midi'
 
 function ClickButton () {
-    const bind = useNote(state => {
-        if (state.first)
-            state.send([0x000, 0x888, 0xfff], 10)
-    })
-    return <div {...bind()}/>
+  const bind = useButton(state => {
+    state.send?.([0x000, 0x888, 0xfff], 10)
+  })
+  return <button {...bind}>Send Data to MIDI</button>
 }
 ```

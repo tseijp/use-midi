@@ -1,14 +1,14 @@
 import React from 'react'
 import { registerAction } from '../actions'
 import { Controller, parseProps } from '../Controller'
-import { EventTypes, MidiKey, Config, Prop, Props, Native } from '../types'
+import { Events, MidiKey, Config, Prop, Props, NativeProps } from '../types'
 import { is } from '../utils'
 
 export function useRecognizers <Config> (
     props: Props,
     config?: Config | {},
     key?: MidiKey,
-    native?: Native
+    native?: NativeProps
 ): Controller['bind'] | undefined
 
 export function useRecognizers (props: any, config: any={}, key?: any, native?: any) {
@@ -24,10 +24,10 @@ export function useRecognizers (props: any, config: any={}, key?: any, native?: 
 }
 
 export function useButton <
-    EventType = EventTypes<'button'>,
-    C extends Config<'button'> = Config<'button'>
+    E = Events<'button'>,
+    C = Config<'button'>
 > (
-    button: Prop<'button', EventType>,
+    button: Prop<'button', E>,
     config?: C | {}
 ): Controller['bind'] | undefined
 
@@ -37,10 +37,10 @@ export function useButton (onButton: any, config: any) {
 }
 
 export function useFader<
-    EventType = EventTypes<'button'>,
-    C extends Config<'fader'> = Config<'fader'>
+    E = Events<'fader'>,
+    C = Config<'fader'>
 >(
-    onFader: Prop<'fader', EventType>,
+    onFader: Prop<'fader', E>,
     config?: C | {}
 ): Controller['bind'] | undefined
 
@@ -50,10 +50,10 @@ export function useFader (onFader: any, config: any={}) {
 }
 
 export function useNote<
-    EventType = EventTypes<'note'>,
-    C extends Config<'note'> = Config<'note'>
+    E = Events<'note'>,
+    C = Config<'note'>
 >(
-    onNote: Prop<'note', EventType>,
+    onNote: Prop<'note', E>,
     config?: C | {}
 ): Controller['bind'] | undefined
 
@@ -62,25 +62,32 @@ export function useNote (onNote: any, config: any={}) {
     return useRecognizers({ onNote }, config, 'note')
 }
 
+export function useKnob<
+    E = Events<'knob'>,
+    C = Config<'knob'>
+>(
+    onKnob: Prop<'knob', E>,
+    config?: C | {}
+): Controller['bind'] | undefined
+
+export function useKnob (onKnob: any, config: any={}) {
+    registerAction('knob')
+    return useRecognizers({ onKnob }, config, 'knob')
+}
+
 export function useMidi <C extends Config = Config> (
     props: Props,
     config?: Config | {}
 ): Controller['bind'] | undefined
 
 export function useMidi (_props: any, config: any={}) {
-    registerAction('button', 'fader', 'note')
+    registerAction('button', 'fader', 'knob', 'note')
     const [props, native] = parseProps(_props)
     return useRecognizers<Config>(props, config, undefined, native)
 }
 
-export function UseButton <
-    EventType = EventTypes<'button'>,
-    C extends Config<'button'> = Config<'button'>
-> (
-    props: C & {
-        onButton: Prop<'button', EventType>,
-        children: (bind: any) => null | JSX.Element
-    }
+export function UseButton <E = Events<'button'>, C = Config<'button'>> (
+    props: C & { onButton: Prop<'button', E>, children: (bind: any) => null | JSX.Element }
 ): null | JSX.Element
 
 export function UseButton (props: any) {
@@ -88,14 +95,8 @@ export function UseButton (props: any) {
     return children(useButton(onButton, config))
 }
 
-export function UseFader <
-    EventType = EventTypes<'fader'>,
-    C extends Config<'fader'> = Config<'fader'>
->(
-    props: C & Props & {
-        onFader: Prop<'fader', EventType>,
-        children: (bind: any) => null | JSX.Element
-    }
+export function UseFader <E = Events<'fader'>, C = Config<'fader'>>(
+    props: C & { onFader: Prop<'fader', E>, children: (bind: any) => null | JSX.Element }
 ): null | JSX.Element
 
 export function UseFader (props: any) {
@@ -103,14 +104,17 @@ export function UseFader (props: any) {
     return children(useFader(onFader, config))
 }
 
-export function UseNote <
-    EventType = EventTypes<'fader'>,
-    C extends Config<'fader'> = Config<'fader'>
->(
-    props: C & Props & {
-        onNote: Prop<'note', EventType>,
-        children: (bind: any) => null | JSX.Element
-    }
+export function UseKnob <E = Events<'knob'>, C = Config<'knob'>>(
+    props: C & { onKnob: Prop<'knob', E>, children: (bind: any) => null | JSX.Element }
+): null | JSX.Element
+
+export function UseKnob (props: any) {
+    const {children, onKnob, ...config} = props
+    return children(useKnob(onKnob, config))
+}
+
+export function UseNote < E = Events<'note'>, C = Config<'note'>>(
+    props: C & { onNote: Prop<'note', E>, children: (bind: any) => null | JSX.Element}
 ): null | JSX.Element
 
 export function UseNote (props: any) {
@@ -118,11 +122,11 @@ export function UseNote (props: any) {
     return children(useNote(onNote, config))
 }
 
-export function UseMidi <C extends Config = Config>(
-    props: Props & C & {children: (bind: any) => null | JSX.Element}
+export function UseMidi <C extends Config = Config> (
+    props: Props & { config: C, children: (bind: any) => null | JSX.Element }
 ): null | JSX.Element
 
 export function UseMidi(props: any) {
-    const {children, onButton, onFader, onNote, ...config} = props
-    return children(useMidi({onButton, onFader, onNote}, config))
+    const {children, config, ...other} = props
+    return children(useMidi(other, config))
 }
