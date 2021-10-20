@@ -29,10 +29,22 @@ export class Recognizer {
     }
 }
 
+export class Midi extends Recognizer {
+    constructor (
+        target: EventTarget | string | ((e: any) => string),
+        _props: Props | {} = {},
+        config: Config | {} = {}
+    ) {
+        const [props, native] = parseProps(_props)
+        registerAction('button', 'slider', 'knob', 'note')
+        super(target, props, config, undefined, native)
+    }
+}
+
 export class Button <E = Events<'button'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onButton: Prop<'fader', E>,
+        onButton: Prop<'slider', E>,
         config: Config<'button'> | {} = {}
     ) {
         registerAction('button')
@@ -40,14 +52,14 @@ export class Button <E = Events<'button'>> extends Recognizer {
     }
 }
 
-export class Fader <E = Events<'fader'>> extends Recognizer {
+export class Slider <E = Events<'slider'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onFader: Prop<'fader', E>,
-        config: Config<'fader'> | {} = {}
+        onSlider: Prop<'slider', E>,
+        config: Config<'slider'> | {} = {}
     ) {
-        registerAction('fader')
-        super(target, { onFader }, config, 'fader')
+        registerAction('slider')
+        super(target, { onSlider }, config, 'slider')
     }
 }
 
@@ -70,17 +82,5 @@ export class Note <E = Events<'note'>> extends Recognizer {
     ) {
         registerAction('note')
         super(target, { onNote }, config, 'note')
-    }
-}
-
-export class Midi extends Recognizer {
-    constructor (
-        target: EventTarget | string | ((e: any) => string),
-        _props: Props | {} = {},
-        config: Config | {} = {}
-    ) {
-        const [props, native] = parseProps(_props)
-        registerAction('button', 'fader', 'knob', 'note')
-        super(target, props, config, undefined, native)
     }
 }

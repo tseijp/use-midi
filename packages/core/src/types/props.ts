@@ -12,7 +12,7 @@ export type Props = Partial<FullProps & NativeProps>
 
 export type FullProps = Partial<{
     onButton: Prop<'button'>
-    onFader: Prop<'fader'>
+    onSlider: Prop<'slider'>
     onKnob: Prop<'knob'>
     onNote: Prop<'note'>
 }>

@@ -3,70 +3,57 @@ sidebar_label: Rma Example
 ---
 # Rma Example
 
-import {rma, each} from 'use-midi/src'
+import {rma, each, eachProp} from 'use-midi/src'
 
 export default function () {
-    const [state, set] = React.useState([0, 0].fill({key: '', keys: []}))
-    const [log, setLog] = React.useState([])
-    const [data, setData] = React.useState([0, 0, 0])
-    React.useEffect(() => {
-        rma(() => {
-            setLog(p => [...p, `rma update`])
-            const is = [...rma.inputs.keys()],
-                  os = [...rma.outputs.keys()]
-            set([{key: is[0], keys: is}, {key: os[0], keys: os}])
-            each(is, i => rma.inputs.get(i).onmidimessage = e => {
-                setLog(p => [...p, 'midimessage' + e.data])
-            })
-            return true
-        })
-    }, [])
+    const [log, setL] = React.useState(['HELLO'])
+    const [data, setD] = React.useState([0, 0, 0])
+    const [state, setS] = React.useState([['', []], ['', []]])
     const handleClick = () => {
-        rma.outputs.get(state[1].key)?.send(data)
-        setLog(p => [...p, `clicked` + data])
+        rma.outputs.get(state[1][0])?.send(data)
+        setL(p => [...p, `clicked` + data])
     }
-    const handleChange = (index=0) => e => setData(prevData => {
-        return prevData.map((v, k) => k===index? e.target.value: v)
-    })
-    const handleSelect = (index=0) => e => set(prevState => {
-        if (e.target.value ==='not-selected') return prevState
-        return prevState.map((v, k) => k===index? {...v, key: e.target.value}: v)
-    })
+    const handleInput = (i=0) => ({key: i, value: data[i], onChange: e => {
+        setD(p => p.map((v, k) => k===i? e.target.value: v))
+    }})
+    const handleSelect = (i=0) => ({value: state[i][0], onChange: e => {
+        if (e.target.value === 'not-selected') return
+        setS(p => p.map((v, k) => k===i? [e.target.value, p[k][1]]: v))
+    }})
+    React.useEffect(() => rma(() => {
+        setL(p => [...p, `rma update`])
+        const is = [...rma.inputs.keys()],
+              os = [...rma.outputs.keys()]
+        setS([[is[0], is], [os[0], os]])
+        each(is, i => rma.inputs.get(i).onmidimessage = e => {
+            setL(p => [...p, 'midimessage' + e.data])
+        })
+        return true
+    }), [])
     return (
         <div>
           {React.useMemo(() =>
-            state.map(({key, keys}, index) => {
-              const target = rma.inputs?.get(key) ||
-                             rma.outputs?.get(key)
-              return target && (
-                <div key={key}>
-                  <p>{index}: {key}</p>
-                  <ul key={key}>
-                    <li>name: {target.name}</li>
-                    <li>type: {target.type}</li>
-                    <li>state: {target.state}</li>
-                  </ul>
-                  <select value={key} onChange={handleSelect(index)}>
-                    <option value="not-selected">
-                      Please select a input device
-                    </option>
-                    {keys.map(k =>
-                      <option key={k} value={k}>
-                        {k.slice(0, 20)}
-                      </option>
-                    )}
+            state.map(([key, keys], i) => {
+              const port = rma.inputs?.get(key) ||
+                             rma.outputs?.get(key) || {}
+              return (
+                <ul key={i}>
+                  <li>name: {port.name}</li>
+                  <li>type: {port.type}</li>
+                  <li>state: {port.state}</li>
+                  <li>connection: {port.connection}</li>
+                  <select {...handleSelect(i)}>
+                    <option value="not-selected">Please select a input device</option>
+                    {keys.map(k => <option key={k} value={k}>{k.slice(0, 50)}</option>)}
                   </select>
-              </div>
+                </ul>
               )
             })
           , [state])}
-          <div>
-            {[0, 1, 2].map(i =>
-              <input key={i} type="number" min="0" max="255"
-                value={data[i]} onChange={handleChange(i)}/>
-            )}
-            <button onClick={handleClick}>send data</button>
-          </div>
+          {[0, 1, 2].map(i =>
+            <input type="number" min="0" max="255" {...handleInput(i)} />
+          )}
+        <button onClick={handleClick}>send data</button>
           <ul>{log.map((l, i) => <li key={i}>{l}</li>)}</ul>
         </div>
     )

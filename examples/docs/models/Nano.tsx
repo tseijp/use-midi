@@ -6,10 +6,10 @@ import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export default function (props: any) {
-  const { src, button, fader, note, knob, native, ...other } = props
+  const { src, button, slider, note, knob, native, ...other } = props
   const group = useRef()
   const buttonRef = useRef()
-  const faderRef = useRef()
+  const sliderRef = useRef()
   const noteRef = useRef()
   const knobRef = useRef()
   const nativeRef = useRef()
@@ -24,9 +24,9 @@ export default function (props: any) {
         <mesh geometry={nodes.Buttons_2_Plane007_1.geometry} material={nodes.Buttons_2_Plane007_1.material} />
         <mesh geometry={nodes.Buttons_2_Plane007_2.geometry} material={nodes.Buttons_2_Plane007_2.material} />
       </group>
-      <group ref={faderRef} {...fader(faderRef)}>
-        <mesh geometry={nodes.Faders_Plane039_1.geometry} material={nodes.Faders_Plane039_1.material} />
-        <mesh geometry={nodes.Faders_Plane039_2.geometry} material={nodes.Faders_Plane039_2.material} />
+      <group ref={sliderRef} {...slider(sliderRef)}>
+        <mesh geometry={nodes.Sliders_Plane039_1.geometry} material={nodes.Sliders_Plane039_1.material} />
+        <mesh geometry={nodes.Sliders_Plane039_2.geometry} material={nodes.Sliders_Plane039_2.material} />
       </group>
       <group ref={noteRef} {...note(noteRef)}>
         <mesh geometry={nodes.Buttons_Plane031_1.geometry} material={nodes.Buttons_Plane031_1.material} />

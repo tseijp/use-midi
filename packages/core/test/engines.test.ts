@@ -1,4 +1,4 @@
-import { each, Controller, ButtonEngine, FaderEngine, NoteEngine } from 'use-midi/src'
+import { each, Controller, ButtonEngine, SliderEngine, KnobEngine, NoteEngine } from 'use-midi/src'
 
 describe('Base Engine', () => {
     let ctrl: Controller
@@ -8,17 +8,18 @@ describe('Base Engine', () => {
     beforeEach(() => {
         ctrl = new Controller()
         ctrl.applyConfig({})
-        ctrl.applyProps({onButton: fn, onFader: fn, onNote: fn})
+        ctrl.applyProps({onButton: fn, onSlider: fn, onNote: fn})
     })
 
     it.each`
-        index     | Engine          | bindFn
-      ${'button'} | ${ButtonEngine} | ${['button', 'buttonEnd']}
-      ${'fader'}  | ${FaderEngine}  | ${['fader', 'faderEnd']}
-      ${'note'}   | ${NoteEngine}   | ${['note', 'noteEnd']}
-    `('engine: $index', ({index, Engine, bindFn}) => {
+        index     | Engine          | bindFns
+      ${'button'} | ${ButtonEngine} | ${['button']}
+      ${'slider'} | ${SliderEngine} | ${['slider']}
+      ${'knob'}   | ${KnobEngine}   | ${['knob']}
+      ${'note'}   | ${NoteEngine}   | ${['note']}
+    `('engine: $index', ({index, Engine, bindFns}) => {
         const engine = new Engine(ctrl, [], index)
-        each(bindFn, (key: any) => engine[key](event))
+        each(bindFns, (key: any) => engine[key](event))
         expect(engine).toBeTruthy()
     })
 })

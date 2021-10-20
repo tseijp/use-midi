@@ -13,7 +13,7 @@ import { Live } from '/components/Live'
   }
   const bind = useMidi({
     onButton: state => console.log(state),
-    onFader: state => console.log(state),
+    onSlider: state => console.log(state),
     onNote: state => console.log(state)
   }, {device})
   return <div />

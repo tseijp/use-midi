@@ -1,4 +1,4 @@
-import { each, eachProp, chain, is } from './utils'
+import { each, eachProp, chain, is, toPropEvent } from './utils'
 import { EventStore, AccessStore } from './stores'
 import { MidiKey, Props, Config } from './types'
 import { EngineMap, ConfigMap } from './actions'
@@ -16,20 +16,10 @@ export class Controller {
     constructor (props: Props={}) {
         this.props = props
         if (props.onButton) this.keys.add('button')
-        if (props.onFader) this.keys.add('fader')
+        if (props.onSlider) this.keys.add('slider')
         if (props.onKnob) this.keys.add('knob')
         if (props.onNote) this.keys.add('note')
     }
-
-    /**
-     * Setup each stores from midi key // TODO DELETE
-     *
-     *   setup (key: MidiKey) {
-     *       this.keys.add(key)
-     *       this.ctrl.eventStores[key] = new EventStore(ctrl)
-     *       this.ctrl.accessStores[key] = new AccessStore(ctrl)
-     *   }
-     */
 
     /**
      * Executes side effects on each render.
@@ -66,10 +56,9 @@ export class Controller {
         const props: any = {}, native: any = {}
         const { keys, eventStore, accessStore, engine, config, state } = this
         const bindFn = (device='', key='', prop: (e: any) => void, isNative=false) => {
-            const type = device//isNative? device: toDomEvent(device, key)
-            const target = isNative? native: props
-            target[type] = target[type] || []
-            target[type].push(prop)
+            const [obj, type] = isNative? [native, toPropEvent(device, key)]: [props, device]
+            obj[type] = obj[type] || []
+            obj[type].push(prop)
         }
         /**
          * initialize engine and bind
@@ -81,36 +70,49 @@ export class Controller {
                 engine[key].bind(bindFn)
             })
 
-        eachProp(native, (prop, key) => {
+        eachProp(this.native, (prop, key) => {
             bindFn(key, '', event => prop({...state.shared, event, args}), true)
         })
 
         eachProp(props, (prop, key) => void (props[key] = chain(...prop)))
-        eachProp(native, (prop, key) => void (native[key] = chain(...prop)))
 
-        /**
-         * When target isn't specified then return hanlder props.
-         */
-        if (!config.target) return native
+        eachProp(native, (prop, key) => void (native[key] = chain(...prop)))
 
         /**
          * register target and each handler to stores
          */
         accessStore.add(event => {
-            let port = state.port || config.shared.port
-            const { inputs, outputs } = event.target
-            if (is.fun(state.port)) port = port(event)
-            state.port = port = inputs?.get(port) || outputs?.get(port)
-            eachProp(props, (prop, key) => eventStore.add(port, key, prop))
+            this.state.event = event
+            eachProp(props, (prop, key) => eventStore.add(this.port, key, prop))
         })
 
+        /**
+         * When target isn't specified then return hanlder props.
+         */
+        if (!config.shared.target) return native
+
         eachProp(native, (prop, key) => {
-            eventStore.add(state.target, key, prop)
+            const eventKey = key.substr(2).toLowerCase()
+            eventStore.add(config.shared.target, eventKey, prop)
         })
+    }
+
+    /**
+     * select port
+     */
+    get port () {
+        const { config: {shared}, state } = this
+        const { inputs, outputs } = state.event.target
+        let port = state.port || shared.port
+        if (is.fun(port)) port = port(...inputs?.keys(), ...outputs?.keys())
+        if (is.str(port)) port = inputs?.get(port) || outputs?.get(port)
+        if (!port) return console.warn('Error: Can not select MIDI Port')
+        return port
     }
 }
 
-const RE_NOT_NATIVE = /^on(Note|Fader|Button)/
+const RE_NOT_NATIVE = /^on(Button|Slider|Knob|Note|MidiMessage|StateChange)/ // this is not native?
+const defaultPort = (...keys: string[]) => keys[0]
 
 export function parseProps(_props: Props) {
     const props: any = {}
@@ -124,33 +126,17 @@ export function parseProps(_props: Props) {
 }
 
 function parseConfig (config: any, midiKey?: MidiKey) {
-    const {enabled=true, target, device, ...other} = config
-    const _config: any = {shared: {enabled, target, device}}
+    const {enabled=true, target, device='pointer', port=defaultPort, ...other} = config
+    const _config: any = {shared: {enabled, target, device, port}}
     if (midiKey) {
         const target = ConfigMap.get(midiKey)
         _config[midiKey] = {...target, ...other}
     } else {
-        eachProp(other, (cfg, key) => {
+        eachProp(other, (prop, key) => {
             const target = ConfigMap.get(key as any)
             if (target)
-                _config[key] = {...target, ...cfg}
+                _config[key] = {...target, ...prop}
         })
     }
     return _config
 }
-
-
-// const EVENT_TYPE_MAP: any = {
-//     midi: { start: 'access', change: 'access', end: 'access' },
-//     state: { start: 'change', change: 'change', end: 'change' },
-//     pointer: { start: 'down', change: 'move', end: 'up' },
-//     mouse: { start: 'down', change: 'move', end: 'up' },
-//     touch: { start: 'start', change: 'move', end: 'end' },
-//     gesture: { start: 'start', change: 'change', end: 'end' }
-// }
-//
-// export function toDomEvent(device: string, action = '') {
-//     const deviceProps = EVENT_TYPE_MAP[device]
-//     const actionKey = deviceProps ? deviceProps[action] || action : action
-//     return device + actionKey
-// }

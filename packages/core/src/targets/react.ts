@@ -7,20 +7,30 @@ import { is } from '../utils'
 export function useRecognizers <Config> (
     props: Props,
     config?: Config | {},
-    key?: MidiKey,
+    midiKey?: MidiKey,
     native?: NativeProps
 ): Controller['bind'] | undefined
 
-export function useRecognizers (props: any, config: any={}, key?: any, native?: any) {
+export function useRecognizers (props: any, config: any={}, midiKey?: any, native?: any) {
     const ctrl = React.useMemo(() => new Controller(props), [])
     ctrl.applyProps(props, native)
-    ctrl.applyConfig(config, key)
+    ctrl.applyConfig(config, midiKey)
     React.useEffect(ctrl.effect.bind(ctrl))
     React.useEffect(() => ctrl.clean.bind(ctrl), [])
 
     return is.und(config.target)
         ? ctrl.bind.bind(ctrl)
         : undefined
+}
+export function useMidi <C extends Config = Config> (
+    props: Props,
+    config?: Config | {}
+): Controller['bind'] | undefined
+
+export function useMidi (_props: any, config: any={}) {
+    registerAction('button', 'slider', 'knob', 'note')
+    const [props, native] = parseProps(_props)
+    return useRecognizers<Config>(props, config, undefined, native)
 }
 
 export function useButton <
@@ -36,17 +46,17 @@ export function useButton (onButton: any, config: any) {
     return useRecognizers({ onButton }, config, 'button')
 }
 
-export function useFader<
-    E = Events<'fader'>,
-    C = Config<'fader'>
+export function useSlider<
+    E = Events<'slider'>,
+    C = Config<'slider'>
 >(
-    onFader: Prop<'fader', E>,
+    onSlider: Prop<'slider', E>,
     config?: C | {}
 ): Controller['bind'] | undefined
 
-export function useFader (onFader: any, config: any={}) {
-    registerAction('fader')
-    return useRecognizers({ onFader }, config, 'fader')
+export function useSlider (onSlider: any, config: any={}) {
+    registerAction('slider')
+    return useRecognizers({ onSlider }, config, 'slider')
 }
 
 export function useNote<
@@ -75,15 +85,13 @@ export function useKnob (onKnob: any, config: any={}) {
     return useRecognizers({ onKnob }, config, 'knob')
 }
 
-export function useMidi <C extends Config = Config> (
-    props: Props,
-    config?: Config | {}
-): Controller['bind'] | undefined
+export function UseMidi <C extends Config = Config> (
+    props: Props & { config: C, children: (bind: any) => null | JSX.Element }
+): null | JSX.Element
 
-export function useMidi (_props: any, config: any={}) {
-    registerAction('button', 'fader', 'knob', 'note')
-    const [props, native] = parseProps(_props)
-    return useRecognizers<Config>(props, config, undefined, native)
+export function UseMidi(props: any) {
+    const {children, config, ...other} = props
+    return children(useMidi(other, config))
 }
 
 export function UseButton <E = Events<'button'>, C = Config<'button'>> (
@@ -95,13 +103,13 @@ export function UseButton (props: any) {
     return children(useButton(onButton, config))
 }
 
-export function UseFader <E = Events<'fader'>, C = Config<'fader'>>(
-    props: C & { onFader: Prop<'fader', E>, children: (bind: any) => null | JSX.Element }
+export function UseSlider <E = Events<'slider'>, C = Config<'slider'>>(
+    props: C & { onSlider: Prop<'slider', E>, children: (bind: any) => null | JSX.Element }
 ): null | JSX.Element
 
-export function UseFader (props: any) {
-    const {children, onFader, ...config} = props
-    return children(useFader(onFader, config))
+export function UseSlider (props: any) {
+    const {children, onSlider, ...config} = props
+    return children(useSlider(onSlider, config))
 }
 
 export function UseKnob <E = Events<'knob'>, C = Config<'knob'>>(
@@ -120,13 +128,4 @@ export function UseNote < E = Events<'note'>, C = Config<'note'>>(
 export function UseNote (props: any) {
     const {children, onNote, ...config} = props
     return children(useNote(onNote, config))
-}
-
-export function UseMidi <C extends Config = Config> (
-    props: Props & { config: C, children: (bind: any) => null | JSX.Element }
-): null | JSX.Element
-
-export function UseMidi(props: any) {
-    const {children, config, ...other} = props
-    return children(useMidi(other, config))
 }

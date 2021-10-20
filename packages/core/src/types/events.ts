@@ -2,7 +2,7 @@ import { MidiKey } from './state'
 
 export type FullEvents = {
     button: MIDIMessageEvent & MIDIConnectionEvent
-    fader: MIDIMessageEvent & MIDIConnectionEvent
+    slider: MIDIMessageEvent & MIDIConnectionEvent
     note: MIDIMessageEvent & MIDIConnectionEvent
     knob: MIDIMessageEvent & MIDIConnectionEvent
     full: FullEvents

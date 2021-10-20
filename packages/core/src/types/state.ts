@@ -4,6 +4,15 @@ export type IngKey =
 
 export type MidiKey = Exclude<keyof FullState, 'shared'|'full'>
 
+export interface FullState {
+    shared: SharedState
+    button?: ButtonState
+    slider?: SliderState
+    knob?: KnobState
+    note?: NoteState
+    full?: FullState
+}
+
 export interface SharedState {
     target: EventTarget // Raw Target Object
     allowed: boolean    // True when user gave permission to access MIDI devices
@@ -11,8 +20,34 @@ export interface SharedState {
     supported: boolean  // True when Web MIDI API is supported by the browser
 }
 
+export type State<Key extends MidiKey|'shared'> =
+    GenericState & NonNullable<FullState[Key]>
+
+export interface ButtonState extends GenericState {
+    value: boolean
+}
+
+export interface SliderState extends GenericState {
+    axis?: 'vertical' | 'horizontal'
+    converse?: 'unipolar' | 'bipolar'
+}
+
+export interface NoteState extends GenericState {
+    number: number
+    from: number
+    to: number
+    mode: 'momentary' | 'toggle' | 'trigger'
+}
+
+export interface KnobState extends GenericState {
+    number: number
+    from: number
+    to: number
+    mode: 'momentary' | 'toggle' | 'trigger'
+}
+
 export interface GenericState {
-    args ?: any    // The arguments when you bind
+    args  : any[]  // The arguments when you bind
     event : Event  // Raw Midi Event Object
     type  : string // Raw Midi Event type
 
@@ -38,38 +73,3 @@ export interface GenericState {
     noteNum ?: number // The number of Midi note number if recieved
     velocity?: number // The number of Midi velocity number if recieved
 }
-
-export interface ButtonState extends GenericState {
-    value: boolean
-}
-
-export interface FaderState extends GenericState {
-    axis?: 'vertical' | 'horizontal'
-    converse?: 'unipolar' | 'bipolar'
-}
-
-export interface NoteState extends GenericState {
-    number: number
-    from: number
-    to: number
-    mode: 'momentary' | 'toggle' | 'trigger'
-}
-
-export interface KnobState extends GenericState {
-    number: number
-    from: number
-    to: number
-    mode: 'momentary' | 'toggle' | 'trigger'
-}
-
-export interface FullState {
-    shared: SharedState
-    button?: ButtonState
-    fader?: FaderState
-    knob?: KnobState
-    note?: NoteState
-    full?: FullState
-}
-
-export type State<Key extends MidiKey|'shared'> =
-    GenericState & NonNullable<FullState[Key]>

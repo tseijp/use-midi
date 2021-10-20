@@ -56,9 +56,11 @@ let ts = -1,
     onAccessQueue = makeQueue<Fun>(),
     onFinishQueue = makeQueue<Fun>(),
     updateQueue = makeQueue<UpdateFun>(),
-    nativeRma = rma.supported
-        ? () => (navigator as any).requestMIDIAccess(rma.options)
-        : () => {}
+    nativeRma = () => rma.supported && (navigator as any).requestMIDIAccess(rma.options)
+    // nativeRma = () => {
+    //     if (!rma.supported) rma.warn('Cannot supported Web MIDI API for rmaz')
+    //     else return (navigator as any).requestMIDIAccess(rma.options)
+    // }
 
 rma.write = fun => schedule(fun, writeQueue)
 rma.onStart = fun => schedule(fun, onStartQueue)
@@ -155,8 +157,6 @@ function makeQueue<T extends Function>(): Queue<T> {
 function setHidden (key: any, fun: AnyFun) {
     Object.defineProperty(rma, key, {
         get () {
-            if (!rma.demanded)
-                start()
             if (rma.allowed)
                 return fun()
         }

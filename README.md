@@ -5,6 +5,9 @@
 [![ version ](
     https://img.shields.io/npm/v/use-midi)](
     https://npmjs.com/package/use-midi)
+[![ codecov ](
+    https://codecov.io/gh/tseijp/use-midi/coverage.svg)](
+    https://codecov.io/gh/tseijp/use-midi)
 [![ Downloads ](
     https://img.shields.io/npm/dm/use-midi.svg)](
     https://npmjs.com/package/use-midi)
@@ -20,27 +23,29 @@
 [![ license ](
     https://badgen.net/npm/license/use-midi)](
     https://www.npmjs.com/package/use-midi)
-[![ codecov ](
-    https://codecov.io/gh/tseijp/use-midi/coverage.svg)](
-    https://codecov.io/gh/tseijp/use-midi)
 
 ### Installation
+To install the entire `use-midi` lib:
 
 ```shell
 #Yarn
 yarn add use-midi
 
 #NPM
-npm install use-midi
+npm i use-midi
 ```
 
-### Quick started
+### Getting started
 
 ```shell
 git clone https://github.com/tseijp/use-midi
+```
+
+Run the development server:
+
+```shell
 cd use-midi
-cd examples
-yarn i
+yarn init
 yarn start
 ```
 
@@ -66,20 +71,15 @@ Examples and tutorials can be found [here][exam]
 
 ### What does it look like?
 
-[![](
-    https://)](
-    https://)
-
-
 <details>
-  <summary>Vanilla javascript</summary>
+  <summary>React javascript</summary>
 
 ```js
 import { useNote } from 'use-midi'
 
 function Example() {
    // Set the note hook
-  const bind = useNote((state) => {/**/})
+  const bind = useNote((state) => {/*~~*/})
 
   // Bind it to a component
   return <div {...bind()} />
@@ -94,7 +94,7 @@ function Example() {
 ```js
 // script.js
 const target = document.getElementById('drag')
-const noteMidi = new NoteMidi(target, (state) => {/**/})
+const noteMidi = new NoteMidi(target, (state) => {/*~~*/})
 
 // when you want to remove the listener
 noteMidi.destroy()
@@ -109,7 +109,8 @@ use-midi exports several hooks that can handle different midi:
 | Hook         | Description                                |
 | ------------ | ------------------------------------------ |
 | `useButton`  | Handles the button midi                    |
-| `useFader`   | Handles the fader midi                     |
+| `useSlider`  | Handles the slider midi                    |
+| `useKnob`    | Handles the knob midi                      |
 | `useNote`    | Handles the note midi                      |
 | `useMidi`    | Handles multiple midi in the one hooks     |
 

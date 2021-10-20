@@ -12,7 +12,8 @@ use-midi exports several hooks and components that can handle different midi:
 | Hook         | Description                                |
 | ------------ | ------------------------------------------ |
 | `useButton`  | Handles the button midi                    |
-| `useFader`   | Handles the fader midi                     |
+| `useSlider`  | Handles the slider midi                    |
+| `useKnob`    | Handles the knob midi                      |
 | `useNote`    | Handles the note midi                      |
 | `useMidi`    | Handles multiple midi in the one hooks     |
 
@@ -46,7 +47,8 @@ use-midi exports several classes tha can handle different midi:
 | Hook         | Description                                |
 | ------------ | ------------------------------------------ |
 | `Button`     | Handles the button midi                    |
-| `Fader`      | Handles the fader midi                     |
+| `Slider`      | Handles the slider midi                     |
+| `Knob`       | Handles the knob midi                      |
 | `Note`       | Handles the note midi                      |
 | `Midi`       | Handles multiple midi in the one hooks     |
 
@@ -82,7 +84,8 @@ useNote(state => { state.device = state.event.inputs?.keys()[0] })
 ```js
 const bind = useMidi({
     onButton: (state) => {/*~~~*/},
-    onFader: (state) => {/*~~~*/},
+    onSlider: (state) => {/*~~~*/},
+    onKnob: (state) => {/*~~~*/},
     onNote: (state) => {/*~~~*/},
     onMidiMessage: (state) => {/*~~~*/}
     onStateChange: (state) => {/*~~~*/}
