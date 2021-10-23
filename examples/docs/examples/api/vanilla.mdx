@@ -7,14 +7,14 @@ import { Midi, rma } from 'use-midi/src'
 
 <Live {...{Midi, rma}}>
 {`function () {
-    const onButton = state => {}
-    const onSlider = state => {}
-    const onNote = state => {}
+    const button = state => {}
+    const slider = state => {}
+    const note = state => {}
     const [state, set] = React.useState()
     React.useEffect(() => {
         rma(() => {
             const target = Array.from(rma.inputs)[0]
-            const props = {onButton, onSlider, onNote}
+            const props = {button, slider, note}
             const midi = new Midi(target, props)
             set(midi)
         })

@@ -8,7 +8,7 @@ describe('targets', () => {
      * setup mock
      */
     const fn = jest.fn()
-    const fns = {onButton: fn, onSlider: fn, onKnob: fn, onNote: fn}
+    const fns = {button: fn, slider: fn, knob: fn, note: fn}
     const children = jest.fn(() => <></>)
     const target = document.createElement('div')
 
@@ -35,10 +35,10 @@ describe('targets', () => {
 
     it.each`
         index       | props
-        ${'Button'} | ${{onButton: fn}}
-        ${'Slider'} | ${{onSlider: fn}}
-        ${'Knob'}   | ${{onKnob: fn, target}}
-        ${'Note'}   | ${{onNote: fn, target}}
+        ${'Button'} | ${{button: fn}}
+        ${'Slider'} | ${{slider: fn}}
+        ${'Knob'}   | ${{knob: fn, target}}
+        ${'Note'}   | ${{note: fn, target}}
         ${'Midi'}   | ${{...fns, target: window}}
     `('react: $index', ({index, props}) => {
         const use = (SRC as any)['use' + index]

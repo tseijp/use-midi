@@ -2,7 +2,7 @@
 sidebar_label: Piano Example
 ---
 
-import styled from 'styled-components'
+# Piano Example
 
 ref: https://codepen.io/Maki-Gobou/pen/mLqoQj
 
@@ -44,26 +44,29 @@ ref: https://codepen.io/Maki-Gobou/pen/mLqoQj
 </Wrapper>
 
 ```js
-function Tut (props) {
-  const {note, other} = props
-  const ref = React.useRef()
-  const bind - useNote(state => {
-    const {noteNum, velocity, send, args} = state
-    if (note === noteNum)
-      ref.current.active = velocity > 0
-  }, {key: 0})
-  return <button ref={ref} {...other} {...bind()}/>
-}
+const bind = useNote(state => {
+  const {noteNum, velocity, send, args} = state
+  if (note === noteNum)
+    ref.current.active = velocity > 0
+})
 ```
 
-import {useNote} from 'use-midi/src'
+import { UseNote } from 'use-midi/src'
 
-export function Tut (props) {
-  const bind = useNote(state => {})
-  return <div {...props} {...bind()}/>
+export function Tut (props, ref) {
+    const { note, ...other } = props
+    const bind = state => {
+        const { noteNum, velocity, send } = state
+        if (ref?.current && note === noteNum)
+            ref.current.active = velocity > 0
+        }
+    return <UseNote as="div" ref={ref} {...other} note={bind}/>
 }
 
-export const Black = styled(Tut)`
+import styled from 'styled-components'
+import { forwardRef } from 'react'
+
+export const Black = styled(forwardRef(Tut))`
   position: absolute;
   top: 0px;
   left: -12px;
@@ -84,7 +87,7 @@ export const Black = styled(Tut)`
   }
 `
 
-export const White = styled(Tut)`
+export const White = styled(forwardRef(Tut))`
   display: block;
   height: 220px;
   background: #fff;

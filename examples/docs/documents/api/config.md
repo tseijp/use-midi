@@ -31,7 +31,7 @@ you will need to structure the config object differently.
 ```js
 useSlider(state => {}, {...sharedConfig, ...sliderConfig})
 
-useNote({onSlider: state => {}}, {...sharedConfig, slider: sliderConfig})
+useNote({slider: state => {}}, {...sharedConfig, slider: sliderConfig})
 ```
 
 [config]: https://github.com/tseijp/use-midi/blob/master/packages/core/src/types/config.ts

@@ -1,4 +1,5 @@
-import { rma, EventStore, AccessStore, TimeoutStore } from 'use-midi/src'
+import { rma } from 'use-midi/src'
+import * as SRC from 'use-midi/src'
 
 describe('stores', () => {
     // mock
@@ -14,12 +15,11 @@ describe('stores', () => {
     afterAll(() => void (window.setTimeout = _setTimeout))
 
     it.each`
-        index        | Store           | args
-        ${'event'}   | ${EventStore}   | ${[{addEventListener, removeEventListener}, 'midimessage', callback]}
-        ${'access'}  | ${AccessStore}  | ${[callback]}
-        ${'timeout'} | ${TimeoutStore} | ${['key', callback]}
-    `('store: $index', ({Store, args}) => {
-        const store = new Store(), length = 3
+        index            | args
+        ${'EventStore'}  | ${[{addEventListener, removeEventListener}, 'midimessage', callback]}
+        ${'AccessStore'} | ${[callback]}
+    `('store: $index', ({index, args}) => {
+        const store = new (SRC as any)[index](), length = 3
         for (let i=0; i < length; i++)
             store.add(...args)
         rma.demanded = true

@@ -1,6 +1,6 @@
+import { MidiKey, Props, Config, MIDIAccess, MIDIInput, MIDIOutput } from './types'
 import { each, eachProp, chain, is, toPropEvent } from './utils'
 import { EventStore, AccessStore } from './stores'
-import { MidiKey, Props, Config } from './types'
 import { EngineMap, ConfigMap } from './actions'
 
 export class Controller {
@@ -15,10 +15,10 @@ export class Controller {
 
     constructor (props: Props={}) {
         this.props = props
-        if (props.onButton) this.keys.add('button')
-        if (props.onSlider) this.keys.add('slider')
-        if (props.onKnob) this.keys.add('knob')
-        if (props.onNote) this.keys.add('note')
+        if (props.button) this.keys.add('button')
+        if (props.slider) this.keys.add('slider')
+        if (props.knob) this.keys.add('knob')
+        if (props.note) this.keys.add('note')
     }
 
     /**
@@ -83,38 +83,50 @@ export class Controller {
          */
         accessStore.add(event => {
             this.state.event = event
-            eachProp(props, (prop, key) => eventStore.add(this.port, key, prop))
+            eachProp(props, (prop, key) => eventStore.add(this.input, key, prop))
         })
 
         /**
          * When target isn't specified then return hanlder props.
+         * register target and each native handler to stores
          */
         if (!config.shared.target) return native
 
         eachProp(native, (prop, key) => {
-            const eventKey = key.substr(2).toLowerCase()
+            let eventKey = key.substr(2).toLowerCase()
             eventStore.add(config.shared.target, eventKey, prop)
         })
     }
 
     /**
-     * select port
+     * select input and output port
      */
-    get port () {
-        const { config: {shared}, state } = this
-        const { inputs, outputs } = state.event.target
-        let port = state.port || shared.port
-        if (is.fun(port)) port = port(...inputs?.keys(), ...outputs?.keys())
-        if (is.str(port)) port = inputs?.get(port) || outputs?.get(port)
-        if (!port) return console.warn('Error: Can not select MIDI Port')
-        return port
+    get input () {
+        const { config: {shared}, state: {port, event} } = this
+        return parsePort(port || shared.port, event.target.inputs) // TODO rename props.port to props.output
+    }
+
+    get output () {
+        const { config: {shared}, state: {port, event} } = this
+        return parsePort(port || shared.port, event.target.outputs) // TODO rename props.port to props.output
     }
 }
 
-const RE_NOT_NATIVE = /^on(Button|Slider|Knob|Note|MidiMessage|StateChange)/ // this is not native?
+const RE_NOT_NATIVE = /^(button|slider|knob|note|midimessage|statechange)/
 const defaultPort = (...keys: string[]) => keys[0]
 
-export function parseProps(_props: Props) {
+export function parsePort (
+    port?: string | {(...keys: string[]): string},
+    ports?:  MIDIAccess['inputs'|'outputs']
+): MIDIInput | MIDIOutput
+
+export function parsePort (port: any=defaultPort, ports?: any) {
+    if (is.fun(port)) port = port(...ports!?.keys())
+    if (is.str(port)) port = ports?.get(port)
+    return port
+}
+
+export function parseProps (_props: Props) {
     const props: any = {}
     const native: any = {}
     eachProp(_props, (prop, key) => {

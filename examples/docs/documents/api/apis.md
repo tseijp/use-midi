@@ -34,7 +34,7 @@ Components is a shorthand for passing hooks directly to children.
 
 ```js
 return (
-  <UseMidi onNote={state => {/*~~~*/}}>
+  <UseMidi note={state => {/*~~~*/}}>
     {bind => <div {...bind(...args)}/>}
   </UseNote>
 )
@@ -83,10 +83,10 @@ useNote(state => { state.port = state.event.inputs?.keys()[0] })
 
 ```js
 const bind = useMidi({
-    onButton: state => {/*~~~*/},
-    onSlider: state => {/*~~~*/},
-    onKnob: state => {/*~~~*/},
-    onNote: state => {/*~~~*/},
+    button: state => {/*~~~*/},
+    slider: state => {/*~~~*/},
+    knob: state => {/*~~~*/},
+    note: state => {/*~~~*/},
 }, config)
 
 return <div {...bind()}/>

@@ -35,7 +35,7 @@ import { UseNote } from 'use-midi/src'
 
 export function _Tus (props, ref) {
     const use = state => console.log(state)
-    return <UseNote {...props} ref={ref} as="li" onNote={use}/>
+    return <UseNote {...props} ref={ref} as="li" note={use}/>
 }
 
 export const Tut = styled(forwardRef(_Tus))`

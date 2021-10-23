@@ -8,15 +8,15 @@ describe('Base Engine', () => {
     beforeEach(() => {
         ctrl = new Controller()
         ctrl.applyConfig({})
-        ctrl.applyProps({onButton: fn, onSlider: fn, onNote: fn})
+        ctrl.applyProps({button: fn, slider: fn, note: fn})
     })
 
     it.each`
         index       | Engine          | bindFns
-        ${'button'} | ${ButtonEngine} | ${['button']}
-        ${'slider'} | ${SliderEngine} | ${['slider']}
-        ${'knob'}   | ${KnobEngine}   | ${['knob']}
-        ${'note'}   | ${NoteEngine}   | ${['note']}
+        ${'button'} | ${ButtonEngine} | ${['midimessage']}
+        ${'slider'} | ${SliderEngine} | ${['midimessage']}
+        ${'knob'}   | ${KnobEngine}   | ${['midimessage']}
+        ${'note'}   | ${NoteEngine}   | ${['midimessage']}
     `('engine: $index', ({index, Engine, bindFns}) => {
         const engine = new Engine(ctrl, [], index)
         each(bindFns, (key: any) => engine[key](event))

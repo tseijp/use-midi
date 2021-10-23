@@ -3,8 +3,6 @@ sidebar_label: Launchpad Example
 ---
 # Launchpad Example
 
-import styled, {css} from 'styled-components'
-
 ref: https://codepen.io/Maki-Gobou/pen/yPXZvv
 
 <Container>
@@ -40,24 +38,22 @@ ref: https://codepen.io/Maki-Gobou/pen/yPXZvv
 </Container>
 
 ```js
-function Button (props) {
-  const {note, ...other} = props
-  const ref = React.useRef()
-  const use = state => {
-    const {noteNum, velocity, send, args} = state
-    if (note === noteNum)
-      ref.current.active = velocity > 0
-  }
-  return <Button use={use} ref={ref} {...other}/>
-}
+const bind = useNote(state => {
+  const {noteNum, velocity, send, args} = state
+  if (note === noteNum)
+    ref.current.active = velocity > 0
+})
 ```
 
-import {useNote} from 'use-midi/src'
+import {UseNote} from 'use-midi/src'
+import { forwardRef } from 'react'
 
-export function Button (props) {
-    const bind = useNote(state => {})
-    return <button {...props} {...bind()}/>
-}
+export const Button = forwardRef((props, ref) => {
+    const use = state => {}
+    return <UseNote as="button" ref={ref} {...props} note={use}/>
+})
+
+import styled, {css} from 'styled-components'
 
 export const List = styled.div`
   display: flex;

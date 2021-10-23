@@ -39,6 +39,10 @@ export abstract class Engine<Key extends MidiKey> {
         return this._ctrl.config
     }
 
+    get handler() {
+        return this._ctrl.props[this._key]!
+    }
+
     constructor (ctrl: Controller, args: any, key: Key) {
         this._ctrl = ctrl
         this._args = args
@@ -127,18 +131,20 @@ export abstract class Engine<Key extends MidiKey> {
         if (state.first) this.__first__?.()
         else if (state.last) this.__last__?.()
         else this.__change__?.()
+        state.messaging = !!event.data
         state.target = event.target
         state.event = event
         state.type = event.type
-        // state.send = event.target.send || (() => {})
         state.deltaTime = event.timeStamp - state.timeStamp
         state.timeStamp = event.timeStamp
         state.elapsedTime = state.timeStamp - state.startTime
+        if (event.target.send)
+            state.send = () => event.target.send?.(state.data)
 
         /**
          * calculate data on MIDI message event
          */
-        if (!event.data) return
+         if (!state.messaging) return
         const [_m0, _m1, _m2] = state.movement
         const [_p0, _p1, _p2] = state.data
         const [_c0, _c1, _c2] = event.data
@@ -151,5 +157,17 @@ export abstract class Engine<Key extends MidiKey> {
         state.noteNum = _c1
         state.distance += state.delta[0]
         state.velocity = _c2? _c2 / 127: state.delta[0] / state.deltaTime
+    }
+    /**
+     * Fires the midi prop.
+     */
+    emit () {
+        const { state, shared, config } = this
+
+        if (state.blocked && !state.force) return
+        const memo = this.handler({ ...shared, ...state, [this._key]: state.values })
+
+        // Sets memo to the returned value of the handler (unless it's  undefined)
+        if (memo !== undefined) state.memo = memo
     }
 }

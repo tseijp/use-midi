@@ -44,43 +44,43 @@ export class Midi extends Recognizer {
 export class Button <E = Events<'button'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onButton: Prop<'slider', E>,
+        button: Prop<'slider', E>,
         config: Config<'button'> | {} = {}
     ) {
         registerAction('button')
-        super(target, { onButton }, config, 'button')
+        super(target, { button }, config, 'button')
     }
 }
 
 export class Slider <E = Events<'slider'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onSlider: Prop<'slider', E>,
+        slider: Prop<'slider', E>,
         config: Config<'slider'> | {} = {}
     ) {
         registerAction('slider')
-        super(target, { onSlider }, config, 'slider')
+        super(target, { slider }, config, 'slider')
     }
 }
 
 export class Knob <E = Events<'knob'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onKnob: Prop<'knob', E>,
+        knob: Prop<'knob', E>,
         config: Config<'knob'> | {} = {}
     ) {
         registerAction('knob')
-        super(target, { onKnob }, config, 'knob')
+        super(target, { knob }, config, 'knob')
     }
 }
 
 export class Note <E = Events<'note'>> extends Recognizer {
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        onNote: Prop<'note', E>,
+        note: Prop<'note', E>,
         config: Config<'note'> | {} = {}
     ) {
         registerAction('note')
-        super(target, { onNote }, config, 'note')
+        super(target, { note }, config, 'note')
     }
 }

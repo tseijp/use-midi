@@ -11,10 +11,10 @@ export type Prop <
 export type Props = Partial<FullProps & NativeProps>
 
 export type FullProps = Partial<{
-    onButton: Prop<'button'>
-    onSlider: Prop<'slider'>
-    onKnob: Prop<'knob'>
-    onNote: Prop<'note'>
+    button: Prop<'button'>
+    slider: Prop<'slider'>
+    knob: Prop<'knob'>
+    note: Prop<'note'>
 }>
 
 export type NativeProps <T extends Props = {}> = {

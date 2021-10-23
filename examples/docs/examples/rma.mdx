@@ -6,17 +6,17 @@ sidebar_label: Rma Example
 import {rma, each, eachProp} from 'use-midi/src'
 
 export default function () {
-    const [log, setL] = React.useState(['HELLO'])
+    const [log, setL] = React.useState([])
     const [data, setD] = React.useState([0, 0, 0])
     const [state, setS] = React.useState([['', []], ['', []]])
-    const handleClick = () => {
+    const bindClick = () => {
         rma.outputs.get(state[1][0])?.send(data)
         setL(p => [...p, `clicked` + data])
     }
-    const handleInput = (i=0) => ({key: i, value: data[i], onChange: e => {
+    const bindInput = (i=0) => ({key: i, value: data[i], onChange: e => {
         setD(p => p.map((v, k) => k===i? e.target.value: v))
     }})
-    const handleSelect = (i=0) => ({value: state[i][0], onChange: e => {
+    const bindSelect = (i=0) => ({value: state[i][0], onChange: e => {
         if (e.target.value === 'not-selected') return
         setS(p => p.map((v, k) => k===i? [e.target.value, p[k][1]]: v))
     }})
@@ -42,7 +42,7 @@ export default function () {
                   <li>type: {port.type}</li>
                   <li>state: {port.state}</li>
                   <li>connection: {port.connection}</li>
-                  <select {...handleSelect(i)}>
+                  <select {...bindSelect(i)}>
                     <option value="not-selected">Please select a input device</option>
                     {keys.map(k => <option key={k} value={k}>{k.slice(0, 50)}</option>)}
                   </select>
@@ -51,9 +51,10 @@ export default function () {
             })
           , [state])}
           {[0, 1, 2].map(i =>
-            <input type="number" min="0" max="255" {...handleInput(i)} />
+            <input type="number" min="0" max="255" {...bindInput(i)} />
           )}
-        <button onClick={handleClick}>send data</button>
+        <button onClick={bindClick}>send data</button>
+          <h3>Log: ${log.length}</h3>
           <ul>{log.map((l, i) => <li key={i}>{l}</li>)}</ul>
         </div>
     )

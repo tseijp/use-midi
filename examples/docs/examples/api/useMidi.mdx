@@ -8,9 +8,9 @@ import { Live } from '/components/Live'
 <Live {...{useMidi}}>
 {`function App () {
   const bind = useMidi({
-    onButton: state => console.log(state),
-    onSlider: state => console.log(state),
-    onNote: state => console.log(state)
+    button: state => console.log(state),
+    slider: state => console.log(state),
+    note: state => console.log(state)
   })
   return <div />
 }`}
