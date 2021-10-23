@@ -7,15 +7,11 @@ import { Live } from '/components/Live'
 
 <Live {...{useMidi}}>
 {`function App () {
-  const device = e => {
-    const inputs = Array.from(e.target.inputs.keys())
-    return inputs[inputs.length - 1]
-  }
   const bind = useMidi({
     onButton: state => console.log(state),
     onSlider: state => console.log(state),
     onNote: state => console.log(state)
-  }, {device})
+  })
   return <div />
 }`}
 </Live>

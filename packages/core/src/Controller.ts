@@ -61,7 +61,7 @@ export class Controller {
             obj[type].push(prop)
         }
         /**
-         * initialize engine and bind
+         * initialize engine and bind functions
          */
         if (config.shared.enabled)
             each(keys, key => {

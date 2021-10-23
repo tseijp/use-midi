@@ -15,13 +15,13 @@ ref: https://codepen.io/Maki-Gobou/pen/yPXZvv
       )}
     </List>
     <List right>
-      {["0", "1", "2", "3", "4", "5", "6", "7"].map(i =>
-        <Button key={i}>▷</Button>
+      {["0", "1", "2", "3", "4", "5", "6", "7"].map(key =>
+        <Button key={key}>▷</Button>
       )}
     </List>
     <List bottom>
-      {["0", "1", "2", "3", "4", "5", "6", "7"].map(i =>
-        <Button key={i}>▲</Button>
+      {["0", "1", "2", "3", "4", "5", "6", "7"].map(key =>
+        <Button key={key}>▲</Button>
       )}
     </List>
     <List left>
@@ -32,7 +32,7 @@ ref: https://codepen.io/Maki-Gobou/pen/yPXZvv
     <Center>
       {["0", "1", "2", "3", "4", "5", "6", "7"].map(j =>
         ["0", "1", "2", "3", "4", "5", "6", "7"].map(i =>
-          <Button key={j + "-" + i}></Button>
+          <Button key={j+'-'+i}></Button>
         )
       )}
     </Center>
@@ -41,14 +41,14 @@ ref: https://codepen.io/Maki-Gobou/pen/yPXZvv
 
 ```js
 function Button (props) {
-  const {note, other} = props
+  const {note, ...other} = props
   const ref = React.useRef()
-  const bind = useNote(state => {
+  const use = state => {
     const {noteNum, velocity, send, args} = state
     if (note === noteNum)
       ref.current.active = velocity > 0
-  }, {name: 'LPMiniMK3 MIDI In'})
-  return <button ref={ref} {...other} {...bind()}/>
+  }
+  return <Button use={use} ref={ref} {...other}/>
 }
 ```
 

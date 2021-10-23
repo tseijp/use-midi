@@ -14,10 +14,10 @@ describe('stores', () => {
     afterAll(() => void (window.setTimeout = _setTimeout))
 
     it.each`
-        index    | Store           | args
-      ${'event'} | ${EventStore}   | ${[{addEventListener, removeEventListener}, 'midimessage', callback]}
-     ${'access'} | ${AccessStore}  | ${[callback]}
-    ${'timeout'} | ${TimeoutStore} | ${['key', callback]}
+        index        | Store           | args
+        ${'event'}   | ${EventStore}   | ${[{addEventListener, removeEventListener}, 'midimessage', callback]}
+        ${'access'}  | ${AccessStore}  | ${[callback]}
+        ${'timeout'} | ${TimeoutStore} | ${['key', callback]}
     `('store: $index', ({Store, args}) => {
         const store = new Store(), length = 3
         for (let i=0; i < length; i++)

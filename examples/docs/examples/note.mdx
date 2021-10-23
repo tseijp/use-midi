@@ -4,6 +4,7 @@ sidebar_label: Note Example
 
 # Note Example
 
+import { forwardRef } from 'react'
 import styled, {css} from 'styled-components'
 
 ref: https://codepen.io/zastrow/pen/oDBki
@@ -30,14 +31,14 @@ useNote(state => {
 })
 ```
 
-import {useNote} from 'use-midi'
+import { UseNote } from 'use-midi/src'
 
-export function Li (props) {
-    const bind = useNote(state => {})
-    return <li {...props} {...bind()}/>
+export function _Tus (props, ref) {
+    const use = state => console.log(state)
+    return <UseNote {...props} ref={ref} as="li" onNote={use}/>
 }
 
-export const Tut = styled(Li)`
+export const Tut = styled(forwardRef(_Tus))`
   margin:0;
   padding:0;
   list-style: none;

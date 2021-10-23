@@ -7,9 +7,8 @@ import { Live } from '/components/Live'
 
 <Live {...{rma, useNote}}>
 {`function App () {
-  const device = e => [...e.target.inputs.keys()][1]
   const [logs, set] = React.useState([])
-  const bind = useNote(state => set(p => [...p, 'bind' + state]), {device})
+  const bind = useNote(state => set(p => [...p, 'bind' + state]))
   return logs.map(log => <p key={log}>{log}</p>)
 }`}
 </Live>

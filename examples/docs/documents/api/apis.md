@@ -3,7 +3,7 @@ sidebar_position: 1
 sidebar_label: MIDI
 ---
 
-# MIDI
+# Available midi apis
 
 ## React
 
@@ -47,7 +47,7 @@ use-midi exports several classes tha can handle different midi:
 | Hook         | Description                                |
 | ------------ | ------------------------------------------ |
 | `Button`     | Handles the button midi                    |
-| `Slider`      | Handles the slider midi                     |
+| `Slider`     | Handles the slider midi                     |
 | `Knob`       | Handles the knob midi                      |
 | `Note`       | Handles the note midi                      |
 | `Midi`       | Handles multiple midi in the one hooks     |
@@ -73,8 +73,8 @@ From multiple connected midi devices, you need to specify the device.
 
 ```js
 useNote(state => {}, {target: midiInput})
-useNote(state => {}, {device: 'foo' || e => e.inputs?.keys()[0]})
-useNote(state => { state.device = state.event.inputs?.keys()[0] })
+useNote(state => {}, {port: 'foo' || e => e.inputs?.keys()[0]})
+useNote(state => { state.port = state.event.inputs?.keys()[0] })
 ```
 
 ### Handling multiple midis at once
@@ -83,12 +83,10 @@ useNote(state => { state.device = state.event.inputs?.keys()[0] })
 
 ```js
 const bind = useMidi({
-    onButton: (state) => {/*~~~*/},
-    onSlider: (state) => {/*~~~*/},
-    onKnob: (state) => {/*~~~*/},
-    onNote: (state) => {/*~~~*/},
-    onMidiMessage: (state) => {/*~~~*/}
-    onStateChange: (state) => {/*~~~*/}
+    onButton: state => {/*~~~*/},
+    onSlider: state => {/*~~~*/},
+    onKnob: state => {/*~~~*/},
+    onNote: state => {/*~~~*/},
 }, config)
 
 return <div {...bind()}/>

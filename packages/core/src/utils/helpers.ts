@@ -21,17 +21,6 @@ export function eachProp<T extends object, This>(
         fn.call(ctx as any, obj[key] as any, key)
 }
 
-export function chain(...fns: Function[]): Function {
-    if (fns.length === 0) return () => {}
-    if (fns.length === 1) return fns[0]
-
-    let result: any
-    return (...args: any[]) => {
-        each(fns, fn => (result = fn(...args) || result))
-        return result
-    }
-}
-
 export function flush<P, T>(queue: Map<P, T>, iterator: (entry: [P, T]) => void): void
 
 export function flush<T>(queue: Set<T>, iterator: (value: T) => void): void
@@ -41,6 +30,17 @@ export function flush(queue: any, iterator: any) {
         const items = Array.from(queue)
         queue.clear()
         each(items, iterator)
+    }
+}
+
+export function chain(...fns: Function[]): Function {
+    if (fns.length === 0) return () => {}
+    if (fns.length === 1) return fns[0]
+
+    let result: any
+    return (...args: any[]) => {
+        each(fns, fn => (result = fn(...args) || result))
+        return result
     }
 }
 

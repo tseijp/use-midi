@@ -10,7 +10,7 @@ describe('targets', () => {
     const fn = jest.fn()
     const fns = {onButton: fn, onSlider: fn, onKnob: fn, onNote: fn}
     const children = jest.fn(() => <></>)
-    const target = undefined // TODO
+    const target = document.createElement('div')
 
     /**
      * setup rma
@@ -19,12 +19,12 @@ describe('targets', () => {
     const nativeRma = () => new Promise(resolve => resolve(midiAccess))
     beforeAll(() => void rma.use(nativeRma))
     it.each`
-        index     | target   | props | config
-      ${'Button'} | ${void 0}| ${fn} | ${void 0}
-      ${'Slider'} | ${void 0}| ${fn} | ${void 0}
-      ${'Knob'}   | ${void 0}| ${fn} | ${{}}
-      ${'Note'}   | ${void 0}| ${fn} | ${{}}
-      ${'Midi'}   | ${void 0}| ${fns}| ${{}}
+        index       | target    | props | config
+        ${'Button'} | ${void 0} | ${fn} | ${void 0}
+        ${'Slider'} | ${target} | ${fn} | ${void 0}
+        ${'Knob'}   | ${'mouse'}| ${fn} | ${{}}
+        ${'Note'}   | ${window} | ${fn} | ${{}}
+        ${'Midi'}   | ${window} | ${fns}| ${{}}
     `('class: $index', ({index, target, props, config}) => {
         const Class = (SRC as any)[index]
         const instance = new Class(target, props, config)
@@ -34,12 +34,12 @@ describe('targets', () => {
     })
 
     it.each`
-        index     | props
-      ${'Button'} | ${{onButton: fn, target}}
-      ${'Slider'} | ${{onSlider: fn, target}}
-      ${'Knob'}   | ${{onKnob: fn, target}}
-      ${'Note'}   | ${{onNote: fn, target}}
-      ${'Midi'}   | ${{...fns}}
+        index       | props
+        ${'Button'} | ${{onButton: fn}}
+        ${'Slider'} | ${{onSlider: fn}}
+        ${'Knob'}   | ${{onKnob: fn, target}}
+        ${'Note'}   | ${{onNote: fn, target}}
+        ${'Midi'}   | ${{...fns, target: window}}
     `('react: $index', ({index, props}) => {
         const use = (SRC as any)['use' + index]
         const Use = (SRC as any)['Use' + index]

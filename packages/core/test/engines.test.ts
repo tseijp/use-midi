@@ -12,11 +12,11 @@ describe('Base Engine', () => {
     })
 
     it.each`
-        index     | Engine          | bindFns
-      ${'button'} | ${ButtonEngine} | ${['button']}
-      ${'slider'} | ${SliderEngine} | ${['slider']}
-      ${'knob'}   | ${KnobEngine}   | ${['knob']}
-      ${'note'}   | ${NoteEngine}   | ${['note']}
+        index       | Engine          | bindFns
+        ${'button'} | ${ButtonEngine} | ${['button']}
+        ${'slider'} | ${SliderEngine} | ${['slider']}
+        ${'knob'}   | ${KnobEngine}   | ${['knob']}
+        ${'note'}   | ${NoteEngine}   | ${['note']}
     `('engine: $index', ({index, Engine, bindFns}) => {
         const engine = new Engine(ctrl, [], index)
         each(bindFns, (key: any) => engine[key](event))

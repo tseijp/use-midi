@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { ForwardedRef as Ref, createElement as el, ReactHTML as HTML, ReactSVG as SVG, FC } from 'react'
 import { registerAction } from '../actions'
 import { Controller, parseProps } from '../Controller'
 import { Events, MidiKey, Config, Prop, Props, NativeProps } from '../types'
 import { is } from '../utils'
 
-export function useRecognizers <Config> (
+export type As = string | keyof HTML | keyof SVG | FC<any> | React.ClassType<any, any, any>
+export type Children = null | JSX.Element | {(bind: Controller['bind'], ref: Ref<any>): null | JSX.Element}
+
+export function useRecognizers <C extends Config=Config> (
     props: Props,
-    config?: Config | {},
+    config?: C | {},
     midiKey?: MidiKey,
     native?: NativeProps
 ): Controller['bind'] | undefined
@@ -22,9 +25,9 @@ export function useRecognizers (props: any, config: any={}, midiKey?: any, nativ
         ? ctrl.bind.bind(ctrl)
         : undefined
 }
-export function useMidi <C extends Config = Config> (
-    props: Props,
-    config?: Config | {}
+
+export function useMidi <C extends Config=Config> (
+    props: Props, config?: Config | {}
 ): Controller['bind'] | undefined
 
 export function useMidi (_props: any, config: any={}) {
@@ -33,12 +36,8 @@ export function useMidi (_props: any, config: any={}) {
     return useRecognizers<Config>(props, config, undefined, native)
 }
 
-export function useButton <
-    E = Events<'button'>,
-    C = Config<'button'>
-> (
-    button: Prop<'button', E>,
-    config?: C | {}
+export function useButton <E=Events<'button'>, C=Config<'button'>> (
+    button: Prop<'button', E>, config?: C | {}
 ): Controller['bind'] | undefined
 
 export function useButton (onButton: any, config: any) {
@@ -46,12 +45,8 @@ export function useButton (onButton: any, config: any) {
     return useRecognizers({ onButton }, config, 'button')
 }
 
-export function useSlider<
-    E = Events<'slider'>,
-    C = Config<'slider'>
->(
-    onSlider: Prop<'slider', E>,
-    config?: C | {}
+export function useSlider<E=Events<'slider'>, C=Config<'slider'>>(
+    onSlider: Prop<'slider', E>, config?: C | {}
 ): Controller['bind'] | undefined
 
 export function useSlider (onSlider: any, config: any={}) {
@@ -59,12 +54,8 @@ export function useSlider (onSlider: any, config: any={}) {
     return useRecognizers({ onSlider }, config, 'slider')
 }
 
-export function useNote<
-    E = Events<'note'>,
-    C = Config<'note'>
->(
-    onNote: Prop<'note', E>,
-    config?: C | {}
+export function useNote<E=Events<'note'>, C=Config<'note'>>(
+    onNote: Prop<'note', E>, config?: C | {}
 ): Controller['bind'] | undefined
 
 export function useNote (onNote: any, config: any={}) {
@@ -72,12 +63,8 @@ export function useNote (onNote: any, config: any={}) {
     return useRecognizers({ onNote }, config, 'note')
 }
 
-export function useKnob<
-    E = Events<'knob'>,
-    C = Config<'knob'>
->(
-    onKnob: Prop<'knob', E>,
-    config?: C | {}
+export function useKnob<E=Events<'knob'>, C=Config<'knob'>>(
+    onKnob: Prop<'knob', E>, config?: C | {}
 ): Controller['bind'] | undefined
 
 export function useKnob (onKnob: any, config: any={}) {
@@ -85,47 +72,58 @@ export function useKnob (onKnob: any, config: any={}) {
     return useRecognizers({ onKnob }, config, 'knob')
 }
 
-export function UseMidi <C extends Config = Config> (
-    props: Props & { config: C, children: (bind: any) => null | JSX.Element }
+export const UseMidi   = React.forwardRef(_UseMidi)
+export const UseButton = React.forwardRef(_UseButton)
+export const UseSlider = React.forwardRef(_UseSlider)
+export const UseKnob   = React.forwardRef(_UseKnob)
+export const UseNote   = React.forwardRef(_UseNote)
+
+function _UseMidi <C extends Config=Config> (
+    props: Props & { as?: As, config?: C, children?: Children}, ref: Ref<any>
 ): null | JSX.Element
 
-export function UseMidi(props: any) {
-    const {children, config, ...other} = props
-    return children(useMidi(other, config))
+function _UseMidi(props: any, ref: any) {
+    const { as, children, onButton, onSlider, onKnob, onNote, config, ...other } = props
+    const bind = useMidi({onButton, onSlider, onKnob, onNote}, config)
+    return as? el(as, {...bind?.(), ref, ...other}, children): children?.(bind, ref)
 }
 
-export function UseButton <E = Events<'button'>, C = Config<'button'>> (
-    props: C & { onButton: Prop<'button', E>, children: (bind: any) => null | JSX.Element }
+function _UseButton <E=Events<'button'>, C=Config<'button'>, P=Prop<'button', E>>(
+    props: C & {as?: As, onButton: P, children?: Children}, ref: Ref<any>
 ): null | JSX.Element
 
-export function UseButton (props: any) {
-    const {children, onButton, ...config} = props
-    return children(useButton(onButton, config))
+function _UseButton (props: any, ref: any) {
+    const { as, children, onButton, config, ...other } = props
+    const bind = useButton(onButton, config)
+    return as? el(as, {...bind?.(), ...other, ref}, children): children?.(bind, ref)
 }
 
-export function UseSlider <E = Events<'slider'>, C = Config<'slider'>>(
-    props: C & { onSlider: Prop<'slider', E>, children: (bind: any) => null | JSX.Element }
+function _UseSlider <E=Events<'slider'>, C=Config<'slider'>, P=Prop<'slider', E>>(
+    props: C & {as?: As, onSlider: P, children?: Children}, ref: Ref<any>
 ): null | JSX.Element
 
-export function UseSlider (props: any) {
-    const {children, onSlider, ...config} = props
-    return children(useSlider(onSlider, config))
+function _UseSlider (props: any, ref: any) {
+    const { as, children, onSlider, config, ...other } = props
+    const bind = useSlider(onSlider, config)
+    return as? el(as, {...bind?.(), ...other, ref}, children): children?.(bind, ref)
 }
 
-export function UseKnob <E = Events<'knob'>, C = Config<'knob'>>(
-    props: C & { onKnob: Prop<'knob', E>, children: (bind: any) => null | JSX.Element }
+function _UseKnob <E=Events<'knob'>, C=Config<'knob'>, P=Prop<'knob', E>>(
+    props: C & {as?: As, onKnob: P, children?: Children}, ref: Ref<any>
 ): null | JSX.Element
 
-export function UseKnob (props: any) {
-    const {children, onKnob, ...config} = props
-    return children(useKnob(onKnob, config))
+function _UseKnob (props: any, ref: any) {
+    const { as, children, onKnob, config, ...other } = props
+    const bind = useKnob(onKnob, config)
+    return as? el(as, {...bind?.(), ...other, ref}, children): children?.(bind, ref)
 }
 
-export function UseNote < E = Events<'note'>, C = Config<'note'>>(
-    props: C & { onNote: Prop<'note', E>, children: (bind: any) => null | JSX.Element}
+function _UseNote <E=Events<'note'>, C=Config<'note'>, P=Prop<'note', E>>(
+    props: C & {as?: As, onNote: P, children?: Children}, ref: Ref<any>
 ): null | JSX.Element
 
-export function UseNote (props: any) {
-    const {children, onNote, ...config} = props
-    return children(useNote(onNote, config))
+function _UseNote (props: any, ref: any) {
+    const { as, children, onNote, config, ...other } = props
+    const bind = useNote(onNote, config)
+    return as? el(as, {...bind?.(), ...other, ref}, children): children?.(bind, ref)
 }

@@ -1,71 +1,39 @@
 import { each, eachProp, chain, flush, is } from 'use-midi/src';
-
-describe('each', () => {
-    it('eachable array', () => {
-        const callback = jest.fn(x => 42 + x)
-        each([0, 1], callback)
-        expect(callback.mock.calls.length).toBe(2)     // The mock function is called twice
-        expect(callback.mock.calls[0][0]).toBe(0)      // The first argument of the first call to the function was 0
-        expect(callback.mock.calls[1][0]).toBe(1)      // The first argument of the second call to the function was 1
-        expect(callback.mock.results[0].value).toBe(42)// The return value of the first call to the function was 42
-    })
-})
-
-describe('eachProp', () => {
-    it('eachable object', () => {
-        const callback = jest.fn((value, key) => value + key)
-        eachProp({foo: 0, bar: 1}, callback)
-        expect(callback.mock.calls.length).toBe(2)         // The mock function is called twice
-        expect(callback.mock.calls[0][0]).toBe(0)          // The first argument of the first call to the function was 0
-        expect(callback.mock.calls[1][1]).toBe('bar')      // The first argument of the second call to the function was 1
-        expect(callback.mock.results[0].value).toBe('0foo')// The return value of the first call to the function was 42
+import * as SRC from 'use-midi/src'
+describe('each, eachProp', () => {
+    const numFun = jest.fn(x => 42 + x)
+    const strFun = jest.fn((value, key) => value + key)
+    const arr = [0, 1], obj = {foo: 0, bar: 1}
+    const set = new Set([0, 1]), map = new Map([['foo', 0], ['bar', 1]])
+    it.each`
+        index        | target | callback  | value       | len  | c00  | c11
+        ${'each'}    | ${arr} | ${numFun} | ${42}       | ${2} | ${0} | ${1}
+        ${'each'}    | ${set} | ${numFun} | ${42}       | ${2} | ${0} | ${1}
+        ${'each'}    | ${map} | ${strFun} | ${'0foo'}   | ${2} | ${0} | ${'bar'}
+        ${'eachProp'}| ${obj} | ${strFun} | ${'0foo'}   | ${2} | ${0} | ${'bar'}
+        ${'flush'}   | ${set} | ${numFun} | ${42}       | ${2} | ${0} | ${1}
+        ${'flush'}   | ${map} | ${strFun} | ${'foo,00'} | ${2} | ${['foo', 0]} | ${1}
+    `('eachable function: $index', ({index, target, callback, len, c00, c11, value}) => {
+        (SRC as any)[index](target, callback)
+        expect(callback.mock.calls.length).toEqual(len)       // The mock function is called twice
+        expect(callback.mock.calls[0][0]).toEqual(c00)        // The first argument of the first call to the function was 0
+        expect(callback.mock.calls[1][1]).toEqual(c11)        // The first argument of the second call to the function was 1
+        expect(callback.mock.results[0].value).toEqual(value) // The return value of the first call to the function was 42
     })
 })
 
 describe('chain', () => {
-    it('0 length', () => {
-        const result = chain()
-        expect(result()).toBeFalsy()
-    })
-    it('1 length', () => {
-        const callback = jest.fn(x => 42 + x)
-        const result = chain(callback)(0)
-        expect(result).toEqual(42)
-        expect(callback.mock.calls.length).toBe(1)
-        expect(callback.mock.calls[0][0]).toBe(0)
-        expect(callback.mock.results[0].value).toBe(42)
-    })
-    it('some length', () => {
-        const callback = jest.fn(x => 42 + x)
-        const result = chain(...Array(10).fill(callback))(0)
-        expect(result).toEqual(42)
-        expect(callback.mock.calls.length).toBe(10)
-        expect(callback.mock.calls[0][0]).toBe(0)
-        expect(callback.mock.results[0].value).toBe(42)
-    })
-})
-
-describe('flush', () => {
-    it('Set target', () => {
-        const callback = jest.fn(x => 42 + x)
-        const target = new Set([0, 1])
-        flush<number>(target, callback)
-        expect(target).toEqual(new Set())
-        expect(callback.mock.calls.length).toBe(2)     // The mock function is called twice
-        expect(callback.mock.calls[0][0]).toBe(0)      // The first argument of the first call to the function was 0
-        expect(callback.mock.calls[1][0]).toBe(1)      // The first argument of the second call to the function was 1
-        expect(callback.mock.results[0].value).toBe(42)// The return value of the first call to the function was 42
-    })
-
-    it ('Map target', () => {
-        const callback = jest.fn(([prop, key]) => prop + key)
-        const target = new Map([['foo', 0], ['bar', 1]])
-        flush<string, number>(target, callback)
-        expect(target).toEqual(new Map())
-        expect(callback.mock.calls.length).toBe(2)           // The mock function is called twice
-        expect(callback.mock.calls[0][0]).toEqual(['foo', 0])// The first argument of the first call to the function was 0
-        expect(callback.mock.calls[1][0]).toEqual(['bar', 1])// The first argument of the second call to the function was 1
-        expect(callback.mock.results[0].value).toBe('foo0')  // The return value of the first call to the function was 42
+    const callback = jest.fn(x => 42 + x)
+    it.each`
+        length | calls00   | value     | fn
+        ${0}   | ${void 0} | ${void 0} | ${() => chain()(0)}
+        ${1}   | ${0}      | ${42}     | ${() => chain(callback)(0)}
+        ${10}  | ${0}      | ${42}     | ${() => chain(...Array(10).fill(callback))(0)}
+    `('lenght: $length ', ({length, calls00, value, fn}) => {
+        expect(fn()).toEqual(value)
+        expect(callback.mock.calls.length).toBe(length)
+        expect(callback.mock.calls[0]?.[0]).toBe(calls00)
+        expect(callback.mock.results[0]?.value).toBe(value)
     })
 })
 
@@ -95,7 +63,7 @@ describe('is', () => {
         expect(is.und(undefined)).toBeTruthy()
         expect(is.num(0)).toBeTruthy()
         expect(is.str("")).toBeTruthy()
-        expect(is.bol(true)).toBeTruthy()
+        expect(is.bol(false)).toBeTruthy()
         expect(is.fun(() => {})).toBeTruthy()
         expect(is.obj({})).toBeTruthy()
     })

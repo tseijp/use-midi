@@ -1,7 +1,7 @@
 ---
 sidebar_label: Korg Controller
 ---
-
+import {forwardRef} from 'react'
 import styled, {ThemeProvider, css} from 'styled-components'
 
 ref: https://codepen.io/johnmeade-webdev/pen/jOEaMyX
@@ -40,36 +40,43 @@ ref: https://codepen.io/johnmeade-webdev/pen/jOEaMyX
 
 ### Examples
 
-```js
-const bind = useRange(state => {
-    if (state.input) {
-        setData(state.data)
-    }
-    else if (state.output) {
-        state.send(data)
-    }
-}, {portname: 'MIDI'})
 
-const bind = useClick(state => {
-    if (state.input) {
-        setData(state.data)
-    } else if (state.output) {
-        state.send(data)
-    }
-})
-// <Button {...bind()}/>
+```jsx
+<UseButton onButton={state => {}} as="button"/>
 ```
 
+```jsx
+<UseSlider onSlider={state => {}} as="div"/>
+```
+
+```jsx
+<UseKnob onKnob={state => {}} as="div"/>
+```
+
+import { UseButton, UseSlider, UseKnob } from 'use-midi/src'
+
+export function _Button (props, ref) {
+    const use = state => {}
+    return <UseButton {...props} ref={ref} onButton={use} as="button"/>
+}
+
+export function _Slider (props, ref) {
+    const use = state => {}
+    return <UseSlider {...props} ref={ref} onSlider={use} as="div"/>
+}
+
+export function _Knob (props, ref) {
+    const use = state => {}
+    return <UseKnob {...props} ref={ref} onKnob={use} as="div"/>
+}
+
 export function PickColor (props) {
-    const [color, set] = React.useState('black')
     const {children, ...other} = props
+    const [color, set] = React.useState('black')
+    const handleChange = e => set(e.target.value)
     return (
       <div {...other}>
-        <input
-          type="color"
-          value={color}
-          onChange={e => set(e.target.value)}
-        />
+        <input type="color" value={color} onChange={handleChange}/>
         {children(color)}
       </div>
     )
@@ -92,7 +99,7 @@ export const ControllerSection = styled.div`
   align-items: center;
 `
 
-export const Button = styled.button`
+export const Button = styled(forwardRef(_Button))`
   width: 2rem;
   height: 2rem;
   color: white;
@@ -114,7 +121,7 @@ export const SideContainer = styled.div`
   height: 20rem;
 `
 
-export const Knob = styled.div`
+export const Knob = styled(forwardRef(_Knob))`
   margin-top: .5rem;
   width: 3rem;
   height: 3rem;
@@ -169,7 +176,7 @@ export const SliderIncsRight = styled(SliderIncsLeftRight)`
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff",endColorstr="#ffffff",GradientType=1);
 `
 
-export const Slider = styled.div`
+export const Slider = styled(forwardRef(_Slider))`
   position: absolute;
   width: 2.5rem;
   height: 5rem;
