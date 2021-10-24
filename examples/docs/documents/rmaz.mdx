@@ -49,12 +49,7 @@ import { rma } from 'use-midi/src'
 export let midi;
 
 export function App () {
-    React.useEffect(() => {
-        rma(() => {
-            console.log(rma.event)
-            return true
-        })
-    }, [])
+    React.useEffect(rma, [])
     return (
         <>
           <h4>inputs</h4>

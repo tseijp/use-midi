@@ -11,9 +11,8 @@ export type Prop <
 export type Props = Partial<FullProps & NativeProps>
 
 export type FullProps = Partial<{
-    button: Prop<'button'>
-    slider: Prop<'slider'>
-    knob: Prop<'knob'>
+    fade: Prop<'fade'>
+    turn: Prop<'turn'>
     note: Prop<'note'>
 }>
 

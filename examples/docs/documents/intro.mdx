@@ -22,7 +22,7 @@ The library is designed for incremental adoption strategies.
 <div onClick={onClick} />
 
 // UseMidi element DOES NOT have event callback props
-const bind = useButton(state => {});
+const bind = UseNote(state => {});
 <View {...bind()}/>
 ```
 
@@ -76,10 +76,10 @@ export const StyledComponent = styled.div`
     };
 `
 
-import { useButton } from 'use-midi/src'
+import { useNote } from 'use-midi/src'
 
 export function ClickButton (props) {
-    const bind = useButton(state => {
+    const bind = useNote(state => {
         if (state.first)
             state.send?.([0x000, 0x888, 0xfff], 10)
     })
@@ -93,10 +93,10 @@ export function ClickButton (props) {
 The following example makes a `<button/>`
 
 ```js
-import { useButton } from 'use-midi'
+import { useNote } from 'use-midi'
 
 function ClickButton () {
-  const bind = useButton(state => {
+  const bind = useNote(state => {
     state.send?.([0x000, 0x888, 0xfff], 10)
   })
   return <button {...bind}>Send Data to MIDI</button>

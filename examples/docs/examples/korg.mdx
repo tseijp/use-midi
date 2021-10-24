@@ -42,28 +42,28 @@ ref: https://codepen.io/johnmeade-webdev/pen/jOEaMyX
 
 
 ```jsx
-<UseButton button={state => {}} as="button"/>
+<UseFade slider={state => {}} as="div"/>
 
-<UseSlider slider={state => {}} as="div"/>
+<UseNote button={state => {}} as="button"/>
 
-<UseKnob knob={state => {}} as="div"/>
+<UseTurn knob={state => {}} as="div"/>
 ```
 
-import { UseButton, UseSlider, UseKnob } from 'use-midi/src'
+import { UseNote, UseFade, UseTurn } from 'use-midi/src'
 
 export function _Button (props, ref) {
     const use = state => {}
-    return <UseButton {...props} ref={ref} button={use} as="button"/>
+    return <UseNote {...props} ref={ref} button={use} as="button"/>
 }
 
 export function _Slider (props, ref) {
     const use = state => {}
-    return <UseSlider {...props} ref={ref} slider={use} as="div"/>
+    return <UseFade {...props} ref={ref} slider={use} as="div"/>
 }
 
 export function _Knob (props, ref) {
     const use = state => {}
-    return <UseKnob {...props} ref={ref} knob={use} as="div"/>
+    return <UseTurn {...props} ref={ref} knob={use} as="div"/>
 }
 
 export function PickColor (props) {

@@ -1,7 +1,7 @@
 import { Engine } from '../Engine'
 
-export class KnobEngine extends Engine<'knob'> {
-    _key = 'knob' as const
+export class TurnEngine extends Engine<'turn'> {
+    _key = 'turn' as const
 
     bind (bindFn: any) {
         bindFn('midimessage', '', this.midimessage.bind(this))

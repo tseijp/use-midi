@@ -6,18 +6,17 @@ export type Config <Key extends MidiKey|'full'='full'> =
 
 export type FullConfig = {
     shared?: SharedConfig
-    button?: ButtonConfig
-    slider?: SliderConfig
-    knob?: KnobConfig
+    fade?: FadeConfig
     note?: NoteConfig
+    turn?: TurnConfig
     full?: FullConfig
 }
 
-export interface ButtonConfig extends MidiConfig {}
+export interface FadeConfig extends MidiConfig {
+    range: number // TODO
+}
 
-export interface SliderConfig extends MidiConfig {}
-
-export interface KnobConfig extends MidiConfig {}
+export interface TurnConfig extends MidiConfig {}
 
 export interface NoteConfig extends MidiConfig {}
 

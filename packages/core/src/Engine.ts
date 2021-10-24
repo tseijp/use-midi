@@ -117,7 +117,7 @@ export abstract class Engine<Key extends MidiKey> {
      * event: MIDIStateChagneEvent || MIDIMessageEvent
      */
     compute (event?: any) {
-        const { state, shared, _key } = this
+        const { state, shared, _ctrl, _key } = this
         if (!state.active || state.blocked) return
         state.args = this._args
         state.first = state.active && !state.active
@@ -138,8 +138,7 @@ export abstract class Engine<Key extends MidiKey> {
         state.deltaTime = event.timeStamp - state.timeStamp
         state.timeStamp = event.timeStamp
         state.elapsedTime = state.timeStamp - state.startTime
-        if (event.target.send)
-            state.send = () => event.target.send?.(state.data)
+        state.send = () => (event.target.send || _ctrl.output.send)?.(state.data)
 
         /**
          * calculate data on MIDI message event
@@ -158,6 +157,7 @@ export abstract class Engine<Key extends MidiKey> {
         state.distance += state.delta[0]
         state.velocity = _c2? _c2 / 127: state.delta[0] / state.deltaTime
     }
+
     /**
      * Fires the midi prop.
      */
@@ -170,4 +170,10 @@ export abstract class Engine<Key extends MidiKey> {
         // Sets memo to the returned value of the handler (unless it's  undefined)
         if (memo !== undefined) state.memo = memo
     }
+}
+
+export const IngKey = {
+    fade: 'sliding',
+    note: 'noting',
+    turn: 'turning',
 }

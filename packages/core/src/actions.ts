@@ -1,7 +1,7 @@
 import {each} from './utils'
 import { MidiKey } from './types'
 import { Engine } from './Engine'
-import { ButtonEngine, SliderEngine, KnobEngine, NoteEngine } from './engines'
+import { FadeEngine, TurnEngine, NoteEngine } from './engines'
 import type { Controller } from './Controller'
 
 export type EngineClass<Key extends MidiKey> = {
@@ -23,16 +23,12 @@ export const EngineMap = new Map<MidiKey, EngineClass<any>>()
 export const ConfigMap = new Map<MidiKey, ConfigClass<any>>()//ResolverMap>()
 
 export const Actions = {
-    button: {
-        engine: ButtonEngine,
+    fade: {
+        engine: FadeEngine,
         config: {} as any
     },
-    slider: {
-        engine: SliderEngine,
-        config: {} as any
-    },
-    knob: {
-        engine: KnobEngine,
+    turn: {
+        engine: TurnEngine,
         config: {} as any
     },
     note: {

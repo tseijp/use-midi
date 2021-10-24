@@ -8,7 +8,7 @@ describe('targets', () => {
      * setup mock
      */
     const fn = jest.fn()
-    const fns = {button: fn, slider: fn, knob: fn, note: fn}
+    const fns = {fade: fn, note: fn, turn: fn}
     const children = jest.fn(() => <></>)
     const target = document.createElement('div')
 
@@ -19,12 +19,11 @@ describe('targets', () => {
     const nativeRma = () => new Promise(resolve => resolve(midiAccess))
     beforeAll(() => void rma.use(nativeRma))
     it.each`
-        index       | target    | props | config
-        ${'Button'} | ${void 0} | ${fn} | ${void 0}
-        ${'Slider'} | ${target} | ${fn} | ${void 0}
-        ${'Knob'}   | ${'mouse'}| ${fn} | ${{}}
-        ${'Note'}   | ${window} | ${fn} | ${{}}
-        ${'Midi'}   | ${window} | ${fns}| ${{}}
+        index     | target     | props | config
+        ${'Fade'} | ${target}  | ${fn} | ${void 0}
+        ${'Note'} | ${'mouse'} | ${fn} | ${{}}
+        ${'Turn'} | ${'touch'} | ${fn} | ${{}}
+        ${'Midi'} | ${window}  | ${fns}| ${{}}
     `('class: $index', ({index, target, props, config}) => {
         const Class = (SRC as any)[index]
         const instance = new Class(target, props, config)
@@ -34,12 +33,11 @@ describe('targets', () => {
     })
 
     it.each`
-        index       | props
-        ${'Button'} | ${{button: fn}}
-        ${'Slider'} | ${{slider: fn}}
-        ${'Knob'}   | ${{knob: fn, target}}
-        ${'Note'}   | ${{note: fn, target}}
-        ${'Midi'}   | ${{...fns, target: window}}
+        index     | props
+        ${'Fade'} | ${{fade: fn}}
+        ${'Note'} | ${{note: fn, target}}
+        ${'Turn'} | ${{turn: fn, target}}
+        ${'Midi'} | ${{...fns, target: window}}
     `('react: $index', ({index, props}) => {
         const use = (SRC as any)['use' + index]
         const Use = (SRC as any)['Use' + index]

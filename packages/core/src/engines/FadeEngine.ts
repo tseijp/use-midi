@@ -1,10 +1,10 @@
 import { Engine } from '../Engine'
 
-export class SliderEngine extends Engine<'slider'> {
-    _key = 'slider' as const
+export class FadeEngine extends Engine<'fade'> {
+    _key = 'fade' as const
 
     // superseeds generic Engine reset call
-    reset (this: SliderEngine) {
+    reset (this: FadeEngine) {
         super.reset()
         const { state } = this
         state.swipe = [0, 0]

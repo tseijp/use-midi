@@ -11,7 +11,7 @@ import { OrbitControls } from '@react-three/drei'
 import './styles.css'
 import { Nano } from '../../models'
 import { LowHigh } from '../../components/LowHigh'
-import { useButton, useSlider, useKnob, useNote, useMidi } from 'use-midi/src'
+import { useFade, useNote, useTurn, useMidi } from 'use-midi/src'
 
 export default function App () {
     if (typeof window === "undefined")
@@ -33,30 +33,23 @@ export default function App () {
 function Model (props: any) {
     const { src } = props
 
-    const native = useMidi({})
+    const midi = useMidi({})
 
-    const button = useButton(state => {
-        console.log(1)
-        move(state, 'position', 'y')
-    })
-
-    const slider = useSlider(state => {
-        move(state, 'position', 'z')
-    })
-
-    const knob = useKnob(state => {
-        move(state, 'position', 'y')
+    const fade = useFade(state => {
+        const { args: [ref] } = state
     })
 
     const note = useNote(state => {
-        move(state, 'position', 'y')
+        const { args: [ref] } = state
+        if (ref.current)
+            ref.current.position.y = 100
     })
 
-    return <LowHigh binds={{button, slider, note, knob, native}} low={Nano} src={src}/>
-}
+    const turn = useTurn(state => {
+        const { args: [ref] } = state
+        if (ref.current)
+            ref.current.position.y = 0
+    })
 
-function move (state: any,  keys='', args='') {
-    const { args: [ref] } = state
-    if (!ref.current) return
-    ref.current[keys][args] = state.data[0]
+    return <LowHigh binds={{fade, note, turn, midi}} low={Nano} src={src}/>
 }

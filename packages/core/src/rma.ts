@@ -10,7 +10,7 @@ type UpdateFun = (ts?: number) => boolean | void
 type nativeRma = () => undefined | Promise<any>
 
 export interface Rma {
-    (update: UpdateFun): void
+    (update?: UpdateFun): void
     write: (fun: Fun) => void
     onStart: (fun: Fun) => void
     onAccess: (fun: Fun) => void
@@ -46,7 +46,7 @@ export interface Queue<T extends Function = any> {
     flush: (arg?: any) => void
 }
 
-export const rma: Rma = fun => schedule(fun, updateQueue)
+export const rma: Rma = (fun=()=>{}) => schedule(fun, updateQueue)
 
 let ts = -1,
     sync = false,

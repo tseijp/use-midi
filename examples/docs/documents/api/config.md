@@ -29,9 +29,9 @@ Depending on whether you suse midi hooks or if you use the `useMidi` hook,
 you will need to structure the config object differently.
 
 ```js
-useSlider(state => {}, {...sharedConfig, ...sliderConfig})
+useFade(state => {}, {...sharedConfig, ...fadeConfig})
 
-useNote({slider: state => {}}, {...sharedConfig, slider: sliderConfig})
+useMidi({fade: state => {}}, {...sharedConfig, fade: fadeConfig})
 ```
 
 [config]: https://github.com/tseijp/use-midi/blob/master/packages/core/src/types/config.ts

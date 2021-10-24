@@ -11,10 +11,9 @@ use-midi exports several hooks and components that can handle different midi:
 
 | Hook         | Description                                |
 | ------------ | ------------------------------------------ |
-| `useButton`  | Handles the button midi                    |
-| `useSlider`  | Handles the slider midi                    |
-| `useKnob`    | Handles the knob midi                      |
+| `useFade`    | Handles the fade midi                      |
 | `useNote`    | Handles the note midi                      |
+| `useTurn`    | Handles the turn midi                      |
 | `useMidi`    | Handles multiple midi in the one hooks     |
 
 ### Usage
@@ -34,7 +33,7 @@ Components is a shorthand for passing hooks directly to children.
 
 ```js
 return (
-  <UseMidi note={state => {/*~~~*/}}>
+  <UseNote note={state => {/*~~~*/}}>
     {bind => <div {...bind(...args)}/>}
   </UseNote>
 )
@@ -46,10 +45,9 @@ use-midi exports several classes tha can handle different midi:
 
 | Hook         | Description                                |
 | ------------ | ------------------------------------------ |
-| `Button`     | Handles the button midi                    |
-| `Slider`     | Handles the slider midi                     |
-| `Knob`       | Handles the knob midi                      |
+| `Fade`       | Handles the fade midi                      |
 | `Note`       | Handles the note midi                      |
+| `Turn`       | Handles the turn midi                      |
 | `Midi`       | Handles multiple midi in the one hooks     |
 
 ### Usage
@@ -83,10 +81,9 @@ useNote(state => { state.port = state.event.inputs?.keys()[0] })
 
 ```js
 const bind = useMidi({
-    button: state => {/*~~~*/},
-    slider: state => {/*~~~*/},
-    knob: state => {/*~~~*/},
+    fade: state => {/*~~~*/},
     note: state => {/*~~~*/},
+    turn: state => {/*~~~*/},
 }, config)
 
 return <div {...bind()}/>

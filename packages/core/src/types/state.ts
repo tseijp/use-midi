@@ -6,9 +6,8 @@ export type MidiKey = Exclude<keyof FullState, 'shared'|'full'>
 
 export interface FullState {
     shared: SharedState
-    button?: ButtonState
-    slider?: SliderState
-    knob?: KnobState
+    fade?: FadeState
+    turn?: TurnState
     note?: NoteState
     full?: FullState
 }
@@ -18,16 +17,16 @@ export interface SharedState {
     allowed: boolean    // True when user gave permission to access MIDI devices
     requested: boolean  // True when user grant permission to access MIDI devices
     supported: boolean  // True when Web MIDI API is supported by the browser
+    messaging: boolean  // True if the target is being messaged.
+    fading   : boolean  // True if the target is being faded.
+    noting   : boolean  // True if the target is being noted.
+    turning  : boolean  // True if the target is being turned.
 }
 
 export type State<Key extends MidiKey|'shared'> =
     GenericState & NonNullable<FullState[Key]>
 
-export interface ButtonState extends GenericState {
-    value: boolean
-}
-
-export interface SliderState extends GenericState {
+export interface FadeState extends GenericState {
     axis?: 'vertical' | 'horizontal'
     converse?: 'unipolar' | 'bipolar'
 }
@@ -39,7 +38,7 @@ export interface NoteState extends GenericState {
     mode: 'momentary' | 'toggle' | 'trigger'
 }
 
-export interface KnobState extends GenericState {
+export interface TurnState extends GenericState {
     number: number
     from: number
     to: number

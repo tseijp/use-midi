@@ -1,5 +1,5 @@
-import { each, Controller, ButtonEngine, SliderEngine, KnobEngine, NoteEngine } from 'use-midi/src'
-
+import { each, Controller } from 'use-midi/src'
+import * as SRC from 'use-midi/src'
 describe('Base Engine', () => {
     let ctrl: Controller
     const fn = jest.fn()
@@ -8,17 +8,16 @@ describe('Base Engine', () => {
     beforeEach(() => {
         ctrl = new Controller()
         ctrl.applyConfig({})
-        ctrl.applyProps({button: fn, slider: fn, note: fn})
+        ctrl.applyProps({fade: fn, note: fn, turn: fn})
     })
 
     it.each`
-        index       | Engine          | bindFns
-        ${'button'} | ${ButtonEngine} | ${['midimessage']}
-        ${'slider'} | ${SliderEngine} | ${['midimessage']}
-        ${'knob'}   | ${KnobEngine}   | ${['midimessage']}
-        ${'note'}   | ${NoteEngine}   | ${['midimessage']}
-    `('engine: $index', ({index, Engine, bindFns}) => {
-        const engine = new Engine(ctrl, [], index)
+        index     | bindFns
+        ${'Fade'} | ${['midimessage']}
+        ${'Turn'} | ${['midimessage']}
+        ${'Note'} | ${['midimessage']}
+    `('engine: $index', ({index, bindFns}) => {
+        const engine = new (SRC as any)[index + 'Engine'](ctrl, [], index.toLowerCase())
         each(bindFns, (key: any) => engine[key](event))
         expect(engine).toBeTruthy()
     })

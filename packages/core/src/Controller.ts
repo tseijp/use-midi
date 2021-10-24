@@ -13,11 +13,23 @@ export class Controller {
     public state = {shared: {}} as any
     public config = {shared: {}} as any
 
+    /**
+     * shorthands of each port
+     */
+    get input () {
+        const { config: {shared}, state: {event: {target: {inputs}}} } = this
+        return parsePort(shared.input || shared.port, inputs) as MIDIInput
+    }
+
+    get output () {
+        const { config: {shared}, state: {event: {target: {outputs}}} } = this
+        return parsePort(shared.output || shared.port, outputs) as MIDIOutput
+    }
+
     constructor (props: Props={}) {
         this.props = props
-        if (props.button) this.keys.add('button')
-        if (props.slider) this.keys.add('slider')
-        if (props.knob) this.keys.add('knob')
+        if (props.fade) this.keys.add('fade')
+        if (props.turn) this.keys.add('turn')
         if (props.note) this.keys.add('note')
     }
 
@@ -97,27 +109,14 @@ export class Controller {
             eventStore.add(config.shared.target, eventKey, prop)
         })
     }
-
-    /**
-     * select input and output port
-     */
-    get input () {
-        const { config: {shared}, state: {port, event} } = this
-        return parsePort(port || shared.port, event.target.inputs) // TODO rename props.port to props.output
-    }
-
-    get output () {
-        const { config: {shared}, state: {port, event} } = this
-        return parsePort(port || shared.port, event.target.outputs) // TODO rename props.port to props.output
-    }
 }
 
-const RE_NOT_NATIVE = /^(button|slider|knob|note|midimessage|statechange)/
+const RE_NOT_NATIVE = /^(fade|turn|note|midimessage|statechange)/
 const defaultPort = (...keys: string[]) => keys[0]
 
 export function parsePort (
     port?: string | {(...keys: string[]): string},
-    ports?:  MIDIAccess['inputs'|'outputs']
+    ports?:  MIDIAccess['inputs' | 'outputs']
 ): MIDIInput | MIDIOutput
 
 export function parsePort (port: any=defaultPort, ports?: any) {
