@@ -13,19 +13,6 @@ export class Controller {
     public state = {shared: {}} as any
     public config = {shared: {}} as any
 
-    /**
-     * shorthands of each port
-     */
-    get input () {
-        const { config: {shared}, state: {event: {target: {inputs}}} } = this
-        return parsePort(shared.input || shared.port, inputs) as MIDIInput
-    }
-
-    get output () {
-        const { config: {shared}, state: {event: {target: {outputs}}} } = this
-        return parsePort(shared.output || shared.port, outputs) as MIDIOutput
-    }
-
     constructor (props: Props={}) {
         this.props = props
         if (props.fade) this.keys.add('fade')
@@ -72,6 +59,7 @@ export class Controller {
             obj[type] = obj[type] || []
             obj[type].push(prop)
         }
+
         /**
          * initialize engine and bind functions
          */
@@ -109,6 +97,19 @@ export class Controller {
             eventStore.add(config.shared.target, eventKey, prop)
         })
     }
+
+    /**
+     * shorthands of each port
+     */
+    get input () {
+        const { config: {shared}, state: {event: {target: {inputs}}} } = this
+        return parsePort(shared.input || shared.port, inputs) as MIDIInput
+    }
+
+    get output () {
+        const { config: {shared}, state: {event: {target: {outputs}}} } = this
+        return parsePort(shared.output || shared.port, outputs) as MIDIOutput
+    }
 }
 
 const RE_NOT_NATIVE = /^(fade|turn|note|midimessage|statechange)/
@@ -136,9 +137,19 @@ export function parseProps (_props: Props) {
     return [props, native]
 }
 
+export const sharedConfig: Config<'shared'> = {
+    enabled: true,
+    device: 'pointer',
+    output: defaultPort,
+    input: defaultPort,
+    port: defaultPort,
+}
+
 function parseConfig (config: any, midiKey?: MidiKey) {
-    const {enabled=true, target, device='pointer', port=defaultPort, ...other} = config
-    const _config: any = {shared: {enabled, target, device, port}}
+    const _config: any = {shared: sharedConfig}, other: any = {}
+    eachProp(config, (prop, key) => {
+        (key in sharedConfig? _config.shared: other)[key] = prop
+    })
     if (midiKey) {
         const target = ConfigMap.get(midiKey)
         _config[midiKey] = {...target, ...other}

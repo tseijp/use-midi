@@ -108,10 +108,9 @@ use-midi exports several hooks that can handle different midi:
 
 | Hook         | Description                                |
 | ------------ | ------------------------------------------ |
-| `useButton`  | Handles the button midi                    |
-| `useSlider`  | Handles the slider midi                    |
-| `useKnob`    | Handles the knob midi                      |
+| `useFade`    | Handles the fade midi                      |
 | `useNote`    | Handles the note midi                      |
+| `useTurn`    | Handles the turn midi                      |
 | `useMidi`    | Handles multiple midi in the one hooks     |
 
 #### [More on the full documentation website...](https://tseijp.github.io/use-midi/)

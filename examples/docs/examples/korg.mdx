@@ -46,7 +46,7 @@ ref: https://codepen.io/johnmeade-webdev/pen/jOEaMyX
 
 <UseNote button={state => {}} as="button"/>
 
-<UseTurn knob={state => {}} as="div"/>
+<UseTurn turn={state => {}} as="div"/>
 ```
 
 import { UseNote, UseFade, UseTurn } from 'use-midi/src'
@@ -63,7 +63,7 @@ export function _Slider (props, ref) {
 
 export function _Knob (props, ref) {
     const use = state => {}
-    return <UseTurn {...props} ref={ref} knob={use} as="div"/>
+    return <UseTurn {...props} ref={ref} turn={use} as="div"/>
 }
 
 export function PickColor (props) {

@@ -33,6 +33,10 @@ export function flush(queue: any, iterator: any) {
     }
 }
 
+export function call<T>(v: T | ((...args: any[]) => T), ...args: any[]): T {
+    return is.fun(v)? (v as any)(...args): v
+}
+
 export function chain(...fns: Function[]): Function {
     if (fns.length === 0) return () => {}
     if (fns.length === 1) return fns[0]

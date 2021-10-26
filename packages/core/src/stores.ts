@@ -13,6 +13,7 @@ export class Store {
 export class EventStore extends Store {
     add (target: EventTarget, type: string, prop: any, opts?: any): void
     add (target: any, ...args: any[]) {
+        if (!target) return console.warn("Error: Event target of undefined (reading 'addEventListener')")
         target.addEventListener(...args)
         this._listeners.push(() => target.removeEventListener(...args))
     }

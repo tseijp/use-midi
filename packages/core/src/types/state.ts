@@ -1,8 +1,6 @@
-export type IngKey =
-    | 'input'
-    | 'output'
-
 export type MidiKey = Exclude<keyof FullState, 'shared'|'full'>
+
+export type IngKey = 'fading' | 'noting' | 'turning'
 
 export interface FullState {
     shared: SharedState
@@ -50,25 +48,45 @@ export interface GenericState {
     event : Event  // Raw Midi Event Object
     type  : string // Raw Midi Event type
 
-    active : boolean // True when the Midi is active
-    blocked: boolean // True when the Midi is blocked
-    enabled: boolean // True when the Midi is enabled
-    first  : boolean // True when its the first event
-    last   : boolean // True when its the last event
+    _active: boolean
+    active : boolean // True if the Midi is active
+    blocked: boolean // True if the Midi is blocked
+    enabled: boolean // True if the Midi is enabled
+    first  : boolean // True if its the first event
+    last   : boolean // True if its the last event
 
     startTime  : number // The start time of the current event
     deltaTime  : number // The delta between current and previous event
     timeStamp  : number // The timestamp of the current event
     elapsedTime: number // Elapsed tie of the current Midi
 
-    init : number[] // Raw values when the Midi started
-    data : number[] // Current raw values of the Midi
-    prev : number[] // Previous raw values of the Midi
-    delta: number[] // Between current raw Midi values and previous values
-    sign : number[] // Direction of the delta values
+    init: number[] // Raw values when the Midi started
+    data: number[] // Current raw values of recieved Midi data
+    prev: number[] // Previous raw values of recieved Midi data
 
-    command  : number // The number of recieved Midi command code
-    channel  : number // The number of recieved Midi channel number
-    noteNum ?: number // The number of Midi note number if recieved
-    velocity?: number // The number of Midi velocity number if recieved
+    command    : number // recieved Midi command code
+    channel    : number // recieved Midi channel number
+    note      ?: number // Midi note number if recieved
+    value     ?: number // Midi velocity number if recieved
+    delta      : number // Difference between the current value and the previous value.
+    threshold  : number
+    step       : number
+    offset     : number // offset since the first midi value
+    sign       : number
+    direction  : number
+    distance   : number
+    movement   : number
+    velocity   : number
+
+    _value     : number
+    _delta     : number
+    _offset    : number
+    _distance  : number
+    _movement  : number
+
+    valueMap   : Map<number, number>
+    deltaMap   : Map<number, number>
+    offsetMap  : Map<number, number>
+    distanceMap: Map<number, number>
+    movementMap: Map<number, number>
 }

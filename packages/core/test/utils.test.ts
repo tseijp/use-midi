@@ -1,4 +1,4 @@
-import { each, eachProp, chain, flush, is } from 'use-midi/src';
+import { call, chain, is } from 'use-midi/src';
 import * as SRC from 'use-midi/src'
 describe('each, eachProp', () => {
     const numFun = jest.fn(x => 42 + x)
@@ -22,15 +22,18 @@ describe('each, eachProp', () => {
     })
 })
 
-describe('chain', () => {
+describe('fns', () => {
     const callback = jest.fn(x => 42 + x)
     it.each`
-        length | calls00   | value     | fn
+        length | calls00   | value     | fun
         ${0}   | ${void 0} | ${void 0} | ${() => chain()(0)}
         ${1}   | ${0}      | ${42}     | ${() => chain(callback)(0)}
         ${10}  | ${0}      | ${42}     | ${() => chain(...Array(10).fill(callback))(0)}
-    `('lenght: $length ', ({length, calls00, value, fn}) => {
-        expect(fn()).toEqual(value)
+        ${0}   | ${void 0} | ${void 0} | ${() => call(void 0)}
+        ${1}   | ${void 0} | ${NaN}    | ${() => call(callback)}
+        ${1}   | ${1}      | ${43}     | ${() => call(callback, 1)}
+    `('index of $#', ({length, calls00, value, fun}) => {
+        expect(fun()).toEqual(value)
         expect(callback.mock.calls.length).toBe(length)
         expect(callback.mock.calls[0]?.[0]).toBe(calls00)
         expect(callback.mock.results[0]?.value).toBe(value)

@@ -45,9 +45,8 @@ ref: https://codepen.io/Maki-Gobou/pen/mLqoQj
 
 ```js
 const bind = useNote(state => {
-  const {noteNum, velocity, send, args} = state
-  if (note === noteNum)
-    ref.current.active = velocity > 0
+  const { value, args } = state
+  ref.current.active = value > 0
 })
 ```
 
@@ -55,12 +54,10 @@ import { UseNote } from 'use-midi/src'
 
 export function Tut (props, ref) {
     const { note, ...other } = props
-    const bind = state => {
-        const { noteNum, velocity, send } = state
-        if (ref?.current && note === noteNum)
-            ref.current.active = velocity > 0
-        }
-    return <UseNote as="div" ref={ref} {...other} note={bind}/>
+    const handle = state => {
+        console.log(state, state.value)
+    }
+    return <UseNote as="div" ref={ref} {...other} note={handle}/>
 }
 
 import styled from 'styled-components'

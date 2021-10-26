@@ -1,28 +1,38 @@
 import { Engine } from '../Engine'
 
 export class NoteEngine extends Engine<'note'> {
-    _key = 'note' as const
+    _ingKey = 'noting' as const
 
     bind (bindFn: any) {
-        // const device = this.config.device // mouse | pointer | touch
-        bindFn('midimessage', '' , this.midimessage.bind(this))
-        bindFn('pointer', 'start', this.pointerStart.bind(this), true)
-        bindFn('pointer', 'end'  , this.pointerEnd.bind(this), true)
+        const device = this.config.shared.device
+        bindFn('midimessage', '', this.midimessage.bind(this))
+        bindFn(device,   'start', this.devicestart.bind(this), true)
+        bindFn(device,   'end'  , this.deviceend.bind(this), true)
     }
 
     midimessage (event: any) {
+        const { state: $ } = this
+        if (!$.active)
+            this.start(event)
         this.compute(event)
     }
 
-    pointerStart (event: PointerEvent) {
+    devicestart (event: PointerEvent) {
+        const { state: $ } = this
         this.start(event)
+        $._value = 0xff
+        $._movement = $._delta = $.value - $._value
         this.compute(event)
         this.emit()
     }
 
-    pointerEnd (event: PointerEvent) {
-        const { state } = this
-        if (!state.active) return
-        state.active = false
+    deviceend (event: PointerEvent) {
+        const { state: $ } = this
+        if (!$._active) return
+        $._value = 0
+        $._movement = $._delta = $.value - $._value
+        this.compute(event)
+        this.emit()
+        $._active = false
     }
 }

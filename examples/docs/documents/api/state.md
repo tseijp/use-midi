@@ -41,9 +41,9 @@ that includes the source event and adds multiple attributes.
 | `sign`       | Direction of the delta values              |
 | `command`    | The number of recieved Midi command code   |
 | `channel`    | The number of recieved Midi channel number |
-| `noteNum`    | The number of Midi note number if recieved |
-| `velocity`   | The number of Midi velocity number if recieved|
-| `args`       |  The arguments when you bind               |
+| `note`       | The number of Midi note number if recieved |
+| `value`      | The number of Midi velocity number if recieved |
+| `args`       | The arguments when you bind                |
 
 ## MIDI state attributes
 
@@ -61,9 +61,5 @@ const bind = useNote(state => {
 
 The note midi state adds a few attributes whih can help you understand the user intent.
 ```js
-const bind = useXXX(state = {
-    const {
-        noteNum
-    } = state
-})
+const bind = useXXX(state => {})
 ```
