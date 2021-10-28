@@ -41,8 +41,9 @@ function Model (props: any) {
 
     const note = useNote(state => {
         const { args: [ref] } = state
+        console.log(state)
         if (ref.current)
-            ref.current.position.y = 100
+            ref.current.position.y = state.value
     })
 
     const turn = useTurn(state => {
@@ -51,5 +52,5 @@ function Model (props: any) {
             ref.current.position.y = 0
     })
 
-    return <LowHigh binds={{fade, note, turn, midi}} low={Nano} src={src}/>
+    return <LowHigh binds={{fade: () => {}, note, turn, midi}} low={Nano} src={src}/>
 }

@@ -3,11 +3,12 @@ import { Engine } from '../Engine'
 export class NoteEngine extends Engine<'note'> {
     _ingKey = 'noting' as const
 
-    bind (bindFn: any) {
+    bind (fun: any) {
         const device = this.config.shared.device
-        bindFn('midimessage', '', this.midimessage.bind(this))
-        bindFn(device,   'start', this.devicestart.bind(this), true)
-        bindFn(device,   'end'  , this.deviceend.bind(this), true)
+        fun(this.midimessage.bind(this), 'midimessage')
+        fun(this.devicestart.bind(this), device, 'start')
+        fun(this.deviceend.bind(this), device, 'out')
+        fun(this.deviceend.bind(this), device, 'end')
     }
 
     midimessage (event: any) {
@@ -31,8 +32,8 @@ export class NoteEngine extends Engine<'note'> {
         if (!$._active) return
         $._value = 0
         $._movement = $._delta = $.value - $._value
+        $._active = false
         this.compute(event)
         this.emit()
-        $._active = false
     }
 }

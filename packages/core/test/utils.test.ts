@@ -41,33 +41,29 @@ describe('fns', () => {
 })
 
 describe('is', () => {
-    it('is to be truthy', () => {
-        const foo = 'foo'
-        expect(is(0, 0, 0)).toBeTruthy()
-        expect(is('0', '0', '0')).toBeTruthy()
-        expect(is({foo}, {foo})).toBeTruthy()
-        expect(is([foo], [foo])).toBeTruthy()
-        expect(is({}, {}, {})).toBeTruthy()
-    })
-    it('is to be falsy', () => {
-        const foo = 'foo',
-              bar = 'bar'
-        expect(is(0, 0, 1)).toBeFalsy()
-        expect(is('0', '0', 0)).toBeFalsy()
-        expect(is('0', '0', '1')).toBeFalsy()
-        expect(is({foo}, {bar})).toBeFalsy()
-        expect(is([foo], [bar])).toBeFalsy()
-        expect(is({}, {}, {bar})).toBeFalsy()
-    })
-    it('is.xxx', () => {
-        expect(is.arr([])).toBeTruthy()
-        expect(is.fls('')).toBeTruthy()
-        expect(is.nul(null)).toBeTruthy()
-        expect(is.und(undefined)).toBeTruthy()
-        expect(is.num(0)).toBeTruthy()
-        expect(is.str("")).toBeTruthy()
-        expect(is.bol(false)).toBeTruthy()
-        expect(is.fun(() => {})).toBeTruthy()
-        expect(is.obj({})).toBeTruthy()
-    })
+    const foo = 'foo', bar = 'bar'
+
+    it.each`
+        bool | target
+        ${1} | ${is(0, 0, 0)}
+        ${1} | ${is('0', '0', '0')}
+        ${1} | ${is({foo}, {foo})}
+        ${1} | ${is([foo], [foo])}
+        ${1} | ${is({}, {}, {})}
+        ${0} | ${is(0, 0, 1)}
+        ${0} | ${is('0', '0', 0)}
+        ${0} | ${is('0', '0', '1')}
+        ${0} | ${is({foo}, {bar})}
+        ${0} | ${is([foo], [bar])}
+        ${0} | ${is({}, {}, {bar})}
+        ${1} | ${is.arr([])}
+        ${1} | ${is.fls('')}
+        ${1} | ${is.nul(null)}
+        ${1} | ${is.und(undefined)}
+        ${1} | ${is.num(0)}
+        ${1} | ${is.str("")}
+        ${1} | ${is.bol(false)}
+        ${1} | ${is.fun(() => {})}
+        ${1} | ${is.obj({})}
+    `('is to be $bool', ({bool, target}) => expect(target).toBe(!!bool) )
 })

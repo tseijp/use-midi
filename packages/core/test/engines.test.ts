@@ -19,7 +19,7 @@ describe('Base Engine', () => {
         ${'Note'} | ${['midimessage']}
     `('engine: $index', ({index, bindFns}) => {
         const engine = new (SRC as any)[index + 'Engine'](ctrl, [], index.toLowerCase())
-        // each(bindFns, (key: any) => engine[key](event))
+        each(bindFns, (key: any) => engine[key](event))
         expect(engine).toBeTruthy()
     })
 })

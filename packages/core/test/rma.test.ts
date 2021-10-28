@@ -28,12 +28,12 @@ describe('rma', () => {
     })
 
     it.each`
-        len  | call 0      | call 1      | fun name     | fun
-        ${5} | ${[void 0]} | ${[0]}      | ${'state'}   | ${() => {midiAccess.onstatechange(connection)}}
-        ${5} | ${[void 0]} | ${[1]}      | ${'advance'} | ${() => {rma.advance()}}
-        ${3} | ${[void 0]} | ${[void 0]} | ${'cancel'}  | ${() => {rma.cancel(callback), rma.advance()}}
-        ${0} | ${ void 0 } | ${ void 0 } | ${'warn'}    | ${() => {rma.demanded = false; rma.advance()}}
-    `('function: $funname', ({len, call0, call1, fun}) => {
+        len  | call 0      | call 1      | fun
+        ${5} | ${[void 0]} | ${[0]}      | ${() => {midiAccess.onstatechange(connection)}}
+        ${5} | ${[void 0]} | ${[1]}      | ${() => {rma.advance()}}
+        ${3} | ${[void 0]} | ${[void 0]} | ${() => {rma.cancel(callback), rma.advance()}}
+        ${0} | ${ void 0 } | ${ void 0 } | ${() => {rma.demanded = false; rma.advance()}}
+    `('rma functions', ({len, call0, call1, fun}) => {
         rma.fun(fun)
         expect(callback.mock.calls.length).toBe(len)
         expect(callback.mock.calls[0]).toEqual(call0)

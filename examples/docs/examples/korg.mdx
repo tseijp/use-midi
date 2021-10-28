@@ -52,17 +52,23 @@ ref: https://codepen.io/johnmeade-webdev/pen/jOEaMyX
 import { UseNote, UseFade, UseTurn } from 'use-midi/src'
 
 export function _Button (props, ref) {
-    const use = state => {}
-    return <UseNote {...props} ref={ref} button={use} as="button"/>
+    const use = state => {
+        console.log(state)
+    }
+    return <UseNote {...props} ref={ref} note={use} as="button"/>
 }
 
 export function _Slider (props, ref) {
-    const use = state => {}
-    return <UseFade {...props} ref={ref} slider={use} as="div"/>
+    const use = state => {
+        console.log(state)
+    }
+    return <UseFade {...props} ref={ref} fade={use} as="div"/>
 }
 
 export function _Knob (props, ref) {
-    const use = state => {}
+    const use = state => {
+        console.log(state)
+    }
     return <UseTurn {...props} ref={ref} turn={use} as="div"/>
 }
 

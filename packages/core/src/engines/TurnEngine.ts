@@ -3,8 +3,8 @@ import { Engine } from '../Engine'
 export class TurnEngine extends Engine<'turn'> {
     _ingKey = 'turning' as const
 
-    bind (bindFn: any) {
-        bindFn('midimessage', '', this.midimessage.bind(this))
+    bind (fun: any) {
+        fun(this.midimessage.bind(this), 'midimessage')
     }
 
     midimessage (event: any) {

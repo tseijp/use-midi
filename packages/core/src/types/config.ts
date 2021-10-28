@@ -36,4 +36,5 @@ export type SharedConfig = Partial<{
     input: SelectPort   // Select Device Key
     output: SelectPort  // Select Device Key
     threshold: number   //
+    transform: {(v: number): number}
 }>

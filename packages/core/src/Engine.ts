@@ -1,6 +1,6 @@
-import { each } from './utils'
-import { MidiKey, IngKey } from './types'
+import { each, call } from './utils'
 import { Controller } from './Controller'
+import { MidiKey, IngKey, State } from './types'
 
 const { abs, sign } = Math
 
@@ -30,7 +30,7 @@ export abstract class Engine<Key extends MidiKey> {
         this._key = key
 
         if (!this.state) {
-            this.state = {data: [0, 0, 0]}
+            this.state = {data: [0, 0, 0]} as State<Key>
             this.__init__?.()
             this.reset()
         }
@@ -52,14 +52,14 @@ export abstract class Engine<Key extends MidiKey> {
      * reset state if init run
      */
     reset () {
-        const { state: $, config, _args } = this
+        const { state: $, config: {shared, from}, _args, _ctrl } = this
+        resetMap($, 'value', 'delta', 'offset', 'distance', 'movement')
         $.deltaTime = $.timeStamp = $.elapsedTime = 0
-        $._value = $._delta = $._offset = $._distance = $._movement = 0
-        $._active = $.active = $.blocked = $.force = false
-        $.velocity = $.command = $.channel = $.note = $.axis = $.memo = void 0
-        $.threshold = abs(config.shared.threshold || 1) // TODO transform
-        resetMap(this.state, 'value', 'delta', 'offset', 'distance', 'movement')
-        // $.offset = $._offset = config.from || $._offset // TODO ? call(config.from)
+        $._active = $.active = $.blocked = $.force = false // shared[_ingKey] = false
+        $.command = $.channel = $.note = $.memo = void 0
+        $.threshold = abs(shared.transform(shared.threshold))
+        $.offset = $._offset = from? call(from): $._offset
+        $.send = () => (($.target as any)?.send || _ctrl.output?.send)?.($.data)
         $.first = true
         $.args = _args
         $.step = -1
@@ -74,11 +74,10 @@ export abstract class Engine<Key extends MidiKey> {
         if (!$._active) {
             this.reset()
             $._active = true
-            $.first = false
-            // shared[_ingKey] = false
             $.target = event.target!
+            $.currentTarget = event.currentTarget!
         }
-        $.startTime = $.timeStamp = event.timeStamp
+        $.startTime = $.timeStamp = event?.timeStamp || 0
     }
 
     /**
@@ -86,47 +85,42 @@ export abstract class Engine<Key extends MidiKey> {
      * event: MIDIStateChagneEvent || MIDIMessageEvent
      */
     compute (event?: any) {
-        const { state: $, shared, _ingKey } = this
-        if (!$._active || $.blocked) return
+        const { state: $, shared, config, _ingKey } = this
         $.args = this._args
 
         /**
-         * calclate event on all event handlers
+         * sets event properties on all event handlers
          */
         if (event) {
-            $.target = event.target
             $.event = event
             $.type = event.type
-            $._deltaTime = event.timeStamp - $.timeStamp
+            $.deltaTime = event.timeStamp - $.timeStamp
             $.timeStamp = event.timeStamp
             $.elapsedTime = $.timeStamp - $.startTime
-            // if (!!event.data) computeMidiMessage(this, event)
-            // if (!!$.target.send) $.send = () => $.target.send?.($.data)
+            if (!!event.data) computeMidiMessage(this, event)
         }
 
-        if (!~$.step) $.step = abs($._movement) > $.threshold? 0: $.threshold
-        if (!~$.step) return
+        const _m = config.shared.transform($._movement)
+        if (!~$.step) $.step = abs(_m) > $.threshold? 0: $.threshold
+        if (!~$.step || !$._active || $.blocked) if (!$.active) return
 
         /**
          * if value is changed
          */
-        $.last = $.active && !$._active   // ?
-        $.first = !$.active && $._active  // ?
+        $.last = $.active && !$._active
+        $.first = !$.active && $._active
         $.active = shared[_ingKey] = $._active
         $.abs = abs($._delta)
-        $.sign = sign($._movement)
+        $.sign = sign(_m)
         $.direction = sign($._delta)
-        /**
-         * save to each Map
-         */
-        $.movement = $._movement = $._movement - $.sign * $.step
-        $.distance = $._distance = $.distance + $.abs
-        $.offset = $._offset + $._movement
-        $.value = $._value
-        $.delta = $._delta
+        shared.movement = $.movement = $._movement = _m - $.sign * $.step
+        shared.distance = $.distance = $._distance = $.distance + $.abs
+        shared.offset = $.offset = $._offset + $._movement
+        shared.value = $.value = $._value
+        shared.delta = $.delta = $._delta
         if ($.last) return this.__end__?.()
         if ($.first) return void this.__start__?.()
-        $.velocity = $._delta / $._deltaTime
+        $.velocity = $._delta / $.deltaTime
         return void this.__change__?.()
     }
 
@@ -143,11 +137,11 @@ export abstract class Engine<Key extends MidiKey> {
     /**
      * shorthands of ctrl value
      */
-    get state () {
+    get state (): State<Key> {
         return this._ctrl.state[this._key]!
     }
 
-    set state (state: any) {
+    set state (state: State<Key>) {
         this._ctrl.state[this._key] = state
     }
 
@@ -173,13 +167,8 @@ function computeMidiMessage (self: Engine<MidiKey>, event?: any) {
     const [_c0=_p0, _c1=_p1, _c2=_p2] = event.data || []
     if(!$.data)
         $.init = [_c0, _c1, _c2]
-    $.data = [_c0, _c1, _c2]
-    $.prev = [_p0, _p1, _p2]
-    $.command = _c0 >> 4
-    $.channel = _c0 & 0xf
-    $.note = _c1
-    $._value = _c2
-    $._delta = _c2 - $.value
+    $.data = [_c0, _c1, _c2], $.command = _c0 >>  4, $._value = _c2,  $.note = _c1
+    $.prev = [_p0, _p1, _p2], $.channel = _c0 & 0xf, $._delta = _c2 - $.value
     $._movement = $.movement + $._delta
 }
 
@@ -187,10 +176,11 @@ function resetMap ($: object, ...keys: string[]): void
 
 function resetMap ($: any, ...keys: any[]) {
     each(keys, key => {
-        let _k = key + 'Map', _m = $[_k], _n = $.node || 0
+        let _m = $[key + 'Map'], _n = $.node || 0
+        $['_' + key] = 0
         if (_m) return _m.clear()
-        _m = $[_k] = new Map()
-        setHidden($, key, () => _m.get(_n), _t => void _m.set(_n, _t))
+        _m = $[key + 'Map'] = new Map()
+        setHidden($, key, () => _m.get(_n) || 0, _t => void _m.set(_n, _t))
     })
 }
 

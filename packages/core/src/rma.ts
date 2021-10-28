@@ -76,16 +76,13 @@ rma.now = typeof performance != 'undefined' ? () => performance.now() : Date.now
 rma.fun = fun => fun()
 rma.warn = console.warn
 rma.error = console.error
+rma.options = { sysex: true, software: true }
 rma.allowed = false
 rma.demanded = false
 rma.supported =
     typeof navigator !== 'undefined' &&
     typeof (navigator as any).requestMIDIAccess === 'function'
 
-rma.options = {
-    sysex: true,
-    software: true
-}
 
 setHidden('event', () => event)
 setHidden('inputs', () => event?.target.inputs)
@@ -93,7 +90,7 @@ setHidden('outputs', () => event?.target.outputs)
 
 rma.advance = () => {
     if (!rma.demanded)
-        rma.warn('Cannot call the manual advancement of rmaz')
+        rma.warn("Error: Can't call the manual advancement of rmaz")
     else update()
 }
 
@@ -109,9 +106,9 @@ function start () {
 
 function change (e: any) {
     if (~ts) {
-        rma.allowed = true
         e.onstatechange = change
         event = e.target? e: {target: e}
+        rma.allowed = true
         rma.fun(update)
     }
 }
@@ -162,3 +159,9 @@ function setHidden (key: any, fun: AnyFun) {
         }
     })
 }
+
+// function setHidden (key: any, fun: AnyFun) {
+//     Object.defineProperty(rma, key, {get () {
+//         return rma.allowed? fun(): rma.warn("Error: Can't allowed the MIDIAccess")
+//     }})
+// }

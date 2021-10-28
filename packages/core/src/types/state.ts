@@ -11,14 +11,13 @@ export interface FullState {
 }
 
 export interface SharedState {
-    target: EventTarget // Raw Target Object
-    allowed: boolean    // True when user gave permission to access MIDI devices
+    allowed  : boolean    // True when user gave permission to access MIDI devices
     requested: boolean  // True when user grant permission to access MIDI devices
     supported: boolean  // True when Web MIDI API is supported by the browser
     messaging: boolean  // True if the target is being messaged.
-    fading   : boolean  // True if the target is being faded.
-    noting   : boolean  // True if the target is being noted.
-    turning  : boolean  // True if the target is being turned.
+    fading: boolean  // True if the target is being faded.
+    noting: boolean  // True if the target is being noted.
+    turning: boolean  // True if the target is being turned.
 }
 
 export type State<Key extends MidiKey|'shared'> =
@@ -44,49 +43,57 @@ export interface TurnState extends GenericState {
 }
 
 export interface GenericState {
-    args  : any[]  // The arguments when you bind
-    event : Event  // Raw Midi Event Object
-    type  : string // Raw Midi Event type
+    currentTarget: EventTarget// Raw Target Object
+    target: EventTarget// Raw Target Object
+    args: any[]      // The arguments when you bind
+    memo: any        //
+    event: Event      // Raw Midi Event Object
+    type: string     // Raw Midi Event type
+    send: {():void}  //
 
     _active: boolean
-    active : boolean // True if the Midi is active
+    force: boolean //
+    active: boolean // True if the Midi is active
     blocked: boolean // True if the Midi is blocked
     enabled: boolean // True if the Midi is enabled
-    first  : boolean // True if its the first event
-    last   : boolean // True if its the last event
+    first: boolean // True if its the first event
+    last: boolean // True if its the last event
 
-    startTime  : number // The start time of the current event
-    deltaTime  : number // The delta between current and previous event
-    timeStamp  : number // The timestamp of the current event
+    startTime: number // The start time of the current event
+    deltaTime: number // The delta between current and previous event
+    timeStamp: number // The timestamp of the current event
     elapsedTime: number // Elapsed tie of the current Midi
 
     init: number[] // Raw values when the Midi started
     data: number[] // Current raw values of recieved Midi data
     prev: number[] // Previous raw values of recieved Midi data
 
-    command    : number // recieved Midi command code
-    channel    : number // recieved Midi channel number
-    note      ?: number // Midi note number if recieved
-    value     ?: number // Midi velocity number if recieved
-    delta      : number // Difference between the current value and the previous value.
-    threshold  : number
-    step       : number
-    offset     : number // offset since the first midi value
-    sign       : number
-    direction  : number
-    distance   : number
-    movement   : number
-    velocity   : number
+    command?: number // recieved Midi command code
+    channel?: number // recieved Midi channel number
+    note?: number // Midi note number if recieved
 
-    _value     : number
-    _delta     : number
-    _offset    : number
-    _distance  : number
-    _movement  : number
+    value: number // Midi velocity number if recieved
+    delta: number // Difference between the current value and the previous value.
+    offset: number // offset since the first midi value
+    distance: number //
+    movement: number //
 
-    valueMap   : Map<number, number>
-    deltaMap   : Map<number, number>
-    offsetMap  : Map<number, number>
+    abs: number //
+    step: number //
+    sign: number //
+    velocity: number //
+    direction: number //
+    threshold: number //
+
+    _value: number //
+    _delta: number //
+    _offset: number
+    _distance: number
+    _movement: number
+
+    valueMap: Map<number, number>
+    deltaMap: Map<number, number>
+    offsetMap: Map<number, number>
     distanceMap: Map<number, number>
     movementMap: Map<number, number>
 }

@@ -55,7 +55,8 @@ import { UseNote } from 'use-midi/src'
 export function Tut (props, ref) {
     const { note, ...other } = props
     const handle = state => {
-        console.log(state, state.value)
+        console.log(state.value, state.first, state.last)
+        // state.send()
     }
     return <UseNote as="div" ref={ref} {...other} note={handle}/>
 }
