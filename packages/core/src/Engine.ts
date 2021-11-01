@@ -67,7 +67,6 @@ export abstract class Engine<Key extends MidiKey> {
 
     /**
      * start of the midi access
-     * event: MIDIStateChagneEvent
      */
     start (event?: any) {
         const { state: $, } = this
@@ -82,7 +81,6 @@ export abstract class Engine<Key extends MidiKey> {
 
     /**
      * calculate midi event data
-     * event: MIDIStateChagneEvent || MIDIMessageEvent
      */
     compute (event?: any) {
         const { state: $, shared, config, _ingKey } = this

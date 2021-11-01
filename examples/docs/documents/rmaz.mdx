@@ -18,10 +18,10 @@ based on rafz: `requestAnimationFrame`
 import { rma } from 'rmaz'
 
 // Schedule an update
-rma(ts => {})
+rma(dt => {})
 
 // Start an update loop
-rma(ts => true)
+rma(dt => true)
 
 // Cancel an update
 rma.cancel(fn)
@@ -50,18 +50,10 @@ export let midi;
 
 export function App () {
     React.useEffect(rma, [])
-    return (
+    return [rma.inputs || [], rma.outputs || []].map((ports, j) =>
         <>
-          <h4>inputs</h4>
-          {Array.from(rma.inputs || []).map((v, i) =>
-            <div key={i}>
-              <h5>{v[0]}</h5>
-              <div>name: {v[1].name}</div>
-              <div>type: {v[1].type}</div>
-            </div>
-          )}
-          <h4>outputs</h4>
-          {Array.from(rma.outputs || []).map((v, i) =>
+          <h4 key={j}>{j? 'outputs': 'inputs'}</h4>
+          {[...ports].map((v, i) =>
             <div key={i}>
               <h5>{v[0]}</h5>
               <div>name: {v[1].name}</div>

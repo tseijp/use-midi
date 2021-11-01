@@ -4,12 +4,12 @@ import * as SRC from 'use-midi/src'
 describe('Base Engine', () => {
     let ctrl: Controller
     const fn = jest.fn()
+    const fns = {fade: fn, note: fn, turn: fn}
     const event = {target: {}, data: [0, 0, 0]}
 
     beforeEach(() => {
         ctrl = new Controller()
-        ctrl.applyConfig({})
-        ctrl.applyProps({fade: fn, note: fn, turn: fn})
+        ctrl.apply(fns, {}, ...Object.keys(fns) as any)
     })
 
     it.each`

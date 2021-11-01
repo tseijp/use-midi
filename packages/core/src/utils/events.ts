@@ -14,9 +14,9 @@ export function toDomEvent(device: string, action = '') {
 }
 
 export function toPropEvent(device: string, action = '', capture: boolean = false) {
-  const deviceProps = EVENT_TYPE_MAP[device]
-  const actionKey = deviceProps ? deviceProps[action] || action : action
-  return 'on' + capitalize(device) + capitalize(actionKey) + (capture ? 'Capture' : '')
+    const deviceProps = EVENT_TYPE_MAP[device]
+    const actionKey = deviceProps ? deviceProps[action] || action : action
+    return 'on' + capitalize(device) + capitalize(actionKey) + (capture ? 'Capture' : '')
 }
 
 function capitalize(string: string) {

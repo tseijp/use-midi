@@ -46,26 +46,22 @@ export interface Queue<T extends Function = any> {
     flush: (arg?: any) => void
 }
 
+const writeQueue = makeQueue<Fun>()
+const onStartQueue = makeQueue<Fun>()
+const onAccessQueue = makeQueue<Fun>()
+const onFinishQueue = makeQueue<Fun>()
+const updateQueue = makeQueue<UpdateFun>()
+
 export const rma: Rma = (fun=()=>{}) => schedule(fun, updateQueue)
-
-let ts = -1,
-    sync = false,
-    event: any,
-    writeQueue = makeQueue<Fun>(),
-    onStartQueue = makeQueue<Fun>(),
-    onAccessQueue = makeQueue<Fun>(),
-    onFinishQueue = makeQueue<Fun>(),
-    updateQueue = makeQueue<UpdateFun>(),
-    // nativeRma = () => rma.supported && (navigator as any).requestMIDIAccess(rma.options)
-    nativeRma = () => {
-        if (!rma.supported) rma.warn('Cannot supported Web MIDI API for rmaz')
-        else return (navigator as any).requestMIDIAccess(rma.options)
-    }
-
 rma.write = fun => schedule(fun, writeQueue)
 rma.onStart = fun => schedule(fun, onStartQueue)
 rma.onAccess = fun => schedule(fun, onAccessQueue)
 rma.onFinish = fun => schedule(fun, onFinishQueue)
+
+let ts = -1, sync = false, event: any, nativeRma = () => {
+    if (!rma.supported) rma.warn('Cannot supported Web MIDI API for rmaz')
+    else return (navigator as any).requestMIDIAccess(rma.options)
+}
 
 rma.sync = fun => void ( sync = true, rma.fun(fun), sync = false )
 rma.cancel = fun => void ( updateQueue.delete(fun), writeQueue.delete(fun) )
@@ -77,12 +73,10 @@ rma.fun = fun => fun()
 rma.warn = console.warn
 rma.error = console.error
 rma.options = { sysex: true, software: true }
-rma.allowed = false
-rma.demanded = false
+rma.allowed = rma.demanded = false
 rma.supported =
     typeof navigator !== 'undefined' &&
     typeof (navigator as any).requestMIDIAccess === 'function'
-
 
 setHidden('event', () => event)
 setHidden('inputs', () => event?.target.inputs)
@@ -118,7 +112,7 @@ function update () {
     ts = rma.now()
 
     onStartQueue.flush()
-    updateQueue.flush(prevTs)
+    updateQueue.flush(ts - prevTs)
     onAccessQueue.flush()
     writeQueue.flush()
     onFinishQueue.flush()
@@ -159,9 +153,3 @@ function setHidden (key: any, fun: AnyFun) {
         }
     })
 }
-
-// function setHidden (key: any, fun: AnyFun) {
-//     Object.defineProperty(rma, key, {get () {
-//         return rma.allowed? fun(): rma.warn("Error: Can't allowed the MIDIAccess")
-//     }})
-// }

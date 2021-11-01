@@ -1,3 +1,3 @@
-export * from './TurnEngine'
-export * from './NoteEngine'
-export * from './FadeEngine'
+export { TurnEngine } from './TurnEngine'
+export { NoteEngine } from './NoteEngine'
+export { FadeEngine } from './FadeEngine'

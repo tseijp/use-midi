@@ -10,16 +10,49 @@ import { OrbitControls } from '@react-three/drei'
 
 import './styles.css'
 import { Nano } from '../../models'
+import { Live } from '../../components/Live'
 import { LowHigh } from '../../components/LowHigh'
+
 import { useFade, useNote, useTurn, useMidi } from 'use-midi/src'
 
+const SRC = "img/assets/Nano.gltf"
+
 export default function App () {
-    if (typeof window === "undefined")
-        return null
+    /**
+     *
+     */
+    const midi = useMidi({})
+    /**
+     *
+     */
+    const fade = useFade(state => {
+        const { args: [ref] } = state
+        if (ref.current)
+            ref.current.position.z = state.value
+    })
+    /**
+     *
+     */
+    const note = useNote(state => {
+        const { args: [ref] } = state
+        if (ref.current)
+            ref.current.position.y = state.value
+    })
+    /**
+     *
+     */
+    const turn = useTurn(state => {
+        const { args: [ref] } = state
+        if (ref.current)
+            ref.current.position.y = 0
+    })
+    /**
+     * render components
+     */
     return (
       <Layout>
         <Canvas camera={{position: [0, .3, 0]}}>
-          <Model src="img/assets/Nano.gltf"/>
+          <LowHigh binds={{fade, note, turn, midi}} low={Nano} src={SRC}/>
           <OrbitControls {...{enableRotate: false, minZoom: .1} as any}/>
           <ambientLight position={[0, 0, 0]} intensity={0.5} />
           <spotLight position={[10, 10, 10]} intensity={2} penumbra={1} />
@@ -28,29 +61,4 @@ export default function App () {
         </Canvas>
       </Layout>
     )
-}
-
-function Model (props: any) {
-    const { src } = props
-
-    const midi = useMidi({})
-
-    const fade = useFade(state => {
-        const { args: [ref] } = state
-    })
-
-    const note = useNote(state => {
-        const { args: [ref] } = state
-        console.log(state)
-        if (ref.current)
-            ref.current.position.y = state.value
-    })
-
-    const turn = useTurn(state => {
-        const { args: [ref] } = state
-        if (ref.current)
-            ref.current.position.y = 0
-    })
-
-    return <LowHigh binds={{fade: () => {}, note, turn, midi}} low={Nano} src={src}/>
 }

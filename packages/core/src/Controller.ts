@@ -1,8 +1,18 @@
-import { MidiKey, Props, Config, MIDIAccess, MIDIInput, MIDIOutput } from './types'
 import { each, eachProp, chain, is, toPropEvent } from './utils'
+import { MidiKey, Props, Config, MIDIAccess, MIDIInput, MIDIOutput } from './types'
+import { FadeEngine, TurnEngine, NoteEngine } from './engines'
 import { EventStore, AccessStore } from './stores'
-import { EngineMap, ConfigMap } from './actions'
 import { rma } from './rma'
+
+export const EngineMap = new Map<MidiKey, any>()
+
+export const ConfigMap = new Map<MidiKey, any>()
+
+export const Actions = {
+    fade: { engine: FadeEngine, config: {} as any },
+    turn: { engine: TurnEngine, config: {} as any },
+    note: { engine: NoteEngine, config: {} as any },
+}
 
 export class Controller {
     public keys = new Set<MidiKey>()
@@ -16,8 +26,8 @@ export class Controller {
     constructor (props: Props={}) {
         this.props = props
         if (props.fade) this.keys.add('fade')
-        if (props.turn) this.keys.add('turn')
         if (props.note) this.keys.add('note')
+        if (props.turn) this.keys.add('turn')
     }
 
     /**
@@ -37,13 +47,14 @@ export class Controller {
     /**
      * Attaches props and config
      */
-    applyProps (props: Props, native: any={}) {
-        this.props = props
-        this.native = native
-    }
-
-    applyConfig (config: Config, midiKey?: MidiKey) {
-        this.config = parseConfig(config, midiKey)
+    apply (props: Props, config?: Config, ...keys: MidiKey[]) {
+        if (keys.length === 1) this.props = props
+        else [this.props, this.native] = parseProps(props)
+        this.config = parseConfig(config, ...keys)
+        each(keys, key => {
+            EngineMap.set(key, Actions[key].engine)
+            ConfigMap.set(key, Actions[key].config)
+        })
     }
 
     /**
@@ -130,20 +141,20 @@ export const sharedConfig: Config<'shared'> = {
     port: defaultPort,
 }
 
-function parseConfig (config: any, midiKey?: MidiKey) {
-    const _config: any = {shared: sharedConfig}, other: any = {}
-    eachProp(config, (prop, key) => {
-        (key in sharedConfig? _config.shared: other)[key] = prop
+function parseConfig (_config: any, ...keys: MidiKey[]) {
+    const other: any = {}, config: any = {shared: sharedConfig}
+    eachProp(_config, (prop, key) => {
+        (key in sharedConfig? config.shared: other)[key] = prop
     })
-    if (midiKey) {
-        const target = ConfigMap.get(midiKey)
-        _config[midiKey] = {...target, ...other}
+    if (keys.length === 1) {
+        const target = ConfigMap.get(keys[0])
+        config[keys[0]] = {...target, ...other}
     } else {
         eachProp(other, (prop, key) => {
             const target = ConfigMap.get(key as any)
             if (target)
-                _config[key] = {...target, ...prop}
+                config[key] = {...target, ...prop}
         })
     }
-    return _config
+    return config
 }

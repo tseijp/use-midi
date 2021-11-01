@@ -13,9 +13,9 @@ export const each = <Value, Key, This>(
 ) => obj.forEach(fn)
 
 export function eachProp<T extends object, This>(
-  obj: T,
-  fn: EachFn<T extends any[]? T[number]: T[keyof T], string, This>,
-  ctx?: This
+    obj: T,
+    fn: EachFn<T extends any[]? T[number]: T[keyof T], string, This>,
+    ctx?: This
 ) {
     for (const key in obj)
         fn.call(ctx as any, obj[key] as any, key)

@@ -19,14 +19,14 @@
         "preset@latest": "lerna add  @docusaurus/preset-classic@latest --dev --scope @use-midi/docs",
         "latest": "yarn run core@latest & yarn run preset@latest",
         "init": "npm i -g yarn lerna && npx lerna bootstrap",
-        "start": "lerna exec --scope @use-midi/docs -- yarn start",
-        "build": "lerna exec --scope @use-midi/docs -- yarn build",
-        "deploy": "lerna exec --scope @use-midi/docs -- yarn deploy",
-        "rollup": "lerna exec --scope use-midi -- yarn rollup -c",
-        "npm": "lerna exec --scope use-midi -- yarn publish",
-        "cov": "lerna exec --scope use-midi -- yarn jest --coverage",
-        "watch": "lerna exec --scope use-midi -- yarn jest --watch --runInBand",
-        "ls": "lerna exec --scope use-midi -- npm pack --dry-run"
+        "start": "cd examples && cd docs && -- yarn start",
+        "build": "cd examples && cd docs && -- yarn build",
+        "deploy": "cd examples && cd docs && -- yarn deploy",
+        "rollup": "cd packages && cd core && -- yarn rollup -c",
+        "watch": "cd packages && cd core && -- yarn jest --watch --runInBand",
+        "cov": "cd packages && cd core && -- yarn jest --coverage",
+        "npm": "cd packages && cd core && -- yarn publish",
+        "ls": "cd packages && cd core && -- npm pack --dry-run"
     },
     "devDependencies": {
         "lerna": "^4.0.0"

@@ -29,7 +29,7 @@ describe('rma', () => {
 
     it.each`
         len  | call 0      | call 1      | fun
-        ${5} | ${[void 0]} | ${[0]}      | ${() => {midiAccess.onstatechange(connection)}}
+        ${5} | ${[void 0]} | ${[1]}      | ${() => {midiAccess.onstatechange(connection)}}
         ${5} | ${[void 0]} | ${[1]}      | ${() => {rma.advance()}}
         ${3} | ${[void 0]} | ${[void 0]} | ${() => {rma.cancel(callback), rma.advance()}}
         ${0} | ${ void 0 } | ${ void 0 } | ${() => {rma.demanded = false; rma.advance()}}
