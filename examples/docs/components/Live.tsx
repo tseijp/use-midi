@@ -12,7 +12,7 @@ const sidebarWidth = 300;
 export function Live (props: any) {
     const {children, noInline, scope, ...other} = props
     const code = React.useMemo(() => {
-        return React.Children.toArray(children).find(Boolean).toString().trim()
+        return React.Children.toArray(children).find(Boolean)!?.toString().trim()
     }, [children])
     return (
       <Live.Provider {...{code, noInline, scope: {...scope, ...other}}}>

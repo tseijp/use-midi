@@ -43,13 +43,14 @@ export interface TurnState extends GenericState {
 }
 
 export interface GenericState {
-    currentTarget: EventTarget// Raw Target Object
-    target: EventTarget// Raw Target Object
+    [key: string]: any // The arguments when you bind
     args: any[]      // The arguments when you bind
     memo: any        //
-    event: Event      // Raw Midi Event Object
-    type: string     // Raw Midi Event type
     send: {():void}  //
+    type: string     // Raw Midi Event type
+    event: Event     // Raw Midi Event Object
+    target: EventTarget// Raw Target Object
+    currentTarget: EventTarget// Raw Target Object
 
     _active: boolean
     force: boolean //

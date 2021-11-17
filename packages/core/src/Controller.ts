@@ -16,12 +16,12 @@ export const Actions = {
 
 export class Controller {
     public keys = new Set<MidiKey>()
-    public eventStore = new EventStore()
-    public accessStore = new AccessStore()
     public native = {} as any
     public props = {} as Props
     public state = {shared: {}} as any
     public config = {shared: {}} as any
+    private _event = new EventStore()
+    private _access = new AccessStore()
 
     constructor (props: Props={}) {
         this.props = props
@@ -40,31 +40,38 @@ export class Controller {
     }
 
     clean () {
-        this.accessStore.clean()
-        this.eventStore.clean()
+        this._event.clean()
+        this._access.clean()
     }
 
     /**
-     * Attaches props and config
+     * Attaches props and config when each render
      */
-    apply (props: Props, config?: Config, ...keys: MidiKey[]) {
-        if (keys.length === 1) this.props = props
-        else [this.props, this.native] = parseProps(props)
+    apply (props?: Props, config?: Config, ...keys: MidiKey[]) {
+        if (keys.length > 1) [this.props, this.native] = parseProps(props!)
+        else this.props = props || this.props
         this.config = parseConfig(config, ...keys)
         each(keys, key => {
             EngineMap.set(key, Actions[key].engine)
             ConfigMap.set(key, Actions[key].config)
         })
+        if (!config?.target)
+            return this.bind.bind(this)
     }
 
     /**
      * The bind function that can be returned by hooks
      */
-    bind (...args: any) {
-        const props: any = {}, midimessage: any[] = []
-        const { keys, native, config, state: {shared} } = this
+    bind (config?: any) {
+        if (!is.und(config)) {
+            this.config = parseConfig(config)
+            this.state.shared = {...this.state.shared, ...config}
+        }
+        const props: any = {}, midi: any[] = []
+        const { keys, native, state: $, _access, _event } = this
+        let { target, enabled } = this.config.shared
         const fun = (prop: {(e: any): void}, device='', key='') => {
-            if (!key) return midimessage.push(prop)
+            if (!key) return midi.push(prop)
             const type = !device? key: toPropEvent(device, key)
             props[type] = props[type] || []
             props[type].push(prop)
@@ -73,23 +80,21 @@ export class Controller {
         /**
          * Initialize engine and bind functions
          */
-        if (config.shared.enabled)
-            each(keys, key => new (EngineMap.get(key)!)(this, args, key).bind(fun as any))
-        eachProp(native, (p, k) => fun(e => p({...shared, event: e, args}), '', k))
+        if (enabled)
+            each(keys, key => new (EngineMap.get(key)!)(this, key).bind(fun))
+        eachProp(native, (p, k) => fun(e => p({...$.shared, event: e, ...config}), '', k))
         eachProp(props, (p, k) => void (props[k] = chain(...p)))
 
         /**
          * Register target and each handler to stores
          * When target isn't specified then return hanlder props.
          */
-        this.accessStore.add(() => {
-            this.eventStore.add(this.input, 'midimessage', chain(...midimessage))
-        })
+        _access.add(() => _event.add(this.input, 'midimessage', chain(...midi)))
 
-        if (!config.shared.target) return props
+        if (!target) return props
         else eachProp(props, (prop, key) => {
             let eventKey = key.substr(2).toLowerCase()
-            this.eventStore.add(config.shared.target, eventKey, prop)
+            _event.add(target, eventKey, prop)
         })
     }
 

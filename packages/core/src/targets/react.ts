@@ -11,11 +11,9 @@ export function useRecognizers <C extends Config=Config> (
 
 export function useRecognizers (props: any, config?: any, ...keys: any[]) {
     const ctrl = React.useMemo(() => new Controller(props), [])
-    ctrl.apply(props, config, ...keys)
     React.useEffect(ctrl.effect.bind(ctrl))
     React.useEffect(() => ctrl.clean.bind(ctrl), [])
-    if (!config.target)
-        return ctrl.bind.bind(ctrl)
+    return ctrl.apply(props, config, ...keys)
 }
 
 export function useMidi <C extends Config=Config> (

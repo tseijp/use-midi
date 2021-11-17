@@ -13,19 +13,19 @@ export default function (props: any) {
   const { nodes } = useGLTF(src) as any
   return (
     <group ref={group} {...other} dispose={null} position={[-0.06, 0, -0.19]} rotation={[Math.PI / 2, 0, 0]}>
-      <group ref={midi} {...binds.midi(midi)}>
+      <group ref={midi} {...binds.midi({ref: midi})}>
         <mesh geometry={nodes.Case_Plane_1.geometry} material={nodes.Case_Plane_1.material} />
         <mesh geometry={nodes.Case_Plane_2.geometry} material={nodes.Case_Plane_2.material} />
       </group>
-      <group ref={note} {...binds.note(note)}>
+      <group ref={note} {...binds.note({ref: note})}>
         <mesh geometry={nodes.Buttons_2_Plane007_1.geometry} material={nodes.Buttons_2_Plane007_1.material} />
         <mesh geometry={nodes.Buttons_2_Plane007_2.geometry} material={nodes.Buttons_2_Plane007_2.material} />
       </group>
-      <group ref={fade} {...binds.fade(fade)}>
+      <group ref={fade} {...binds.fade({ref: fade})}>
         <mesh geometry={nodes.Sliders_Plane039_1.geometry} material={nodes.Sliders_Plane039_1.material} />
         <mesh geometry={nodes.Sliders_Plane039_2.geometry} material={nodes.Sliders_Plane039_2.material} />
       </group>
-      <group ref={note_} {...binds.note(note_)}>
+      <group ref={note_} {...binds.note({ref: note_})}>
         <mesh geometry={nodes.Buttons_Plane031_1.geometry} material={nodes.Buttons_Plane031_1.material} />
         <mesh geometry={nodes.Buttons_Plane031_2.geometry} material={nodes.Buttons_Plane031_2.material} />
       </group>

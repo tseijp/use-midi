@@ -35,3 +35,20 @@ useMidi({fade: state => {}}, {...sharedConfig, fade: fadeConfig})
 ```
 
 [config]: https://github.com/tseijp/use-midi/blob/master/packages/core/src/types/config.ts
+
+
+## Binding special config
+
+You can override config using first argument of bind
+
+```js
+const bind = useNote(() => {}, {channel: 0, note: 0})
+return (
+  <div>
+    <button {...bind()} />
+    <button {...bind({note: 1})} />
+    <button {...bind({channel: 1})} />
+    <button {...bind({channel: 1, note: 1})} />
+  </div>
+)
+```

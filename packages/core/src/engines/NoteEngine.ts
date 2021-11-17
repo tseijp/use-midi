@@ -8,7 +8,7 @@ export class NoteEngine extends Engine<'note'> {
         fun(this.midimessage.bind(this), 'midimessage')
         fun(this.devicestart.bind(this), device, 'start')
         fun(this.deviceend.bind(this), device, 'out')
-        fun(this.deviceend.bind(this), device, 'end')
+        fun(this.deviceend.bind(this), device, 'up')
     }
 
     midimessage (event: any) {

@@ -56,8 +56,8 @@ export function App () {
           {[...ports].map((v, i) =>
             <div key={i}>
               <h5>{v[0]}</h5>
-              <div>name: {v[1].name}</div>
-              <div>type: {v[1].type}</div>
+              <div>name: {v[1]?.name}</div>
+              <div>type: {v[1]?.type}</div>
             </div>
           )}
         </>

@@ -1,5 +1,5 @@
-import { each, call } from './utils'
 import { Controller } from './Controller'
+import { each, call, is } from './utils'
 import { MidiKey, IngKey, State } from './types'
 
 const { abs, sign } = Math
@@ -20,13 +20,11 @@ export interface Engine<Key extends MidiKey> {
 
 export abstract class Engine<Key extends MidiKey> {
     readonly _ctrl: Controller
-    readonly _args: any[]
     readonly _key: Key
     abstract readonly _ingKey: IngKey
 
-    constructor (ctrl: Controller, args: any, key: Key) {
+    constructor (ctrl: Controller, key: Key) {
         this._ctrl = ctrl
-        this._args = args
         this._key = key
 
         if (!this.state) {
@@ -52,21 +50,24 @@ export abstract class Engine<Key extends MidiKey> {
      * reset state if init run
      */
     reset () {
-        const { state: $, config: {shared, from}, _args, _ctrl } = this
+        const { state: $, config, $config, _ctrl } = this
         resetMap($, 'value', 'delta', 'offset', 'distance', 'movement')
         $.deltaTime = $.timeStamp = $.elapsedTime = 0
         $._active = $.active = $.blocked = $.force = false // shared[_ingKey] = false
-        $.command = $.channel = $.note = $.memo = void 0
-        $.threshold = abs(shared.transform(shared.threshold))
-        $.offset = $._offset = from? call(from): $._offset
+        $.command = $.memo = void 0
+        $.channel = $.note
+        $.threshold = abs($config.transform($config.threshold))
+        $.offset = $._offset = config.from? call(config.from): $._offset
         $.send = () => (($.target as any)?.send || _ctrl.output?.send)?.($.data)
         $.first = true
-        $.args = _args
+        $.channel = $config.channel
+        $.args = $config.args
+        $.note = $config.note
         $.step = -1
     }
 
     /**
-     * start of the midi access
+     * start of evemt
      */
     start (event?: any) {
         const { state: $, } = this
@@ -80,11 +81,13 @@ export abstract class Engine<Key extends MidiKey> {
     }
 
     /**
-     * calculate midi event data
+     * calculate evemt
      */
     compute (event?: any) {
-        const { state: $, shared, config, _ingKey } = this
-        $.args = this._args
+        const { state: $, $state, $config, _ingKey } = this
+        $.args = $config.args
+        // $.note = note
+        // $.channel = channel
 
         /**
          * sets event properties on all event handlers
@@ -95,10 +98,10 @@ export abstract class Engine<Key extends MidiKey> {
             $.deltaTime = event.timeStamp - $.timeStamp
             $.timeStamp = event.timeStamp
             $.elapsedTime = $.timeStamp - $.startTime
-            if (!!event.data) computeMidiMessage(this, event)
+            if (!is.und(event.data)) computeMidiMessage(this, event)
         }
 
-        const _m = config.shared.transform($._movement)
+        const _m = $config.transform($._movement)
         if (!~$.step) $.step = abs(_m) > $.threshold? 0: $.threshold
         if (!~$.step || !$._active || $.blocked) if (!$.active) return
 
@@ -107,15 +110,15 @@ export abstract class Engine<Key extends MidiKey> {
          */
         $.last = $.active && !$._active
         $.first = !$.active && $._active
-        $.active = shared[_ingKey] = $._active
+        $.active = $state[_ingKey] = $._active
         $.abs = abs($._delta)
         $.sign = sign(_m)
         $.direction = sign($._delta)
-        shared.movement = $.movement = $._movement = _m - $.sign * $.step
-        shared.distance = $.distance = $._distance = $.distance + $.abs
-        shared.offset = $.offset = $._offset + $._movement
-        shared.value = $.value = $._value
-        shared.delta = $.delta = $._delta
+        $state.movement = $.movement = $._movement = _m - $.sign * $.step
+        $state.distance = $.distance = $._distance = $.distance + $.abs
+        $state.offset = $.offset = $._offset + $._movement
+        $state.value = $.value = $._value
+        $state.delta = $.delta = $._delta
         if ($.last) return this.__end__?.()
         if ($.first) return void this.__start__?.()
         $.velocity = $._delta / $.deltaTime
@@ -126,10 +129,10 @@ export abstract class Engine<Key extends MidiKey> {
      * Fires the midi prop.
      */
     emit () {
-        const { state: $, shared } = this
+        const { state: $, $state } = this
         if ($.blocked && !$.force) return
-        const memo = this.prop({ ...shared, ...$, [this._key]: $._value })
-        if (memo !== undefined) $.memo = memo
+        const memo = this.prop({ ...$state, ...$, [this._key]: $._value })
+        if (!is.und(memo)) $.memo = memo
     }
 
     /**
@@ -143,12 +146,16 @@ export abstract class Engine<Key extends MidiKey> {
         this._ctrl.state[this._key] = state
     }
 
-    get shared () {
+    get $state () {
         return this._ctrl.state.shared
     }
 
     get config () {
         return this._ctrl.config
+    }
+
+    get $config () {
+        return this._ctrl.config.shared
     }
 
     get prop() {

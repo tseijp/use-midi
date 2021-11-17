@@ -22,20 +22,24 @@ With the exception of `useMidi` whitch is a special hook, all other hook share t
 
 ```js
 const bind = useNote(state => {/*~~~*/}, config)
-return <div {...bind(...args)}>
+return <div {...bind()}>
 ```
 
 - `state` is an object containing all attributes of the midi.
 - `config` is an object containing options for the midi
-- `args` is a custom arguments you can pass to the bind function.
+- `bind` is an function for creating event handling objects.
 
 Components is a shorthand for passing hooks directly to children.
 
 ```js
 return (
-  <UseNote note={state => {/*~~~*/}}>
-    {bind => <div {...bind(...args)}/>}
+  <UseNote note={() => {}}>
+    {bind => <div {...bind()}/>}
   </UseNote>
+)
+// or
+return (
+  <UseNote as="div" note={() => {}}/>
 )
 ```
 
@@ -69,21 +73,21 @@ const noteMidi = new Note(target, (state) => {/**/})
 
 From multiple connected midi devices, you need to specify the device.
 
-```js
-useNote(state => {}, {target: midiInput})
-useNote(state => {}, {port: 'foo' || e => e.inputs?.keys()[0]})
-useNote(state => { state.port = state.event.inputs?.keys()[0] })
+```jsx
+useNote(state => {}, {input: midiInput})
+useNote(state => {}, {input: inputs => inputs[0]})
 ```
 
 ### Handling multiple midis at once
 
+
 `use-midi` also allows you to manage different midi at the same time:
 
-```js
+```jsx
 const bind = useMidi({
     fade: state => {/*~~~*/},
     note: state => {/*~~~*/},
-    turn: state => {/*~~~*/},
+    turn: state => {/*~~~*/}
 }, config)
 
 return <div {...bind()}/>

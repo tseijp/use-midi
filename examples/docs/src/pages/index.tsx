@@ -26,7 +26,7 @@ export default function App () {
      *
      */
     const fade = useFade(state => {
-        const { args: [ref] } = state
+        const { ref } = state
         if (ref.current)
             ref.current.position.z = state.value
     })
@@ -34,7 +34,7 @@ export default function App () {
      *
      */
     const note = useNote(state => {
-        const { args: [ref] } = state
+        const { ref } = state
         if (ref.current)
             ref.current.position.y = state.value
     })
@@ -42,7 +42,7 @@ export default function App () {
      *
      */
     const turn = useTurn(state => {
-        const { args: [ref] } = state
+        const { ref } = state
         if (ref.current)
             ref.current.position.y = 0
     })
