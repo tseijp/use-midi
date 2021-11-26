@@ -39,5 +39,4 @@ export type SharedConfig = Partial<{
     transform: {(v: number): number}
     channel: number // TODO
     note: number    // TODO
-    args: any[]     // TODO
 }>

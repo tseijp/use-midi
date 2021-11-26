@@ -6,11 +6,10 @@
 import React from 'react'
 import Layout from '@theme/Layout'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, useGLTF } from '@react-three/drei'
 
 import './styles.css'
 import { Nano } from '../../models'
-import { Live } from '../../components/Live'
 import { LowHigh } from '../../components/LowHigh'
 
 import { useFade, useNote, useTurn, useMidi } from 'use-midi/src'
@@ -18,6 +17,7 @@ import { useFade, useNote, useTurn, useMidi } from 'use-midi/src'
 const SRC = "img/assets/Nano.gltf"
 
 export default function App () {
+    const [ state, set ] = React.useState()
     /**
      *
      */
@@ -51,6 +51,7 @@ export default function App () {
      */
     return (
       <Layout>
+        <h1>{state}</h1>
         <Canvas camera={{position: [0, .3, 0]}}>
           <LowHigh binds={{fade, note, turn, midi}} low={Nano} src={SRC}/>
           <OrbitControls {...{enableRotate: false, minZoom: .1} as any}/>

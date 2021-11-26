@@ -2,6 +2,19 @@ export type MidiKey = Exclude<keyof FullState, 'shared'|'full'>
 
 export type IngKey = 'fading' | 'noting' | 'turning'
 
+export type State<Key extends MidiKey|'shared'> =
+    NonNullable<GenericState & FullState[Key]>
+
+export interface SharedState {
+    allowed: boolean // True when user gave permission to access MIDI devices
+    requested: boolean // True when user grant permission to access MIDI devices
+    supported: boolean // True when Web MIDI API is supported by the browser
+    messaging: boolean // True if the target is being messaged.
+    fading: boolean // True if the target is being faded.
+    noting: boolean // True if the target is being noted.
+    turning: boolean // True if the target is being turned.
+}
+
 export interface FullState {
     shared: SharedState
     fade?: FadeState
@@ -9,19 +22,6 @@ export interface FullState {
     note?: NoteState
     full?: FullState
 }
-
-export interface SharedState {
-    allowed  : boolean    // True when user gave permission to access MIDI devices
-    requested: boolean  // True when user grant permission to access MIDI devices
-    supported: boolean  // True when Web MIDI API is supported by the browser
-    messaging: boolean  // True if the target is being messaged.
-    fading: boolean  // True if the target is being faded.
-    noting: boolean  // True if the target is being noted.
-    turning: boolean  // True if the target is being turned.
-}
-
-export type State<Key extends MidiKey|'shared'> =
-    GenericState & NonNullable<FullState[Key]>
 
 export interface FadeState extends GenericState {
     axis?: 'vertical' | 'horizontal'
@@ -43,14 +43,14 @@ export interface TurnState extends GenericState {
 }
 
 export interface GenericState {
-    [key: string]: any // The arguments when you bind
-    args: any[]      // The arguments when you bind
-    memo: any        //
-    send: {():void}  //
-    type: string     // Raw Midi Event type
-    event: Event     // Raw Midi Event Object
-    target: EventTarget// Raw Target Object
-    currentTarget: EventTarget// Raw Target Object
+    [key: string]: any
+    args: any[] // The arguments when you bind
+    memo: any // TODO
+    send: {():void} // TODO
+    type: string // Raw Midi Event type
+    event: Event // Raw Midi Event Object
+    target: EventTarget // Raw Target Object
+    currentTarget: EventTarget // Raw Target Object
 
     _active: boolean
     force: boolean //

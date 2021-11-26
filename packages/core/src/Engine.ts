@@ -1,6 +1,6 @@
 import { Controller } from './Controller'
-import { each, call, is } from './utils'
 import { MidiKey, IngKey, State } from './types'
+import { each, eachProp, call, is } from './utils'
 
 const { abs, sign } = Math
 
@@ -19,13 +19,15 @@ export interface Engine<Key extends MidiKey> {
 }
 
 export abstract class Engine<Key extends MidiKey> {
-    readonly _ctrl: Controller
     readonly _key: Key
+    readonly _ctrl: Controller
+    readonly _kwargs: State<Key>
     abstract readonly _ingKey: IngKey
 
-    constructor (ctrl: Controller, key: Key) {
-        this._ctrl = ctrl
+    constructor (ctrl: Controller, key: Key, kwargs: any) {
         this._key = key
+        this._ctrl = ctrl
+        this._kwargs = kwargs
 
         if (!this.state) {
             this.state = {data: [0, 0, 0]} as State<Key>
@@ -50,20 +52,23 @@ export abstract class Engine<Key extends MidiKey> {
      * reset state if init run
      */
     reset () {
-        const { state: $, config, $config, _ctrl } = this
+        const { state: $, config, $state, $config, _ingKey, _kwargs, _ctrl } = this
         resetMap($, 'value', 'delta', 'offset', 'distance', 'movement')
         $.deltaTime = $.timeStamp = $.elapsedTime = 0
-        $._active = $.active = $.blocked = $.force = false // shared[_ingKey] = false
+        $._active = $.active = $.blocked = $.force = $state[_ingKey] = false
         $.command = $.memo = void 0
         $.channel = $.note
         $.threshold = abs($config.transform($config.threshold))
         $.offset = $._offset = config.from? call(config.from): $._offset
         $.send = () => (($.target as any)?.send || _ctrl.output?.send)?.($.data)
         $.first = true
-        $.channel = $config.channel
-        $.args = $config.args
-        $.note = $config.note
         $.step = -1
+        $.args = $config.args
+        $.data = $config.data
+        $.args = $config.note
+        $.channel = $config.channel
+        if (_kwargs.data) computeMidiMessage(_kwargs)
+        eachProp(_kwargs, (prop, key) => void($[key] = prop))
     }
 
     /**
@@ -85,10 +90,6 @@ export abstract class Engine<Key extends MidiKey> {
      */
     compute (event?: any) {
         const { state: $, $state, $config, _ingKey } = this
-        $.args = $config.args
-        // $.note = note
-        // $.channel = channel
-
         /**
          * sets event properties on all event handlers
          */
@@ -98,7 +99,7 @@ export abstract class Engine<Key extends MidiKey> {
             $.deltaTime = event.timeStamp - $.timeStamp
             $.timeStamp = event.timeStamp
             $.elapsedTime = $.timeStamp - $.startTime
-            if (!is.und(event.data)) computeMidiMessage(this, event)
+            if (event.data) computeMidiMessage($, event)
         }
 
         const _m = $config.transform($._movement)
@@ -131,13 +132,17 @@ export abstract class Engine<Key extends MidiKey> {
     emit () {
         const { state: $, $state } = this
         if ($.blocked && !$.force) return
-        const memo = this.prop({ ...$state, ...$, [this._key]: $._value })
+        const memo = this.prop({ ...$state, ...$, [this._key]: $._value })      // !!!
         if (!is.und(memo)) $.memo = memo
     }
 
     /**
      * shorthands of ctrl value
      */
+    get prop() {
+        return this._ctrl.props[this._key]!
+    }
+
     get state (): State<Key> {
         return this._ctrl.state[this._key]!
     }
@@ -151,26 +156,22 @@ export abstract class Engine<Key extends MidiKey> {
     }
 
     get config () {
-        return this._ctrl.config
+        return this._ctrl.config // [this._key]! // ??
     }
 
     get $config () {
         return this._ctrl.config.shared
     }
 
-    get prop() {
-        return this._ctrl.props[this._key]!
-    }
 }
 
 /**
  * calculate data on MIDI message event
  */
-function computeMidiMessage (self: Engine<MidiKey>, event?: any) {
-    const { state: $ } = self
+function computeMidiMessage ($: any, event?: any) {
     const [_p0=  0, _p1=  0, _p2=  0] = $.data || []
     const [_c0=_p0, _c1=_p1, _c2=_p2] = event.data || []
-    if(!$.data)
+    if(!$.init)
         $.init = [_c0, _c1, _c2]
     $.data = [_c0, _c1, _c2], $.command = _c0 >>  4, $._value = _c2,  $.note = _c1
     $.prev = [_p0, _p1, _p2], $.channel = _c0 & 0xf, $._delta = _c2 - $.value
@@ -181,7 +182,7 @@ function resetMap ($: object, ...keys: string[]): void
 
 function resetMap ($: any, ...keys: any[]) {
     each(keys, key => {
-        let _m = $[key + 'Map'], _n = $.node || 0
+        let _m = $[key + 'Map'], _n = $.note || 0
         $['_' + key] = 0
         if (_m) return _m.clear()
         _m = $[key + 'Map'] = new Map()

@@ -18,6 +18,7 @@ describe('targets', () => {
     const midiAccess = {onstatechange: null} as unknown as MIDIAccess
     const nativeRma = () => new Promise(resolve => resolve(midiAccess))
     beforeAll(() => void rma.use(nativeRma))
+
     it.each`
         index     | target     | props | config
         ${'Fade'} | ${target}  | ${fn} | ${void 0}

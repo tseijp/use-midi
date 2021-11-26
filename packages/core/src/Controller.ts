@@ -17,14 +17,14 @@ export const Actions = {
 export class Controller {
     public keys = new Set<MidiKey>()
     public native = {} as any
-    public props = {} as Props
-    public state = {shared: {}} as any
-    public config = {shared: {}} as any
+    private _props = {} as Props
+    private _state = {shared: {}} as any
+    private _config = {shared: {}} as any
     private _event = new EventStore()
     private _access = new AccessStore()
 
     constructor (props: Props={}) {
-        this.props = props
+        this._props = props
         if (props.fade) this.keys.add('fade')
         if (props.note) this.keys.add('note')
         if (props.turn) this.keys.add('turn')
@@ -35,7 +35,7 @@ export class Controller {
      * Cleans all side effects when the controller did unounted
      */
     effect () {
-        const { target, device } = this.config.shared
+        const { target, device } = this._config.shared
         if (target || device) this.bind()
     }
 
@@ -48,9 +48,9 @@ export class Controller {
      * Attaches props and config when each render
      */
     apply (props?: Props, config?: Config, ...keys: MidiKey[]) {
-        if (keys.length > 1) [this.props, this.native] = parseProps(props!)
-        else this.props = props || this.props
-        this.config = parseConfig(config, ...keys)
+        if (keys.length > 1) [this._props, this.native] = parseProps(props!)
+        else this._props = props || this._props
+        this._config = parseConfig(config, ...keys)
         each(keys, key => {
             EngineMap.set(key, Actions[key].engine)
             ConfigMap.set(key, Actions[key].config)
@@ -62,14 +62,14 @@ export class Controller {
     /**
      * The bind function that can be returned by hooks
      */
-    bind (config?: any) {
-        if (!is.und(config)) {
-            this.config = parseConfig(config)
-            this.state.shared = {...this.state.shared, ...config}
-        }
-        const props: any = {}, midi: any[] = []
-        const { keys, native, state: $, _access, _event } = this
-        let { target, enabled } = this.config.shared
+    bind (...args: any[]) {
+        const props: any = {}, midi: any[] = [], kwargs = parseKwargs(...args)  // !!!
+        const { keys, native, _state: $, _access, _event } = this
+        let { target, enabled } = this._config.shared
+
+        /**
+         * Bind native functions you set and functions in Engine to props.
+         */
         const fun = (prop: {(e: any): void}, device='', key='') => {
             if (!key) return midi.push(prop)
             const type = !device? key: toPropEvent(device, key)
@@ -78,11 +78,11 @@ export class Controller {
         }
 
         /**
-         * Initialize engine and bind functions
+         * Initialize engine and bind functions with fun!
          */
         if (enabled)
-            each(keys, key => new (EngineMap.get(key)!)(this, key).bind(fun))
-        eachProp(native, (p, k) => fun(e => p({...$.shared, event: e, ...config}), '', k))
+            each(keys, key => new (EngineMap.get(key)!)(this, key, kwargs).bind(fun))      // !!!
+        eachProp(native, (p, k) => fun(e => p({...$.shared, event: e, ...kwargs}), '', k)) // !!!
         eachProp(props, (p, k) => void (props[k] = chain(...p)))
 
         /**
@@ -91,9 +91,10 @@ export class Controller {
          */
         _access.add(() => _event.add(this.input, 'midimessage', chain(...midi)))
 
-        if (!target) return props
+        if (!target)
+            return props
         else eachProp(props, (prop, key) => {
-            let eventKey = key.substr(2).toLowerCase()
+            const eventKey = key.substr(2).toLowerCase()
             _event.add(target, eventKey, prop)
         })
     }
@@ -101,13 +102,25 @@ export class Controller {
     /**
      * shorthands of each port
      */
+    get props () {
+        return this._props
+    }
+
+    get state () {
+        return this._state
+    }
+
+    get config () {
+        return this._config
+    }
+
     get input () {
-        const shared = this.config.shared
+        const shared = this._config.shared
         return parsePort(shared.input || shared.port, rma.inputs) as MIDIInput
     }
 
     get output () {
-        const shared = this.config.shared
+        const shared = this._config.shared
         return parsePort(shared.output || shared.port, rma.outputs) as MIDIOutput
     }
 }
@@ -134,6 +147,23 @@ export function parseProps (_props: Props) {
         else native[key] = prop
     })
     return [props, native]
+}
+
+function parseKwargs (...args: any[]): object
+function parseKwargs (note: () => number, ...args: []): object
+function parseKwargs (data: () => number[], ...args: any[]): object
+function parseKwargs (state: () => object, ...args: []): object
+
+function parseKwargs (arg?: unknown, ...args: any[]) {
+    if (!is.fun(arg))
+        return {args: [arg, ...args]}
+    arg = arg(...args)
+    if (is.num(arg))
+        return {note: arg, args}
+    if (is.arr(arg) && is.num(arg[0]))
+        return {data: arg, args}
+    if (is.obj(arg))
+        return {...arg, args}
 }
 
 export const sharedConfig: Config<'shared'> = {
