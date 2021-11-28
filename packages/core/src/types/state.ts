@@ -1,26 +1,26 @@
-export type MidiKey = Exclude<keyof FullState, 'shared'|'full'>
+export type MidiKey = Exclude<keyof SelfState, 'shared'|'self'>
 
 export type IngKey = 'fading' | 'noting' | 'turning'
 
-export type State<Key extends MidiKey|'shared'> =
-    NonNullable<GenericState & FullState[Key]>
+export type State<Key extends MidiKey|'shared'|'self'='self'> =
+    NonNullable<GenericState & SelfState[Key]>
+
+export type SelfState = {
+    fade: FadeState
+    turn: TurnState
+    note: NoteState
+    self: NonNullable<GenericState & SelfState>
+    shared: SharedState
+}
 
 export interface SharedState {
-    allowed: boolean // True when user gave permission to access MIDI devices
-    requested: boolean // True when user grant permission to access MIDI devices
-    supported: boolean // True when Web MIDI API is supported by the browser
-    messaging: boolean // True if the target is being messaged.
     fading: boolean // True if the target is being faded.
     noting: boolean // True if the target is being noted.
     turning: boolean // True if the target is being turned.
-}
-
-export interface FullState {
-    shared: SharedState
-    fade?: FadeState
-    turn?: TurnState
-    note?: NoteState
-    full?: FullState
+    messaging: boolean // True if the target is being messaged.
+    requested: boolean // True when user grant permission to access MIDI devices
+    supported: boolean // True when Web MIDI API is supported by the browser
+    allowed: boolean // True when user gave permission to access MIDI devices
 }
 
 export interface FadeState extends GenericState {
@@ -44,8 +44,8 @@ export interface TurnState extends GenericState {
 
 export interface GenericState {
     [key: string]: any
-    args: any[] // The arguments when you bind
-    memo: any // TODO
+    args: null | any[] // The arguments when you bind
+    memo: null | any // TODO
     send: {():void} // TODO
     type: string // Raw Midi Event type
     event: Event // Raw Midi Event Object
@@ -69,9 +69,9 @@ export interface GenericState {
     data: number[] // Current raw values of recieved Midi data
     prev: number[] // Previous raw values of recieved Midi data
 
-    command?: number // recieved Midi command code
-    channel?: number // recieved Midi channel number
-    note?: number // Midi note number if recieved
+    command: null | number // recieved Midi command code
+    channel: null | number // recieved Midi channel number
+    note: null | number // Midi note number if recieved
 
     value: number // Midi velocity number if recieved
     delta: number // Difference between the current value and the previous value.

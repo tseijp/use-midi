@@ -1,10 +1,11 @@
-import { Controller } from './Controller'
-import { MidiKey, IngKey, State } from './types'
 import { each, eachProp, call, is } from './utils'
+import { MidiKey, IngKey, State } from './types'
+import { Controller } from './Controller'
+import { Common } from './Common'
 
 const { abs, sign } = Math
 
-export interface Engine<Key extends MidiKey> {
+export interface Engine<Key extends MidiKey> extends Common<Key> {
     /**
      * initiarize engine
      */
@@ -18,17 +19,13 @@ export interface Engine<Key extends MidiKey> {
     __end__?(): void
 }
 
-export abstract class Engine<Key extends MidiKey> {
-    readonly _key: Key
-    readonly _ctrl: Controller
-    readonly _kwargs: State<Key>
+export abstract class Engine<Key extends MidiKey> extends Common<Key> {
     abstract readonly _ingKey: IngKey
+    readonly _kwargs: object
 
-    constructor (ctrl: Controller, key: Key, kwargs: any) {
-        this._key = key
-        this._ctrl = ctrl
+    constructor (ctrl: Controller, key: Key, kwargs: object) {
+        super(ctrl, key)
         this._kwargs = kwargs
-
         if (!this.state) {
             this.state = {data: [0, 0, 0]} as State<Key>
             this.__init__?.()
@@ -39,33 +36,33 @@ export abstract class Engine<Key extends MidiKey> {
     /**
      * event listeners are properly set by the  Controller.
      */
-    abstract bind (
+    protected abstract bind (
         bindFn: (
             device: string,
             action: string,
             prop: (event: any) => void,
             isNative?: boolean
         ) => void
-    ): any
+    ): void
 
     /**
      * reset state if init run
      */
-    reset () {
-        const { state: $, config, $state, $config, _ingKey, _kwargs, _ctrl } = this
+    protected reset () {
+        const { state: $, config, $state, $config, _ingKey, _kwargs, output } = this
         resetMap($, 'value', 'delta', 'offset', 'distance', 'movement')
         $.deltaTime = $.timeStamp = $.elapsedTime = 0
         $._active = $.active = $.blocked = $.force = $state[_ingKey] = false
-        $.command = $.memo = void 0
+        $.command = $.memo = null
         $.channel = $.note
         $.threshold = abs($config.transform($config.threshold))
         $.offset = $._offset = config.from? call(config.from): $._offset
-        $.send = () => (($.target as any)?.send || _ctrl.output?.send)?.($.data)
+        $.send = () => (($.target as any)?.send || output?.send)?.($.data)
         $.first = true
         $.step = -1
         $.args = $config.args
-        $.data = $config.data
-        $.args = $config.note
+        $.data = $config.data!
+        $.note = $config.note
         $.channel = $config.channel
         if (_kwargs.data) computeMidiMessage(_kwargs)
         eachProp(_kwargs, (prop, key) => void($[key] = prop))
@@ -74,7 +71,7 @@ export abstract class Engine<Key extends MidiKey> {
     /**
      * start of evemt
      */
-    start (event?: any) {
+    protected start (event?: any) {
         const { state: $, } = this
         if (!$._active) {
             this.reset()
@@ -88,7 +85,7 @@ export abstract class Engine<Key extends MidiKey> {
     /**
      * calculate evemt
      */
-    compute (event?: any) {
+    protected compute (event?: any) {
         const { state: $, $state, $config, _ingKey } = this
         /**
          * sets event properties on all event handlers
@@ -129,40 +126,12 @@ export abstract class Engine<Key extends MidiKey> {
     /**
      * Fires the midi prop.
      */
-    emit () {
+    protected emit () {
         const { state: $, $state } = this
         if ($.blocked && !$.force) return
-        const memo = this.prop({ ...$state, ...$, [this._key]: $._value })      // !!!
+        const memo = this.props({ ...$state, ...$, [this._key]: $._value })      // !!!
         if (!is.und(memo)) $.memo = memo
     }
-
-    /**
-     * shorthands of ctrl value
-     */
-    get prop() {
-        return this._ctrl.props[this._key]!
-    }
-
-    get state (): State<Key> {
-        return this._ctrl.state[this._key]!
-    }
-
-    set state (state: State<Key>) {
-        this._ctrl.state[this._key] = state
-    }
-
-    get $state () {
-        return this._ctrl.state.shared
-    }
-
-    get config () {
-        return this._ctrl.config // [this._key]! // ??
-    }
-
-    get $config () {
-        return this._ctrl.config.shared
-    }
-
 }
 
 /**

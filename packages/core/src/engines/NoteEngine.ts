@@ -4,7 +4,7 @@ export class NoteEngine extends Engine<'note'> {
     _ingKey = 'noting' as const
 
     bind (fun: any) {
-        const device = this.config.shared.device
+        const { device } = this.$config
         fun(this.midimessage.bind(this), 'midimessage')
         fun(this.devicestart.bind(this), device, 'start')
         fun(this.deviceend.bind(this), device, 'out')

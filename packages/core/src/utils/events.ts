@@ -1,4 +1,6 @@
-// ref: https://github.com/pmndrs/use-gesture/blob/main/packages/core/src/utils/events.ts
+/**
+ * ref: https://github.com/pmndrs/use-gesture/blob/main/packages/core/src/utils/events.ts
+ */
 
 const EVENT_TYPE_MAP: any = {
     pointer: { start: 'down', change: 'move', end: 'up' },

@@ -1,6 +1,17 @@
 import { MidiKey, State } from './state'
 import { Events } from './events'
 
+export type Props<Key extends MidiKey|'shared'|'self'='self'> =
+    NonNullable<SelfProps[Key] & NativeProps>
+
+export type SelfProps = {
+    fade: Prop<'fade'>
+    turn: Prop<'turn'>
+    note: Prop<'note'>
+    self: NonNullable<SelfProps & NativeProps>
+    shared: any // TODO
+}
+
 export type Prop <
     Key extends MidiKey,
     E = Events<Key>
@@ -8,15 +19,7 @@ export type Prop <
     state: Omit<State<Key>, 'event'> & { event: E }
 ) => any | void
 
-export type Props = Partial<FullProps & NativeProps>
-
-export type FullProps = Partial<{
-    fade: Prop<'fade'>
-    turn: Prop<'turn'>
-    note: Prop<'note'>
-}>
-
-export type NativeProps <T extends Props = {}> = {
+export type NativeProps <T extends Partial<Props>={}> = {
     [key in NativeKey]?: (
         state: State<'shared'> & {
             event: undefined extends T[key]
@@ -32,7 +35,7 @@ type ReactDOMAttributes = React.DOMAttributes<EventTarget>
 
 type NativeKey = keyof Omit<
     ReactDOMAttributes,
-    keyof FullProps | 'children' | 'dangerouslySetInnerHTML'
+    keyof SelfProps | 'children' | 'dangerouslySetInnerHTML'
 >
 
 type GetEvent<Key extends NativeKey> = ReactDOMAttributes[Key] extends

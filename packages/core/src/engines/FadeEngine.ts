@@ -4,7 +4,7 @@ export class FadeEngine extends Engine<'fade'> {
     _ingKey = 'fading' as const
 
     bind (fun: any) {
-        const device = this.config.shared.device
+        const { device } = this.$config
         fun(this.compute.bind(this), 'midimessage')
         fun(this.devicestart.bind(this), device, 'start')
         fun(this.devicechange.bind(this), device, 'change')

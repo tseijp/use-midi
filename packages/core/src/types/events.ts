@@ -1,14 +1,14 @@
 import { MidiKey } from './state'
 
-export type FullEvents = {
+export type Events<Key extends MidiKey|'self'='self'> =
+    NonNullable<SelfEvents[Key]>
+
+export type SelfEvents = {
     fade: MIDIMessageEvent & MIDIConnectionEvent
     note: MIDIMessageEvent & MIDIConnectionEvent
     turn: MIDIMessageEvent & MIDIConnectionEvent
-    full: FullEvents
+    self: SelfEvents
 }
-
-export type Events<Key extends MidiKey|'full'='full'> =
-    NonNullable<FullEvents[Key]>
 
 // Type definitions for Web MIDI API 2.0
 // Project: http://www.w3.org/TR/webmidi/

@@ -6,9 +6,9 @@ import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
 function Mesh (props: any) {
-    const { b, i, g, m } = props
+    const { b, i, j, g, m } = props
     const ref = useRef()
-    return <mesh ref={ref} geometry={g} material={m} {...b({ref, key: i, i})}/>
+    return <mesh ref={ref} geometry={g} material={m} {...b(() => ({ref, key: i || j, i, j}))}/>
 }
 
 export default function (props: any) {

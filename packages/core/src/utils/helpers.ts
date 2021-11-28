@@ -1,5 +1,6 @@
-// ref
-// https://github.com/pmndrs/react-spring/blob/master/packages/shared/src/helpers.ts
+/** ref
+ * https://github.com/pmndrs/react-spring/blob/master/packages/shared/src/helpers.ts
+ */
 
 type EachFn<Value, Key, This> = (this: This, value: Value, key: Key) => void
 

@@ -7,15 +7,15 @@ export class Recognizer {
 
     constructor (
         target: EventTarget | string | ((e: any) => string),
-        props: Props | {},
-        config: Config | {},
+        props: Partial<Props> | {},
+        config: Partial<Config> | {},
         ...keys: MidiKey[]
     ) {
         this._ctrl = new Controller(props)
         this._ctrl.apply(props, config, ...keys)
         if (is.str(target) || is.fun(target))
-            this._ctrl.config.shared.device = target
-        else this._ctrl.config.shared.target = target
+            this._ctrl.$config!.device = target as any
+        else this._ctrl.$config!.target = target
         this._ctrl.effect()
     }
 

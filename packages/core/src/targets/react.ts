@@ -6,7 +6,7 @@ export type As = string | keyof HTML | keyof SVG | FC<any> | React.ClassType<any
 export type Children = null | JSX.Element | {(bind: Controller['bind'], ref: Ref<any>): null | JSX.Element}
 
 export function useRecognizers <C extends Config=Config> (
-    props: Props, config?: C | {}, ...keys: MidiKey[]
+    props: Partial<Props>, config?: Partial<C> | {}, ...keys: MidiKey[]
 ): Controller['bind']
 
 export function useRecognizers (props: any, config?: any, ...keys: any[]) {
@@ -17,7 +17,7 @@ export function useRecognizers (props: any, config?: any, ...keys: any[]) {
 }
 
 export function useMidi <C extends Config=Config> (
-    props: Props, config?: Config | {}
+    props: Partial<Props>, config?: Partial<Config> | {}
 ): Controller['bind']
 
 export function useMidi (props: any, config: any={}) {
