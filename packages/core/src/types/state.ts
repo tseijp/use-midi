@@ -18,9 +18,9 @@ export interface SharedState {
     noting: boolean // True if the target is being noted.
     turning: boolean // True if the target is being turned.
     messaging: boolean // True if the target is being messaged.
-    requested: boolean // True when user grant permission to access MIDI devices
-    supported: boolean // True when Web MIDI API is supported by the browser
-    allowed: boolean // True when user gave permission to access MIDI devices
+    requested: boolean // True when user grant permission to access MIDI devices.
+    supported: boolean // True when Web MIDI API is supported by the browser.
+    allowed: boolean // True when user gave permission to access MIDI devices.
 }
 
 export interface FadeState extends GenericState {

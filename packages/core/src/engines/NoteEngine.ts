@@ -7,8 +7,8 @@ export class NoteEngine extends Engine<'note'> {
         const { device } = this.$config
         fun(this.midimessage.bind(this), 'midimessage')
         fun(this.devicestart.bind(this), device, 'start')
+        fun(this.deviceend.bind(this), device, 'end')
         fun(this.deviceend.bind(this), device, 'out')
-        fun(this.deviceend.bind(this), device, 'up')
     }
 
     midimessage (event: any) {
@@ -23,6 +23,7 @@ export class NoteEngine extends Engine<'note'> {
         this.start(event)
         $._value = 0xff
         $._movement = $._delta = $.value - $._value
+        $._active = true
         this.compute(event)
         this.emit()
     }

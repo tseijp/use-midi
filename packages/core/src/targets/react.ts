@@ -2,9 +2,12 @@ import React, { ForwardedRef as Ref, createElement as el, ReactHTML as HTML, Rea
 import { Controller } from '../Controller'
 import { Events, MidiKey, Config, Prop, Props } from '../types'
 
-export type As = string | keyof HTML | keyof SVG | FC<any> | React.ClassType<any, any, any>
-export type Children = null | JSX.Element | {(bind: Controller['bind'], ref: Ref<any>): null | JSX.Element}
+type As = string | keyof HTML | keyof SVG | FC<any> | React.ClassType<any, any, any>
+type Children = null | JSX.Element | {(bind: Controller['bind'], ref: Ref<any>): null | JSX.Element}
 
+/**
+ * React hooks
+ */
 export function useRecognizers <C extends Config=Config> (
     props: Partial<Props>, config?: Partial<C> | {}, ...keys: MidiKey[]
 ): Controller['bind']
@@ -48,6 +51,10 @@ export function useTurn (turn: any, config: any={}) {
     return useRecognizers({ turn }, config, 'turn')
 }
 
+
+/**
+ * React Compornents with hooks
+ */
 export const UseMidi = React.forwardRef(_UseMidi)
 export const UseFade = React.forwardRef(_UseFade)
 export const UseTurn = React.forwardRef(_UseTurn)

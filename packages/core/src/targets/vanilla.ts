@@ -10,12 +10,14 @@ export class Recognizer {
         props: Partial<Props> | {},
         config: Partial<Config> | {},
         ...keys: MidiKey[]
-    ) {
+    )
+
+    constructor (target: any, props: any, config: any, ...keys: any[]) {
+        if (is.str(target) || is.fun(target))
+            config.device! = target as any
+        else config.target! = target
         this._ctrl = new Controller(props)
         this._ctrl.apply(props, config, ...keys)
-        if (is.str(target) || is.fun(target))
-            this._ctrl.$config!.device = target as any
-        else this._ctrl.$config!.target = target
         this._ctrl.effect()
     }
 

@@ -66,7 +66,6 @@ let ts = -1, sync = false, event: any, nativeRma = () => {
 rma.sync = fun => void ( sync = true, rma.fun(fun), sync = false )
 rma.cancel = fun => void ( updateQueue.delete(fun), writeQueue.delete(fun) )
 rma.throttle = fun => rma.fun(fun) // TODO
-
 rma.use = fun => (nativeRma = fun)
 rma.now = typeof performance != 'undefined' ? () => performance.now() : Date.now
 rma.fun = fun => fun()

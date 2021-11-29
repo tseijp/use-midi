@@ -9,7 +9,7 @@ export type SelfProps = {
     turn: Prop<'turn'>
     note: Prop<'note'>
     self: NonNullable<SelfProps & NativeProps>
-    shared: any // TODO
+    shared:  NonNullable<SelfProps & NativeProps>
 }
 
 export type Prop <

@@ -3,7 +3,6 @@
  */
 
 type EachFn<Value, Key, This> = (this: This, value: Value, key: Key) => void
-
 type Eachable<Value = any, Key = any, This = any> = {
     forEach(cb: EachFn<Value, Key, This>, ctx?: This): void
 }
@@ -23,9 +22,7 @@ export function eachProp<T extends object, This>(
 }
 
 export function flush<P, T>(queue: Map<P, T>, iterator: (entry: [P, T]) => void): void
-
 export function flush<T>(queue: Set<T>, iterator: (value: T) => void): void
-
 export function flush(queue: any, iterator: any) {
     if (queue.size) {
         const items = Array.from(queue)
@@ -51,10 +48,10 @@ export function chain(...fns: Function[]): Function {
 
 type IsType<U> = <T>(arg: T & any) => arg is Narrow<T, U>
 type Narrow<T, U> = [T] extends [any] ? U : [T] extends [U] ? Extract<T, U> : U
-
 type PlainObject<T = any> = Exclude<T & {[key: string]: any}, Function | readonly any[]>
 
-const is = (a: any, b?: any, ...other: any): boolean => {
+
+export const is = (a: any, b?: any, ...other: any): boolean => {
     if (other.length > 0) return is(a, b) && is(b, ...other)
     if (typeof a !== typeof b) return false
     if (is.str(a) || is.num(a)) return a === b
@@ -72,5 +69,3 @@ is.str = (a: unknown): a is string => typeof a === 'string'
 is.bol = (a: unknown): a is boolean => a === true || a === false
 is.fun = ((a: unknown) => typeof a === 'function') as IsType<Function>,
 is.obj = <T = any>(a: T & any): a is PlainObject<T> => !!a && a.constructor.name === 'Object'
-
-export  { is }

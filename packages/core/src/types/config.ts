@@ -1,8 +1,6 @@
 import { MidiKey } from './state'
 import { MIDIPort } from './events'
 
-const defaultPort = (...keys: string[]) => keys[0]
-
 export type Config <Key extends MidiKey|'shared'|'self'='self'> =
     NonNullable<SelfConfig[Key] & SharedConfig>
 
@@ -30,21 +28,22 @@ export interface MidiConfig {
 type SelectPort = string | MIDIPort | {(...args: string[]): string | MIDIPort}
 
 export interface SharedConfig <T extends EventTarget=EventTarget>{
-    enabled: boolean // True when the Midi is active
-    sysex: boolean // True when use the sysex option requesting MIDI access
-    debug: boolean // True when use debug mode
-    target: null | T // Raw Midi Event Object
-    device: string  // Select Device Key
-    port: SelectPort // Select Device Key
-    input: SelectPort // Select Device Key
-    output: SelectPort // Select Device Key
-    threshold: number //
+    enabled: boolean // True when the Midi is active.
+    sysex: boolean // True when use the sysex option requesting MIDI access.
+    debug: boolean // True when use debug mode.
+    target: null | T // Raw Midi Event Object.
+    device: string  // Select Device Key.
+    port: SelectPort // Select input and output port key.
+    input: SelectPort // Select input port key.
+    output: SelectPort //Select output port key.
+    threshold: number
     transform: {(v: number): number}
-    command: null | number
-    channel: null | number // TODO
-    note: null | number    // TODO
-    args: null | any[]
-    data: null | number[]
+    delay: null | number // Default number of delay time stamp when send.
+    command: null | number // Default number of recieved Midi command co10de.
+    channel: null | number // Default number of recieved Midi channel number.
+    note: null | number // Default number of Midi note number if recieved.
+    data: null | number[] // Default raw values of the Midi.
+    args: null | any[] // Default arguments when you bind.
 }
 
 export const SharedConfig: Config<'shared'> = {
@@ -53,14 +52,15 @@ export const SharedConfig: Config<'shared'> = {
     debug: false,
     target: null,
     device: 'pointer',
-    port: defaultPort,
-    input: defaultPort,
-    output: defaultPort,
+    port: 'default',
+    input: 'default',
+    output: 'default',
     threshold: 0,
     transform: (v=0) => v || 0,
     command: null,
     channel: null,
     note: null,
     args: null,
-    data: null
+    data: null,
+    delay: null
 }

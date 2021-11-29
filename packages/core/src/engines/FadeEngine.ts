@@ -8,8 +8,8 @@ export class FadeEngine extends Engine<'fade'> {
         fun(this.compute.bind(this), 'midimessage')
         fun(this.devicestart.bind(this), device, 'start')
         fun(this.devicechange.bind(this), device, 'change')
-        fun(this.deviceend.bind(this), device, 'cancel')
         fun(this.deviceend.bind(this), device, 'end')
+        fun(this.deviceend.bind(this), device, 'cancel')
     }
 
     reset (this: FadeEngine) {
@@ -23,6 +23,7 @@ export class FadeEngine extends Engine<'fade'> {
         const { state: $ } = this
         this.start(event)
         $._value = event.clientX + event.clientY
+        $._active = true
         // $.initial = $._value
         this.compute(event)
     }
@@ -39,6 +40,7 @@ export class FadeEngine extends Engine<'fade'> {
     deviceend (event: PointerEvent) {
         // const { state: $ } = this
         this.compute(event)
+        this.emit()
         // $.tap = $.distance <= 3 && dy <= 3
     }
 

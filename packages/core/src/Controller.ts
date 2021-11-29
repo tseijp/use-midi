@@ -4,11 +4,10 @@ import { FadeEngine, TurnEngine, NoteEngine } from './engines'
 import { EventStore, AccessStore } from './stores'
 import { Common } from './Common'
 
-export const EngineMap = new Map<MidiKey, any>()
-
-export const ConfigMap = new Map<MidiKey, any>()
-
-export const Actions = {
+const RE_NOT_NATIVE = /^(fade|turn|note|midimessage|statechange)/
+const EngineMap = new Map<MidiKey, any>()
+const ConfigMap = new Map<MidiKey, any>()
+const Actions = {
     fade: { engine: FadeEngine, config: {} },
     turn: { engine: TurnEngine, config: {} },
     note: { engine: NoteEngine, config: {} },
@@ -49,7 +48,8 @@ export class Controller extends Common {
     }
 
     /**
-     * Attaches props and config when each render
+     * Parse and attach props and configs when each render.
+     * Each value has a Circler Reference for Shorthand.
      */
     apply (props?: Partial<Props>, config?: Partial<Config>, ...keys: MidiKey[]) {
         if (keys.length > 1)
@@ -68,17 +68,16 @@ export class Controller extends Common {
     }
 
     /**
-     * The bind function that can be returned by hooks
+     * The bind function that can be returned by hooks.
      */
     bind (...args: any[]) {
-        const props: any = {}, kwargs = parseArgs(...args)
+        const props = {} as any, kwargs = parseArgs(...args)
         const { _keys, _midi, native, _event, $state, $config } = this
-        let { target, enabled } = $config
-
-        // console.log(this.props, this.config, this.state, this.$state, this.$config)
+        const { target, enabled } = $config
 
         /**
          * Bind functions in Engine and native functions you set to props.
+         * Sort where to push handler function by using the arguments.
          */
         const fun = (prop: {(e: any): void}, device='', key='') => {
             if (!key) return _midi.add(prop)
@@ -88,7 +87,8 @@ export class Controller extends Common {
         }
 
         /**
-         * Initialize engine and bind functions with fun!
+         * Construct engines and bind handler functions with fun.
+         * Merge multi processes pushed by fun into a single function.
          */
         if (enabled)
             each(_keys, key => new (EngineMap.get(key)!)(this, key, kwargs).bind(fun))
@@ -111,7 +111,6 @@ function parseArgs (...args: any[]): object
 function parseArgs (note: () => number, ...args: []): object
 function parseArgs (data: () => number[], ...args: any[]): object
 function parseArgs (state: () => object, ...args: []): object
-
 function parseArgs (arg?: unknown, ...args: any[]) {
     if (!is.fun(arg))
         return {args: [arg, ...args]}
@@ -122,9 +121,8 @@ function parseArgs (arg?: unknown, ...args: any[]) {
         return {data: arg, args}
     if (is.obj(arg))
         return {...arg, args}
+    return {args: [arg, args]}
 }
-
-const RE_NOT_NATIVE = /^(fade|turn|note|midimessage|statechange)/
 
 export function parseProps (_props: Partial<Props>) {
     const props: any = {}, native: any = {}
