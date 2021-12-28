@@ -1,3 +1,4 @@
+import { createElement as el,} from 'react'
 import * as SRC from 'use-midi/src'
 import { rma, MIDIAccess } from 'use-midi/src'
 import { renderHook } from '@testing-library/react-hooks'
@@ -9,7 +10,7 @@ describe('targets', () => {
      */
     const fn = jest.fn()
     const fns = {fade: fn, note: fn, turn: fn}
-    const children = jest.fn(() => <></>)
+    const children = jest.fn(() => el('div'))
     const target = document.createElement('div')
 
     /**
@@ -43,7 +44,7 @@ describe('targets', () => {
         const use = (SRC as any)['use' + index]
         const Use = (SRC as any)['Use' + index]
         const { current } = renderHook(() => use(props)).result
-        const element = renderer.create(<Use {...{...props, children}}/>)
+        const element = renderer.create(el(Use, props, children))
         expect(current && element).toBeTruthy()
         expect(children.mock.calls.length).toBe(1)
         // act(() => midiAccess.onstatechange(connection)) // TODO

@@ -5,6 +5,7 @@ describe('stores', () => {
     // mock
     const removeEventListener = () => {}
     const addEventListener = (_='', fn: Function) => fn()
+    const target = {addEventListener, removeEventListener}
     const _setTimeout = window.setTimeout
     const setTimeout = (fn: Function) => fn()
     const nativeRma = () => new Promise(_ => _({onstatechange: null}))
@@ -15,9 +16,10 @@ describe('stores', () => {
     afterAll(() => void (window.setTimeout = _setTimeout))
 
     it.each`
-        index            | args
-        ${'EventStore'}  | ${[{addEventListener, removeEventListener}, 'midimessage', callback]}
-        ${'AccessStore'} | ${[callback]}
+        index             | args
+        ${'EventStore'}   | ${[target, 'midimessage', callback]}
+        ${'AccessStore'}  | ${[callback]}
+        ${'TimeoutStore'} | ${[callback, 140]}
     `('store: $index', ({index, args}) => {
         const store = new (SRC as any)[index](), length = 3
         for (let i=0; i < length; i++)
