@@ -51,7 +51,6 @@ export function useTurn (turn: any, config: any={}) {
     return useRecognizers({ turn }, config, 'turn')
 }
 
-
 /**
  * React Compornents with hooks
  */

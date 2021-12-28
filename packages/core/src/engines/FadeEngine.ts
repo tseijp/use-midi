@@ -24,7 +24,6 @@ export class FadeEngine extends Engine<'fade'> {
         this.start(event)
         $._value = event.clientX + event.clientY
         $._active = true
-        // $.initial = $._value
         this.compute(event)
     }
 

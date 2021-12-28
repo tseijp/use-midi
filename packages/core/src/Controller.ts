@@ -1,7 +1,7 @@
 import { each, eachProp, chain, is, toPropEvent } from './utils'
+import { EventStore, AccessStore, TimeoutStore } from './stores'
 import { MidiKey, Props, Config, SharedConfig } from './types'
 import { FadeEngine, TurnEngine, NoteEngine } from './engines'
-import { EventStore, AccessStore } from './stores'
 import { Common } from './Common'
 
 const RE_NOT_NATIVE = /^(fade|turn|note|midimessage|statechange)/
@@ -18,6 +18,7 @@ export class Controller extends Common {
     readonly _midi = new Set<(e: any) => void>()
     readonly _event = new EventStore()
     readonly _access = new AccessStore()
+    readonly _timeout = new TimeoutStore()
     private native = {} as any
     _props = {shared: {}} as any
     _state = {shared: {}} as any
@@ -70,8 +71,8 @@ export class Controller extends Common {
     /**
      * The bind function that can be returned by hooks.
      */
-    bind (...args: any[]) {
-        const props = {} as any, kwargs = parseArgs(...args)
+    bind (..._args: any[]) {
+        const props = {} as any, args = parseArgs(..._args)
         const { _keys, _midi, native, _event, $state, $config } = this
         const { target, enabled } = $config
 
@@ -79,7 +80,8 @@ export class Controller extends Common {
          * Bind functions in Engine and native functions you set to props.
          * Sort where to push handler function by using the arguments.
          */
-        const fun = (prop: {(e: any): void}, device='', key='') => {
+        type Prop = {(e: any): void}
+        const fun = (prop: Prop, device='', key='') => {
             if (!key) return _midi.add(prop)
             const type = !device? key: toPropEvent(device, key)
             props[type] = props[type] || []
@@ -91,8 +93,8 @@ export class Controller extends Common {
          * Merge multi processes pushed by fun into a single function.
          */
         if (enabled)
-            each(_keys, key => new (EngineMap.get(key)!)(this, key, kwargs).bind(fun))
-        eachProp(native, (p, k) => fun(e => p({...$state, event: e, ...kwargs}), '', k))
+            each(_keys, k => new (EngineMap.get(k)!)(this, k, args).bind(fun))
+        eachProp(native, (p, k) => fun(e => p({...$state, event: e, ...args}), '', k))
         eachProp(props, (p, k) => void (props[k] = chain(...p)))
 
         /**
