@@ -16,9 +16,9 @@ export interface FadeConfig extends MidiConfig {
     range: number // TODO
 }
 
-export interface TurnConfig extends MidiConfig {}
+export type TurnConfig = MidiConfig
 
-export interface NoteConfig extends MidiConfig {}
+export type NoteConfig = MidiConfig
 
 export interface MidiConfig {
     enabled?: boolean // True when the Midi is active
