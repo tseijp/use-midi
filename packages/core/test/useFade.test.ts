@@ -11,16 +11,16 @@ describe('useFade', () => {
     afterEach(event.clean)
 
     it('basic', () => {
-        exect(1).toBe(1)
-        // hook.init(({ args }) => (bind = useFade(...args!))? null: null)
-        // hook.set({ args : [($: any) => (state = $)]})
-        // expect(state.value).toBe(0)
-        //
-        // event.init(props => el('div', props))
-        // event.set(bind())
-        // expect(state.value).toBe(0)
-        //
-        // event.click()
-        // expect(state.value).toBe(1)
+        expect(1).toBe(1)
+        hook.init(({ args }) => (bind = useFade(...args!))? null: null)
+        hook.set({ args : [($: any) => (state = $)]})
+        expect(state.value).toBe(0)
+
+        event.init(props => el('div', props))
+        event.set(bind())
+        expect(state.value).toBe(0)
+
+        event.click()
+        expect(state.value).toBe(1)
     })
 })
