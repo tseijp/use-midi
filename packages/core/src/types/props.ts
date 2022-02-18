@@ -1,5 +1,6 @@
 import { MidiKey, State } from './state'
 import { Events } from './events'
+import { Any } from '../rma'
 
 export type Props<Key extends MidiKey|'shared'|'self'='self'> =
     NonNullable<SelfProps[Key] & NativeProps>
@@ -9,25 +10,23 @@ export type SelfProps = {
     turn: Prop<'turn'>
     note: Prop<'note'>
     self: NonNullable<SelfProps & NativeProps>
-    shared:  NonNullable<SelfProps & NativeProps>
+    shared: NonNullable<SelfProps & NativeProps>
 }
 
-export type Prop <
-    Key extends MidiKey,
-    E = Events<Key>
-> = (
-    state: Omit<State<Key>, 'event'> & { event: E }
-) => any | void
+export type Prop <Key extends MidiKey> = (
+    //  @TODO
+    state: State<'shared'> & Omit<State<Key>, 'event'> & { event: Events<Key> }
+) => Any | void
 
 export type NativeProps <T extends Partial<Props>={}> = {
     [key in NativeKey]?: (
         state: State<'shared'> & {
+            args: Any[]
             event: undefined extends T[key]
                 ? GetEvent<key>
                 : T[key]
-            args: any
         },
-        ...args: any
+        ...args: Any[]
     ) => void
 }
 

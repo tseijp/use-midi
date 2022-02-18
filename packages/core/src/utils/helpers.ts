@@ -1,29 +1,30 @@
 /** ref
  * https://github.com/pmndrs/react-spring/blob/master/packages/shared/src/helpers.ts
  */
+import { Any } from '../rma'
 
-type EachFn<Value, Key, This> = (this: This, value: Value, key: Key) => void
-type Eachable<Value = any, Key = any, This = any> = {
-    forEach(cb: EachFn<Value, Key, This>, ctx?: This): void
+type EachFun<Value=Any, Key=Any, This=Any> = (this: This, value: Value, key: Key) => void
+type Eachable<Value=Any, Key=Any, This=Any> = {
+    forEach(cb: EachFun<Value, Key, This>, ctx?: This): void
 }
 
 export const each = <Value, Key, This>(
     obj: Eachable<Value, Key, This>,
-    fn: EachFn<Value, Key, This>
+    fn: EachFun<Value, Key, This>
 ) => obj.forEach(fn)
 
 export function eachProp<T extends object, This>(
     obj: T,
-    fn: EachFn<T extends any[]? T[number]: T[keyof T], string, This>,
+    fn: EachFun<T extends Any[]? T[number]: T[keyof T], string, This>,
     ctx?: This
 ) {
-    for (const key in obj)
-        fn.call(ctx as any, obj[key] as any, key)
+    // @ts-ignore
+    for (const key in obj) fn.call(ctx, obj[key], key)
 }
 
-export function flush<P, T>(queue: Map<P, T>, iterator: (entry: [P, T]) => void): void
-export function flush<T>(queue: Set<T>, iterator: (value: T) => void): void
-export function flush(queue: any, iterator: any) {
+export function flush<T>(queue: Set<T>, iterator: EachFun<T>): void
+export function flush<P, T>(queue: Map<P, T>, iterator: EachFun<[P, T]>): void
+export function flush(queue: any, iterator: any) { // @TODO fix any
     if (queue.size) {
         const items = Array.from(queue)
         queue.clear()
@@ -31,16 +32,15 @@ export function flush(queue: any, iterator: any) {
     }
 }
 
-export function call<T>(v: T | ((...args: any[]) => T), ...args: any[]): T {
-    return is.fun(v)? (v as any)(...args): v
+export function call<T>(fun: T | ((...args: unknown[]) => T), ...args: unknown[]): T {
+    return is.fun(fun)? fun(...args): fun
 }
 
 export function chain(...fns: Function[]): Function {
     if (fns.length === 0) return () => {}
     if (fns.length === 1) return fns[0]
-
-    let result: any
-    return (...args: any[]) => {
+    let result: Any
+    return (...args: Any[]) => {
         each(fns, fn => (result = fn(...args) || result))
         return result
     }
@@ -49,7 +49,6 @@ export function chain(...fns: Function[]): Function {
 type IsType<U> = <T>(arg: T & any) => arg is Narrow<T, U>
 type Narrow<T, U> = [T] extends [any] ? U : [T] extends [U] ? Extract<T, U> : U
 type PlainObject<T = any> = Exclude<T & {[key: string]: any}, Function | readonly any[]>
-
 
 export const is = (a: any, b?: any, ...other: any): boolean => {
     if (other.length > 0) return is(a, b) && is(b, ...other)
@@ -68,4 +67,4 @@ is.num = (a: unknown): a is number => typeof a === 'number'
 is.str = (a: unknown): a is string => typeof a === 'string'
 is.bol = (a: unknown): a is boolean => a === true || a === false
 is.fun = ((a: unknown) => typeof a === 'function') as IsType<Function>,
-is.obj = <T = any>(a: T & any): a is PlainObject<T> => !!a && a.constructor.name === 'Object'
+is.obj = <T=any>(a: T&any): a is PlainObject<T> => !!a && a.constructor.name === 'Object'

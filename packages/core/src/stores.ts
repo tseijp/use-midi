@@ -1,5 +1,5 @@
+import { rma, Any } from './rma'
 import { each } from './utils'
-import { rma } from './rma'
 
 export class Store {
     _listeners: (() => void)[] = []
@@ -10,17 +10,22 @@ export class Store {
     }
 }
 
+type EventListenerArgs = [
+  type: string,
+  prop: EventListenerOrEventListenerObject | null,
+  opts?: AddEventListenerOptions | boolean | undefined
+]
+
 export class EventStore extends Store {
-    add (target: EventTarget, type: string, prop: any, opts?: any): void
-    add (target: any, ...args: any[]) {
+    add (target: EventTarget, ...args: any[]) {
         if (!target) return console.warn("Error: Event target of undefined (reading 'addEventListener')")
-        target.addEventListener(...args)
-        this._listeners.push(() => target.removeEventListener(...args))
+        target.addEventListener(...args as EventListenerArgs)
+        this._listeners.push(() => target.removeEventListener(...args as EventListenerArgs))
     }
 }
 
 export class AccessStore extends Store {
-    add (callback: (event: any) => void) {
+    add (callback: (event?: Any) => void) {
         const update = () => callback(rma.event)
         this._listeners.push(() => rma.cancel(update))
         rma(update)

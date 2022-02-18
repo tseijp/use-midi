@@ -1,13 +1,14 @@
-import { Engine } from '../Engine'
+import { Engine, BindFun } from '../Engine'
+import { Events } from '../types'
 
 export class TurnEngine extends Engine<'turn'> {
-    _ingKey = 'turning' as const
+    readonly _ingKey = 'turning' as const
 
-    bind (fun: any) {
+    bind (fun: BindFun<'fade'>) {
         fun(this.midimessage.bind(this), 'midimessage')
     }
 
-    midimessage (event: any) {
+    midimessage (event: Events<'turn'>) {
         const { state: $ } = this
         if (!$._active)
             this.start(event)

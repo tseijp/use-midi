@@ -1,16 +1,19 @@
+import { Any } from '../rma'
+import { Events } from './events'
 export type MidiKey = Exclude<keyof SelfState, 'shared'|'self'>
 
 export type IngKey = 'fading' | 'noting' | 'turning'
+export type IngState = {[key in IngKey]: boolean}
 
 export type State<Key extends MidiKey|'shared'|'self'='self'> =
-    NonNullable<GenericState & SelfState[Key]>
+    NonNullable<SelfState[Key] & GenericState>
 
 export type SelfState = {
     fade: FadeState
     turn: TurnState
     note: NoteState
-    self: NonNullable<GenericState & SelfState>
-    shared: SharedState
+    self: NonNullable<SelfState & GenericState>
+    shared: NonNullable<SharedState & GenericState>
 }
 
 export interface SharedState {
@@ -26,6 +29,8 @@ export interface SharedState {
 export interface FadeState extends GenericState {
     axis?: 'vertical' | 'horizontal'
     converse?: 'unipolar' | 'bipolar'
+    event: Events<'fade'>
+    from: number
 }
 
 export interface NoteState extends GenericState {
@@ -33,6 +38,7 @@ export interface NoteState extends GenericState {
     from: number
     to: number
     mode: 'momentary' | 'toggle' | 'trigger'
+    event: Events<'note'>
 }
 
 export interface TurnState extends GenericState {
@@ -40,15 +46,15 @@ export interface TurnState extends GenericState {
     from: number
     to: number
     mode: 'momentary' | 'toggle' | 'trigger'
+    event: Events<'turn'>
 }
 
 export interface GenericState {
-    [key: string]: any
-    args: null | any[] // The arguments when you bind
-    memo: null | any // TODO
+    // [key: string]: Any
+    args: null | Any[] // The arguments when you bind
+    memo: null | Any // TODO
     send: {():void} // TODO
     type: string // Raw Midi Event type
-    event: Event // Raw Midi Event Object
     target: EventTarget // Raw Target Object
     currentTarget: EventTarget // Raw Target Object
 
@@ -71,7 +77,7 @@ export interface GenericState {
 
     command: null | number // recieved Midi command code
     channel: null | number // recieved Midi channel number
-    note: null | number // Midi note number if recieved
+    note: null | number // recieved Midi note number if recieved
 
     value: number // Midi velocity number if recieved
     delta: number // Difference between the current value and the previous value.

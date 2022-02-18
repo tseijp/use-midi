@@ -14,7 +14,8 @@ describe('each, eachProp', () => {
         ${'flush'}   | ${set} | ${numFun} | ${42}       | ${2} | ${0} | ${1}
         ${'flush'}   | ${map} | ${strFun} | ${'foo,00'} | ${2} | ${['foo', 0]} | ${1}
     `('eachable function: $index', ({index, target, callback, len, c00, c11, value}) => {
-        (SRC as any)[index](target, callback)
+        // @ts-ignore
+        SRC[index](target, callback)
         expect(callback.mock.calls.length).toEqual(len)       // The mock function is called twice
         expect(callback.mock.calls[0][0]).toEqual(c00)        // The first argument of the first call to the function was 0
         expect(callback.mock.calls[1][1]).toEqual(c11)        // The first argument of the second call to the function was 1
@@ -44,26 +45,26 @@ describe('is', () => {
     const foo = 'foo', bar = 'bar'
 
     it.each`
-        bool | target
-        ${1} | ${is(0, 0, 0)}
-        ${1} | ${is('0', '0', '0')}
-        ${1} | ${is({foo}, {foo})}
-        ${1} | ${is([foo], [foo])}
-        ${1} | ${is({}, {}, {})}
-        ${0} | ${is(0, 0, 1)}
-        ${0} | ${is('0', '0', 0)}
-        ${0} | ${is('0', '0', '1')}
-        ${0} | ${is({foo}, {bar})}
-        ${0} | ${is([foo], [bar])}
-        ${0} | ${is({}, {}, {bar})}
-        ${1} | ${is.arr([])}
-        ${1} | ${is.fls('')}
-        ${1} | ${is.nul(null)}
-        ${1} | ${is.und(undefined)}
-        ${1} | ${is.num(0)}
-        ${1} | ${is.str("")}
-        ${1} | ${is.bol(false)}
-        ${1} | ${is.fun(() => {})}
-        ${1} | ${is.obj({})}
-    `('is to be $bool', ({bool, target}) => expect(target).toBe(!!bool) )
+        bool | target                 | describe
+        ${1} | ${is(0, 0, 0)}         | ${"is eq 0 0 0"}
+        ${1} | ${is('0', '0', '0')}   | ${"is eq '0' '0' '0'"}
+        ${1} | ${is({foo}, {foo})}    | ${"is eq {foo} {foo}"}
+        ${1} | ${is([foo], [foo])}    | ${"is eq [foo] [foo]"}
+        ${1} | ${is({}, {}, {})}      | ${"is eq {} {} {}"}
+        ${0} | ${is(0, 0, 1)}         | ${"is not eq 0 0 1"}
+        ${0} | ${is('0', '0', 0)}     | ${"is not eq '0' '0' 0"}
+        ${0} | ${is('0', '0', '1')}   | ${"is not eq '0' '0' 1"}
+        ${0} | ${is({foo}, {bar})}    | ${"is not eq {foo} {bar}"}
+        ${0} | ${is([foo], [bar])}    | ${"is not eq [foo] [bar]"}
+        ${0} | ${is({}, {}, {bar})}   | ${"is not eq {} {} {bar}"}
+        ${1} | ${is.arr([])}          | ${"is arr"}
+        ${1} | ${is.fls('')}          | ${"is fls"}
+        ${1} | ${is.nul(null)}        | ${"is nul"}
+        ${1} | ${is.und(undefined)}   | ${"is und"}
+        ${1} | ${is.num(0)}           | ${"is num"}
+        ${1} | ${is.str("")}          | ${"is str"}
+        ${1} | ${is.bol(false)}       | ${"is bol"}
+        ${1} | ${is.fun(() => {})}    | ${"is fun"}
+        ${1} | ${is.obj({})}          | ${"is obj"}
+    `('$describe: is to be $bool', ({bool, target}) => expect(target).toBe(!!bool) )
 })

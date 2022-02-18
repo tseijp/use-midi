@@ -1,9 +1,10 @@
-import { Engine } from '../Engine'
+import { Engine, BindFun } from '../Engine'
+import { Events } from '../types'
 
 export class FadeEngine extends Engine<'fade'> {
-    _ingKey = 'fading' as const
+    readonly _ingKey = 'fading' as const
 
-    bind (fun: any) {
+    bind (fun: BindFun<'fade'>) {
         const { device } = this.$config
         fun(this.compute.bind(this), 'midimessage')
         fun(this.devicestart.bind(this), device, 'start')
@@ -19,7 +20,7 @@ export class FadeEngine extends Engine<'fade'> {
         // $.canceled = false
     }
 
-    devicestart (event: PointerEvent) {
+    devicestart (event: Events<'fade'>) {
         const { state: $ } = this
         this.start(event)
         $._value = event.clientX + event.clientY
@@ -28,7 +29,7 @@ export class FadeEngine extends Engine<'fade'> {
         this.compute(event)
     }
 
-    devicechange (event: PointerEvent) {
+    devicechange (event: Events<'fade'>) {
         const { state: $ } = this
         const { clientX: x, clientY: y } = event
         $._value = x + y
@@ -37,14 +38,14 @@ export class FadeEngine extends Engine<'fade'> {
         this.compute(event)
     }
 
-    deviceend (event: PointerEvent) {
+    deviceend (event: Events<'fade'>) {
         // const { state: $ } = this
         this.compute(event)
         this.emit()
         // $.tap = $.distance <= 3 && dy <= 3
     }
 
-    midimessage (event: any) {
+    midimessage (event: Events<'fade'>) {
         const { state: $ } = this
         if (!$._active)
             this.start(event)
