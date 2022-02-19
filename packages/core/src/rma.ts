@@ -2,7 +2,7 @@
 // @ts-ignore
 export class Any { private unused: never }
 
-export type Fun<I extends ReadonlyArray<unknown>=any[], O=any> = (...args: I) => O
+export type Fun<I extends ReadonlyArray<unknown>=any[], O=any> = (...i: I) => O
 
 type nativeRma = () => undefined | Promise<unknown>
 

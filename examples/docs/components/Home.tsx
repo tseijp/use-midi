@@ -1,19 +1,20 @@
+import React from 'react'
 import Layout from '@theme/Layout'
 import styled from 'styled-components'
 
 type HomeProps = Partial<{
-  children: null | JSX.Element
+  children: React.ReactNode
 }>
 
 export interface Home {
-  (props: HomeProps): null | JSX.Element
-  Title: (props: HomeProps) => null | JSX.Element
-  Button: (props: ButtonProps) => null | JSX.Element
-  SubText: (props: HomeProps) => null | JSX.Element
-  SubTitle: (props: HomeProps) => null | JSX.Element
+    (props: HomeProps): null | JSX.Element
+    Title: (props: HomeProps) => null | JSX.Element
+    Button: (props: ButtonProps) => null | JSX.Element
+    SubText: (props: HomeProps) => null | JSX.Element
+    SubTitle: (props: HomeProps) => null | JSX.Element
 }
 
-const Home: Home = ((props: HomeProps) => {
+export const Home: Home = ((props: HomeProps) => {
   return <Layout {...props}/>
 }) as Home
 
@@ -22,14 +23,15 @@ Home.Title = styled.h1`
     color: orange;
 `
 
-type ButtonProps = Partial<{
-  w: boolean
-  rel: string
-  target: string
+type ButtonProps = HomeProps & Partial<{
+    $w: boolean
+    rel: string
+    href: string
+    target: string
 }>
 
 Home.Button = styled.a.attrs<ButtonProps>(props => {
-    if (props.w) {
+    if (props.$w) {
         props.target = "_blank"
         props.rel = "noopener"
     }
@@ -43,7 +45,7 @@ Home.Button = styled.a.attrs<ButtonProps>(props => {
     color: white;
     font-size: 16px;
     outline: none;
-    ${({w}) => w && `
+    ${({$w}) => $w && `
         border: 1px #0060ff solid;
         background-color: white;
         color: #0060ff;
@@ -53,5 +55,3 @@ Home.Button = styled.a.attrs<ButtonProps>(props => {
 Home.SubText = styled.div``
 
 Home.SubTitle = styled.h3``
-
-export { Home }

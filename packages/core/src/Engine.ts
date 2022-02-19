@@ -126,7 +126,7 @@ export abstract class Engine<Key extends MidiKey> extends Common<Key> {
     protected emit () {
         const { state: $, $state } = this
         if ($.blocked && !$.force) return // @ts-ignore @TODO
-        const memo = this.props({...$state, ...$, [this._key]: $._value })
+        const memo = this.props({...$state, ...$, [this._key]: $._value }) // @TODO
         if (!is.und(memo)) $.memo = memo!
     }
 }

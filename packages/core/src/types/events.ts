@@ -1,6 +1,6 @@
 import { MidiKey } from './state'
 
-export type Events<Key extends MidiKey|'self'='self'> =
+export type Events<Key extends MidiKey|'shared'|'self'='self'> =
     NonNullable<SelfEvents[Key]>
 
 export type SelfEvents = {
@@ -8,6 +8,7 @@ export type SelfEvents = {
     note: MIDIMessageEvent & MIDIConnectionEvent & PointerEvent
     turn: MIDIMessageEvent & MIDIConnectionEvent & PointerEvent
     self: NonNullable<SelfEvents>
+    shared: NonNullable<SelfEvents> // @TODO
 }
 
 // Type definitions for Web MIDI API 2.0

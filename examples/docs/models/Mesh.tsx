@@ -3,7 +3,7 @@ import { useSpring, animated } from '@react-spring/three'
 import { MeshProps } from '@react-three/fiber'
 
 export default function (props: MeshProps) {
-    const [{z}, set] = useSpring({x: 0, y: 0, z: 0}, [])
+    const [{z}, set] = useSpring({z: 0}, [])
     const bind = {
         onPointerDown: (e: Event) => {
             e.stopPropagation()

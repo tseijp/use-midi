@@ -15,7 +15,7 @@ export type SelfProps = {
 
 export type Prop <Key extends MidiKey> = (
     //  @TODO
-    state: State<'shared'> & Omit<State<Key>, 'event'> & { event: Events<Key> }
+    state: Any & State<'shared'> & Omit<State<Key>, 'event'> & { event: Events<Key> }
 ) => Any | void
 
 export type NativeProps <T extends Partial<Props>={}> = {

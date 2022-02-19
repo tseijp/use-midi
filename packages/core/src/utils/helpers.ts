@@ -1,7 +1,7 @@
 /** ref
  * https://github.com/pmndrs/react-spring/blob/master/packages/shared/src/helpers.ts
  */
-import { Any } from '../rma'
+import { Any, Fun } from '../rma'
 
 type EachFun<Value=Any, Key=Any, This=Any> = (this: This, value: Value, key: Key) => void
 type Eachable<Value=Any, Key=Any, This=Any> = {
@@ -23,8 +23,8 @@ export function eachProp<T extends object, This>(
 }
 
 export function flush<T>(queue: Set<T>, iterator: EachFun<T>): void
-export function flush<P, T>(queue: Map<P, T>, iterator: EachFun<[P, T]>): void
-export function flush(queue: any, iterator: any) { // @TODO fix any
+export function flush<T, P>(queue: Map<T, P>, iterator: EachFun<[T, P]>): void
+export function flush<T, P>(queue: Set<any> | Map<T, P>, iterator: Fun) { //@TODO fix any
     if (queue.size) {
         const items = Array.from(queue)
         queue.clear()
@@ -36,14 +36,14 @@ export function call<T>(fun: T | ((...args: unknown[]) => T), ...args: unknown[]
     return is.fun(fun)? fun(...args): fun
 }
 
-export function chain(...fns: Function[]): Function {
-    if (fns.length === 0) return () => {}
+export function chain<T extends Function>(...fns: T[]): T {
+    if (fns.length === 0) return (() => {}) as unknown as T
     if (fns.length === 1) return fns[0]
     let result: Any
-    return (...args: Any[]) => {
+    return ((...args: unknown[]) => {
         each(fns, fn => (result = fn(...args) || result))
         return result
-    }
+    }) as unknown as T
 }
 
 type IsType<U> = <T>(arg: T & any) => arg is Narrow<T, U>

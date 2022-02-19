@@ -1,11 +1,4 @@
-import {
-    useMemo,
-    useState,
-    Suspense,
-    createElement as el,
-    FunctionComponent as FC,
-    ComponentClass as CC
-} from 'react'
+import React, { createElement as el, FC, ComponentClass as CC } from 'react'
 import { Any, eachProp } from 'use-midi/src'
 
 type LowHighProps<Props extends Any = Any> = Partial<Props & {
@@ -20,7 +13,7 @@ type LowHighProps<Props extends Any = Any> = Partial<Props & {
 export function LowHigh (props: LowHighProps) {
     if (props.disable) return null
     const { low, high, fallback=null, args=[], ...other } = props
-    const _args = useMemo(() => {
+    const _args = React.useMemo(() => {
         const [arg0={}, arg1={}] = args
         eachProp(other, (prop, key) => {
             const il = key.indexOf('-low')
@@ -32,8 +25,8 @@ export function LowHigh (props: LowHighProps) {
         return [arg0, arg1]
     }, [args, other])
 
-    const lowEl = low? el(Suspense, {fallback}, el(low, _args[0])): null
-    return high? el(Suspense, {fallback: lowEl}, el(high, _args[1])): lowEl
+    const lowEl = low? el(React.Suspense, {fallback}, el(low, _args[0])): null
+    return high? el(React.Suspense, {fallback: lowEl}, el(high, _args[1])): lowEl
 }
 
 function setHidden (target: unknown, key: string, prop: unknown) {

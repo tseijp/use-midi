@@ -18,13 +18,9 @@ export abstract class Common<Key extends MidiKey|'shared'|'self'='self'> {
      * Shorthand to call upon property reference,
      * Bound to each value of ctrl.
      */
-    protected set state (state: any) { // State<Key>) { // @TODO
-        if (!is.und(this._key))
+    protected set state (state: State<Key>) { // @TODO fix any
+        if (!is.und(this._key)) // @ts-ignore
             this._ctrl._state[this._key] = state
-    }
-
-    protected get props (): Props<Key> {
-        return this._ctrl._props[this._key]
     }
 
     protected get state (): State<Key> {
@@ -33,6 +29,10 @@ export abstract class Common<Key extends MidiKey|'shared'|'self'='self'> {
 
     protected get config (): Config<Key> {
         return this._ctrl._config[this._key]
+    }
+
+    protected get props (): Props<Key> {
+        return this._ctrl._props[this._key]
     }
 
     /**

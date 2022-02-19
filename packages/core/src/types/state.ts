@@ -50,7 +50,7 @@ export interface TurnState extends GenericState {
 }
 
 export interface GenericState {
-    // [key: string]: Any
+    [key: string]: any // @TODO fix any
     args: null | Any[] // The arguments when you bind
     memo: null | Any // TODO
     send: {():void} // TODO

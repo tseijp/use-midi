@@ -18,11 +18,10 @@ const Actions: {[key in MidiKey]: Action} = {
 
 export class Controller extends Common {
     readonly _keys = new Set<MidiKey>()
-    readonly _midi = new Set<(e: Any) => void>()
+    readonly _midi = new Set<(e: Event) => void>()
     readonly _event = new EventStore()
     readonly _access = new AccessStore()
-    private native = {} as any
-    // private native: Props = {} as Props
+    private native = {} as any // @TODO fix any
     _props: Props = {shared: {}} as Props
     _state: State = {shared: {}} as State
     _config: Config = {shared: {}} as Config
@@ -88,7 +87,7 @@ export class Controller extends Common {
          * Bind functions in Engine and native functions you set to props.
          * Sort where to push handler function by using the arguments.
          */
-        const fun = (prop: {(e: Any): void}, device='', key='') => {
+        const fun = (prop: ((e: Event) => void), device='', key='') => {
             if (!key) return _midi.add(prop)
             const type = !device? key: toPropEvent(device, key)
             props[type] = props[type] || []
@@ -101,7 +100,7 @@ export class Controller extends Common {
          */
         if (enabled) //@ts-ignore
             each(_keys, key => new (EngineMap.get(key)!)(this, key, kwargs).bind(fun))
-        // eachProp(native, (p, k) => fun(e => p({...$state, event: e, ...kwargs}), '', k))
+        eachProp(native, (p, k) => fun(e => p({...$state, event: e, ...kwargs}), '', k)) // @TODO
         eachProp(props, (p, k) => void (props[k] = chain(...p)))
 
         /**
@@ -115,8 +114,8 @@ export class Controller extends Common {
     }
 }
 
-function parseArgs (...args: Any[]): object
-function parseArgs (note: () => number|number[]|object, ...args: Any[]): object
+function parseArgs (...args: Any[]): Any
+function parseArgs (note: () => number|number[]|object, ...args: Any[]): Any
 function parseArgs (arg?: unknown, ...args: Any[]) {
     if (!is.fun(arg))
         return {args: [arg, ...args]}
@@ -145,15 +144,11 @@ function parseConfig (_config: Partial<Config>={}, ...keys: MidiKey[]) {
     eachProp(_config, (prop, key) => {
         (key in SharedConfig? config.shared: other)[key] = prop
     })
-    if (keys.length === 1) {
-        const target = ConfigMap.get(keys[0])
-        config[keys[0]] = {...target, ...other}
-    } else {
-        eachProp(other, (prop, key) => {
-            const target = ConfigMap.get(key as any)
-            if (target)
-                config[key] = {...target, ...prop}
-        })
-    }
+    if (keys.length === 1)
+        config[keys[0]] = {...ConfigMap.get(keys[0]), ...other}
+    else eachProp(other, (prop, key) => {
+        const target = ConfigMap.get(key as MidiKey)
+        if (target) config[key] = {...target, ...prop}
+    })
     return config
 }

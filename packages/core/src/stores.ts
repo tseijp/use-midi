@@ -3,7 +3,6 @@ import { each } from './utils'
 
 export class Store {
     _listeners: (() => void)[] = []
-
     clean () {
         each(this._listeners, fn => fn())
         this._listeners = []
@@ -11,16 +10,18 @@ export class Store {
 }
 
 type EventListenerArgs = [
-  type: string,
-  prop: EventListenerOrEventListenerObject | null,
-  opts?: AddEventListenerOptions | boolean | undefined
+    type: string,
+    prop: {(e: Event): void} | EventListenerObject | null,
+    opts?: AddEventListenerOptions | boolean | undefined
 ]
 
+const WARN_NO_TARGET = "Error: Event target of undefined (reading 'addEventListener')"
+
 export class EventStore extends Store {
-    add (target: EventTarget, ...args: any[]) {
-        if (!target) return console.warn("Error: Event target of undefined (reading 'addEventListener')")
-        target.addEventListener(...args as EventListenerArgs)
-        this._listeners.push(() => target.removeEventListener(...args as EventListenerArgs))
+    add (target: EventTarget, ...args: EventListenerArgs) {
+        if (!target) return console.warn(WARN_NO_TARGET)
+        target.addEventListener(...args)
+        this._listeners.push(() => target.removeEventListener(...args))
     }
 }
 

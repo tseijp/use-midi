@@ -10,10 +10,7 @@ import * as DREI from '@react-three/drei'
 import { Home } from '../../components/Home'
 import { Flex } from '../../components/Flex'
 import { Nano } from '../../models'
-import { LowHigh } from '../../components/LowHigh'
 import { useFade, useNote, useTurn, useMidi } from 'use-midi/src'
-
-
 
 const SRC = "img/assets/Nano.gltf"
 
@@ -30,9 +27,7 @@ export default function App () {
 
     const fade = useFade(state => {
         const { ref, value } = state
-        const z = - value / 100
-        console.log(ref.current)
-        ref.current.position.y = z / 100
+        ref.current.position.y = value / 100000
     })
 
     const note = useNote(state => {
@@ -51,7 +46,9 @@ export default function App () {
         <Flex>
           <FIBER.Canvas style={{height: "50vh",  userSelect: 'none'}} camera={{position: [0, 0.3, 0]}} {...bind()}>
             <color attach="background" args={["#f2f2ff"]}/>
-            <LowHigh binds={{fade, note, turn, midi}} low={Nano} src={SRC}/>
+            <React.Suspense fallback={null}>
+              <Nano src={SRC} binds={{fade, note, turn, midi}}/>
+            </React.Suspense>
             <DREI.OrbitControls {...{enableRotate: false, minZoom: .1}}/>
             <ambientLight position={[0, 0, 0]} intensity={0.5} />
             <spotLight position={[10, 10, 10]} intensity={2} penumbra={1} />
@@ -64,7 +61,7 @@ export default function App () {
             <Home.Button href="https://tseijp.github.io/use-midi/documents/intro">
                 Documentation
             </Home.Button>
-            <Home.Button pad w href="https://github.com/tseijp/use-midi">
+            <Home.Button $w href="https://github.com/tseijp/use-midi">
                 Github
             </Home.Button>
           </Flex>

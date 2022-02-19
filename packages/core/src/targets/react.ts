@@ -39,14 +39,14 @@ export function useMidi <
 
 export function useFade<C=Config<'fade'>>(
     fade: Props<'fade'>,
-    config: Partial<C> = {}
+    config: Partial<C>={}
 ): Controller['bind'] {
     return useRecognizers({ fade }, config, 'fade')
 }
 
 export function useNote<C=Config<'note'>>(
     note: Props<'note'>,
-    config: Partial<C> = {}
+    config: Partial<C>={}
 ): Controller['bind'] {
     return useRecognizers({ note }, config, 'note')
 }
@@ -75,7 +75,7 @@ function _UseMidi  (props: UseMidiProps, ref: Ref<Any>) {
     const { as, children, fade, turn, note, config, ...other } = props
     const bind = useMidi({fade, turn, note}, as? config: {...other, ...config})
     // @ts-ignore
-    return is.und(as)? children(bind, ref):  el(as, {...bind(), ref, ...other}, children)
+    return is.und(as)? children(bind, ref): el(as, {...bind(), ref, ...other}, children)
 }
 
 export type UseFadeProps<
@@ -84,10 +84,10 @@ export type UseFadeProps<
 > = C & {fade: P, as: As, config?: Partial<C>, children?: null | JSX.Element}
 
 function _UseFade (props: UseFadeProps, ref: Ref<Any>) {
-    const { fade, as, config={}, children, ...other } = props
+    const { fade, as, children: ch, config={}, ...other } = props
     const bind = useFade(fade, as? config: {...other, ...config})
     // @ts-ignore
-    return as? el(as, {...bind(), ...other, ref}, children): children?.(bind, ref)
+    return is.und(as)? ch(bind, ref): el(as, {...bind(), ref, ...other}, ch)
 }
 
 export type UseTurnProps<
@@ -96,10 +96,10 @@ export type UseTurnProps<
 > = C & { turn: P, as: As, config?: Partial<C>, children?: null | JSX.Element }
 
 function _UseTurn(props: UseTurnProps, ref: Ref<Any>) {
-    const { as, children, turn, config={}, ...other } = props
+    const { turn, as, children: ch, config={}, ...other } = props
     const bind = useTurn(turn, as? config: {...other, ...config})
     // @ts-ignore
-    return as? el(as, {...bind(), ...other, ref}, children): children?.(bind, ref)
+    return is.und(as)? ch(bind, ref): el(as, {...bind(), ref, ...other}, ch)
 }
 
 export type UseNoteProps<
@@ -108,8 +108,8 @@ export type UseNoteProps<
 > = C & { as: As, note: P, config?: Partial<C>, children?: null | JSX.Element }
 
 function _UseNote (props: UseNoteProps, ref: Ref<Any>) {
-    const { as, children, note, config={}, ...other } = props
+  const { note, as, children: ch, config={}, ...other } = props
     const bind = useNote(note, as? config: {...other, ...config})
     // @ts-ignore
-    return as? el(as, {...bind(), ...other, ref}, children): children?.(bind, ref)
+    return is.und(as)? ch(bind, ref): el(as, {...bind(), ref, ...other}, ch)
 }
