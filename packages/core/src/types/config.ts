@@ -1,3 +1,4 @@
+import { Any } from '../rma'
 import { MidiKey } from './state'
 import { MIDIPort } from './events'
 
@@ -25,25 +26,28 @@ export interface MidiConfig {
     from?: number
 }
 
-type SelectPort = string | MIDIPort | {(...args: string[]): string | MIDIPort}
+export type SelectPort =
+    | ((...args: string[]) => string | MIDIPort)
+    | string
+    | MIDIPort
 
 export interface SharedConfig <T extends EventTarget=EventTarget>{
     enabled: boolean // True when the Midi is active.
     sysex: boolean // True when use the sysex option requesting MIDI access.
     debug: boolean // True when use debug mode.
-    target: null | T // Raw Midi Event Object.
     device: string  // Select Device Key.
     port: SelectPort // Select input and output port key.
     input: SelectPort // Select input port key.
     output: SelectPort //Select output port key.
     threshold: number
     transform: {(v: number): number}
+    target: null | T | string | ((e: Event) => string) // Raw Midi Event Target.
     delay: null | number // Default number of delay time stamp when send.
     command: null | number // Default number of recieved Midi command co10de.
     channel: null | number // Default number of recieved Midi channel number.
     note: null | number // Default number of Midi note number if recieved.
     data: null | number[] // Default raw values of the Midi.
-    args: null | any[] // Default arguments when you bind.
+    args: null | Any[] // Default arguments when you bind.
 }
 
 export const SharedConfig: Config<'shared'> = {
@@ -56,7 +60,7 @@ export const SharedConfig: Config<'shared'> = {
     input: 'default',
     output: 'default',
     threshold: 0,
-    transform: (v=0) => v || 0,
+    transform: (v=0) => v,
     command: null,
     channel: null,
     note: null,

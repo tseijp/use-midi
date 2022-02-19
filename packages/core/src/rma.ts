@@ -1,24 +1,27 @@
 /* MIT License */
-type Fun = () => boolean | void
+// @ts-ignore
+export class Any { private unused: never }
 
-type AnyFun = (...args: any) => any
+export type Fun<I extends ReadonlyArray<unknown>=any[], O=any> = (...i: I) => O
 
-type VoidFn = (...args: any[]) => undefined | void
+type nativeRma = () => undefined | Promise<unknown>
 
-type UpdateFun = (ts?: number) => boolean | void
-
-type nativeRma = () => undefined | Promise<any>
+export interface Queue<T extends Fun = Fun> {
+    add: (fun: T) => void
+    delete: (fun: T) => boolean
+    flush: (arg?: unknown) => void
+}
 
 export interface Rma {
-    (update?: UpdateFun): void
+    (update: Fun<number[]>): void
     write: (fun: Fun) => void
     onStart: (fun: Fun) => void
     onAccess: (fun: Fun) => void
     onFinish: (fun: Fun) => void
 
-    cancel: (fun: AnyFun) => void
-    sync: (fun: VoidFn) => void
-    throttle: (fun: VoidFn) => void
+    sync: (fun: Fun) => void
+    cancel: (fun: Fun) => void
+    throttle: (fun: Fun) => void
 
     use: <T extends nativeRma>(impl: T) => T
     now: () => number
@@ -27,9 +30,9 @@ export interface Rma {
     error: (error: Error) => void
     advance: () => void
 
-    event?: any
-    inputs?: any
-    outputs?: any
+    event?: Any
+    inputs?: Any
+    outputs?: Any
 
     allowed: boolean
     demanded: boolean
@@ -40,32 +43,27 @@ export interface Rma {
     }
 }
 
-export interface Queue<T extends Function = any> {
-    add: (fun: T) => void
-    delete: (fun: T) => boolean
-    flush: (arg?: any) => void
-}
-
 const writeQueue = makeQueue<Fun>()
 const onStartQueue = makeQueue<Fun>()
 const onAccessQueue = makeQueue<Fun>()
 const onFinishQueue = makeQueue<Fun>()
-const updateQueue = makeQueue<UpdateFun>()
+const updateQueue = makeQueue<Fun<number[]>>()
 
-export const rma: Rma = (fun=()=>{}) => schedule(fun, updateQueue)
+export const rma: Rma = (fun) => schedule(fun, updateQueue)
 rma.write = fun => schedule(fun, writeQueue)
 rma.onStart = fun => schedule(fun, onStartQueue)
 rma.onAccess = fun => schedule(fun, onAccessQueue)
 rma.onFinish = fun => schedule(fun, onFinishQueue)
 
-let ts = -1, sync = false, event: any, nativeRma = () => {
+let ts = -1, sync = false, event: Event, nativeRma = () => {
     if (!rma.supported) rma.warn('Cannot supported Web MIDI API for rmaz')
-    else return (navigator as any).requestMIDIAccess(rma.options)
+    // @ts-ignore
+    else return navigator.requestMIDIAccess(rma.options)
 }
 
 rma.sync = fun => void ( sync = true, rma.fun(fun), sync = false )
 rma.cancel = fun => void ( updateQueue.delete(fun), writeQueue.delete(fun) )
-rma.throttle = fun => rma.fun(fun) // TODO
+rma.throttle = fun => rma.fun(fun) // @TODO
 rma.use = fun => (nativeRma = fun)
 rma.now = typeof performance != 'undefined' ? () => performance.now() : Date.now
 rma.fun = fun => fun()
@@ -75,11 +73,12 @@ rma.options = { sysex: true, software: true }
 rma.allowed = rma.demanded = false
 rma.supported =
     typeof navigator !== 'undefined' &&
-    typeof (navigator as any).requestMIDIAccess === 'function'
+    // @ts-ignore
+    typeof navigator.requestMIDIAccess === 'function'
 
-setHidden('event', () => event)
-setHidden('inputs', () => event?.target.inputs)
-setHidden('outputs', () => event?.target.outputs)
+setHidden('event', () => event) // @ts-ignore
+setHidden('inputs', () => event?.target?.inputs) // @ts-ignore
+setHidden('outputs', () => event?.target?.outputs)
 
 rma.advance = () => {
     if (!rma.demanded)
@@ -97,10 +96,10 @@ function start () {
     }
 }
 
-function change (e: any) {
+function change (e: Event & {onstatechange: typeof change}) {
     if (~ts) {
         e.onstatechange = change
-        event = e.target? e: {target: e}
+        event = (e.target? e: {target: e}) as Event
         rma.allowed = true
         rma.fun(update)
     }
@@ -109,7 +108,6 @@ function change (e: any) {
 function update () {
     let prevTs = ts
     ts = rma.now()
-
     onStartQueue.flush()
     updateQueue.flush(ts - prevTs)
     onAccessQueue.flush()
@@ -117,7 +115,7 @@ function update () {
     onFinishQueue.flush()
 }
 
-function schedule<T extends Function>(fun: T, queue: Queue<T>) {
+function schedule<T extends Fun=Fun>(fun: T, queue: Queue<T>) {
     if (sync) {
         queue.delete(fun)
         fun(0)
@@ -128,12 +126,12 @@ function schedule<T extends Function>(fun: T, queue: Queue<T>) {
     }
 }
 
-function makeQueue<T extends Function>(): Queue<T> {
+function makeQueue<T extends Fun=Fun>(): Queue<T> {
     let next = new Set<T>()
     let current = next
     return {
-        add: fun =>  next.add(fun),
         delete: fun => next.delete(fun),
+        add: fun =>  next.add(fun),
         flush: arg => {
             if (current.size) {
                 next = new Set()
@@ -144,11 +142,8 @@ function makeQueue<T extends Function>(): Queue<T> {
     }
 }
 
-function setHidden (key: any, fun: AnyFun) {
+function setHidden (key: string, fun: Fun) {
     Object.defineProperty(rma, key, {
-        get () {
-            if (rma.allowed)
-                return fun()
-        }
+        get () { if (rma.allowed) return fun() }
     })
 }

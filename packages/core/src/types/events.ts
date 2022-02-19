@@ -1,13 +1,14 @@
 import { MidiKey } from './state'
 
-export type Events<Key extends MidiKey|'self'='self'> =
+export type Events<Key extends MidiKey|'shared'|'self'='self'> =
     NonNullable<SelfEvents[Key]>
 
 export type SelfEvents = {
-    fade: MIDIMessageEvent & MIDIConnectionEvent
-    note: MIDIMessageEvent & MIDIConnectionEvent
-    turn: MIDIMessageEvent & MIDIConnectionEvent
-    self: SelfEvents
+    fade: MIDIMessageEvent & MIDIConnectionEvent & PointerEvent
+    note: MIDIMessageEvent & MIDIConnectionEvent & PointerEvent
+    turn: MIDIMessageEvent & MIDIConnectionEvent & PointerEvent
+    self: NonNullable<SelfEvents>
+    shared: NonNullable<SelfEvents> // @TODO
 }
 
 // Type definitions for Web MIDI API 2.0
@@ -17,8 +18,8 @@ export type SelfEvents = {
 
 export interface MIDIOptions {sysex: boolean}
 
-type MIDIInputMap = Map<string, MIDIInput>
-type MIDIOutputMap = Map<string, MIDIOutput>
+export type MIDIInputMap = Map<string, MIDIInput>
+export type MIDIOutputMap = Map<string, MIDIOutput>
 
 export interface MIDIAccess extends EventTarget {
     inputs: MIDIInputMap
@@ -28,7 +29,7 @@ export interface MIDIAccess extends EventTarget {
 
     addEventListener(
         type: 'statechange',
-        listener: (this: this, e: MIDIConnectionEvent) => any,
+        listener: (this: this, e: MIDIConnectionEvent) => void,
         options?: boolean | AddEventListenerOptions
     ): void
 
@@ -56,7 +57,7 @@ export interface MIDIPort extends EventTarget {
 
     addEventListener(
         type: 'statechange',
-        listener: (this: this, e: MIDIConnectionEvent) => any,
+        listener: (this: this, e: MIDIConnectionEvent) => void,
         options?: boolean | AddEventListenerOptions
     ): void
 
@@ -76,13 +77,13 @@ export interface MIDIInput extends MIDIPort {
 
     addEventListener(
         type: 'midimessage',
-        listener: (this: this, e: MIDIMessageEvent) => any,
+        listener: (this: this, e: MIDIMessageEvent) => void,
         options?: boolean | AddEventListenerOptions
     ): void
 
     addEventListener(
         type: 'statechange',
-        listener: (this: this, e: MIDIConnectionEvent) => any,
+        listener: (this: this, e: MIDIConnectionEvent) => void,
         options?: boolean | AddEventListenerOptions
     ): void
 

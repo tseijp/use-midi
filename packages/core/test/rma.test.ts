@@ -28,16 +28,16 @@ describe('rma', () => {
     })
 
     it.each`
-        len  | call 0      | call 1      | fun
+        len  | call_0      | call_1      | fun
         ${5} | ${[void 0]} | ${[1]}      | ${() => {midiAccess.onstatechange(connection)}}
         ${5} | ${[void 0]} | ${[1]}      | ${() => {rma.advance()}}
         ${3} | ${[void 0]} | ${[void 0]} | ${() => {rma.cancel(callback), rma.advance()}}
         ${0} | ${ void 0 } | ${ void 0 } | ${() => {rma.demanded = false; rma.advance()}}
-    `('rma functions', ({len, call0, call1, fun}) => {
+    `('rma functions', ({len, call_0, call_1, fun}) => {
         rma.fun(fun)
         expect(callback.mock.calls.length).toBe(len)
-        expect(callback.mock.calls[0]).toEqual(call0)
-        expect(callback.mock.calls[1]).toEqual(call1)
+        expect(callback.mock.calls[0]).toEqual(call_0)
+        expect(callback.mock.calls[1]).toEqual(call_1)
     })
 
     it('function schedule at syncing', () => {

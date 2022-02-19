@@ -9,7 +9,7 @@ describe('Base Engine', () => {
 
     beforeEach(() => {
         ctrl = new Controller()
-        ctrl.apply(fns, {}, ...Object.keys(fns) as any)
+        ctrl.apply(fns, {}, "fade", "note", "turn")
     })
 
     it.each`
@@ -18,8 +18,9 @@ describe('Base Engine', () => {
         ${'Turn'} | ${['midimessage']}
         ${'Note'} | ${['midimessage']}
     `('engine: $index', ({index, bindFns}) => {
-        const engine = new (SRC as any)[index + 'Engine'](ctrl, [], index.toLowerCase())
-        each(bindFns, (key: any) => engine[key](event))
+      // @ts-ignore
+        const engine = new SRC[index + 'Engine'](ctrl, [], index.toLowerCase())
+        each(bindFns, (key: string) => engine[key](event))
         expect(engine).toBeTruthy()
     })
 })

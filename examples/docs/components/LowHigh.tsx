@@ -1,45 +1,36 @@
-import {
-    useMemo,
-    useState,
-    Suspense,
-    createElement as el,
-    FunctionComponent as FC,
-    ComponentClass as CC
-} from 'react'
-import { eachProp, Lookup } from '../utils'
-import {continueRender, delayRender} from 'remotion'
+import React, { createElement as el, FC, ComponentClass as CC } from 'react'
+import { Any, eachProp } from 'use-midi/src'
 
-export function LowHigh <
-    Props extends Lookup = Lookup,
->(props: Partial<Props & {
+type LowHighProps<Props extends Any = Any> = Partial<Props & {
     children: null | JSX.Element
-    low: unknown | string | FC<Partial<Props>> | CC<Partial<Props>, any>
-    high: unknown | string | FC<Partial<Props>> | CC<Partial<Props>, any>
+    low: string | FC<Partial<Props>> | CC<Partial<Props>, Any>
+    high: string | FC<Partial<Props>> | CC<Partial<Props>, Any>
     args: Partial<Props>[]
-    fallback: any
+    fallback: Any
     disable: boolean
-}>): null | JSX.Element
+}>
 
-export function LowHigh (props: Lookup) {
+export function LowHigh (props: LowHighProps) {
     if (props.disable) return null
-        const { low, high, fallback=null, args=[{}, {}], ...other } = props
-    const [handle] = useState(() => {
-        setTimeout(() => continueRender(handle), 24000)
-        return delayRender()
-    })
-
-    const _args = useMemo(() => {
+    const { low, high, fallback=null, args=[], ...other } = props
+    const _args = React.useMemo(() => {
+        const [arg0={}, arg1={}] = args
         eachProp(other, (prop, key) => {
             const il = key.indexOf('-low')
             const ih = key.indexOf('-high')
             if (!(~il || ~ih || key)) return
-            else if (~il) args[0][key.slice(0, il)] = prop
-            else if (~ih) args[1][key.slice(0, ih)] = prop
-            else if (key) args[0][key] = args[1][key] = prop
+            if (!~il || key) setHidden(arg0, ~il? key: key.slice(0, il), prop)
+            if (!~ih || key) setHidden(arg1, ~ih? key: key.slice(0, il), prop)
         })
-        return args
+        return [arg0, arg1]
     }, [args, other])
 
-    const lowEl = low? el(Suspense, {fallback}, el(low, _args[0])): null
-    return high? el(Suspense, {fallback: lowEl}, el(high, _args[1])): lowEl
+    const lowEl = low? el(React.Suspense, {fallback}, el(low, _args[0])): null
+    return high? el(React.Suspense, {fallback: lowEl}, el(high, _args[1])): lowEl
+}
+
+function setHidden (target: unknown, key: string, prop: unknown) {
+    Object.defineProperty(target, key, {
+        get () { return prop }
+    })
 }

@@ -1,21 +1,39 @@
+import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live'
 import React from 'react'
 import theme from 'prism-react-renderer/themes/vsDark'
 import rem from 'polished/lib/helpers/rem'
 import styled from 'styled-components'
-import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live'
+import { Any } from 'use-midi/src'
 
 const bodyFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"';
 const monospace = 'dm, monospace';
 const headerFont = `"Avenir Next", ${bodyFont}`;
 const sidebarWidth = 300;
 
-export function Live (props: any) {
+type LiveProps = Partial<{
+    children: null | JSX.Element | JSX.Element[]
+    noInline: boolean
+    code: string
+    scope: Any
+    // [key: string]: any
+}>
+
+type Live = {
+    (props: LiveProps): null | JSX.Element
+    Provider: (props: LiveProps) => null | JSX.Element
+    Container: (props: LiveProps) => null | JSX.Element
+    Editor: (props: LiveProps) => null | JSX.Element
+    Error: (props: LiveProps) => null | JSX.Element
+    Preview: (props: LiveProps) => null | JSX.Element
+}
+
+export const Live: Live = (props) => {
     const {children, noInline, scope, ...other} = props
-    const code = React.useMemo(() => {
+    const code: string = React.useMemo(() => {
         return React.Children.toArray(children).find(Boolean)!?.toString().trim()
     }, [children])
     return (
-      <Live.Provider {...{code, noInline, scope: {...scope, ...other}}}>
+      <Live.Provider {...{code, noInline, scope: {...scope, ...other} as Any}}>
         <Live.Container>
           <Live.Editor/>
           <Live.Error/>
@@ -25,7 +43,7 @@ export function Live (props: any) {
     )
 }
 
-Live.Provider = styled(LiveProvider).attrs({theme})<any>`
+Live.Provider = styled(LiveProvider).attrs({theme})`
   max-width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
@@ -47,7 +65,7 @@ Live.Error = styled(LiveError)`
   white-space: pre;
 `
 
-Live.Editor = styled(LiveEditor)<any>`
+Live.Editor = styled(LiveEditor)`
   font-size: 0.8rem;
   font-family: ${monospace};
   font-weight: 300;

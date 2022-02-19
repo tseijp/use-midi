@@ -11,7 +11,8 @@ describe('stores', () => {
     const callback = jest.fn(() => true)
 
     beforeAll(() => void rma.use(nativeRma))
-    beforeAll(() => void (window.setTimeout = setTimeout as any))
+    // @ts-ignore
+    beforeAll(() => void (window.setTimeout = setTimeout))
     afterAll(() => void (window.setTimeout = _setTimeout))
 
     it.each`
@@ -19,7 +20,8 @@ describe('stores', () => {
         ${'EventStore'}  | ${[{addEventListener, removeEventListener}, 'midimessage', callback]}
         ${'AccessStore'} | ${[callback]}
     `('store: $index', ({index, args}) => {
-        const store = new (SRC as any)[index](), length = 3
+        // @ts-ignore
+        const store = new SRC[index](), length = 3
         for (let i=0; i < length; i++)
             store.add(...args)
         rma.demanded = true

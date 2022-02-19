@@ -1,21 +1,19 @@
 import { is } from '../utils'
 import { Controller } from '../Controller'
-import { Prop, Props, MidiKey, Events, Config } from '../types'
+import { Props, MidiKey, Config } from '../types'
 
-export class Recognizer {
+export class Recognizer<P extends Props=Props, C extends Config=Config> {
     readonly _ctrl: Controller
 
     constructor (
-        target: EventTarget | string | ((e: any) => string),
-        props: Partial<Props> | {},
-        config: Partial<Config> | {},
+        target: Config['target'],
+        props: Partial<P>={},
+        config: Partial<C>={},
         ...keys: MidiKey[]
-    )
-
-    constructor (target: any, props: any, config: any, ...keys: any[]) {
-        if (is.str(target) || is.fun(target))
-            config.device! = target as any
-        else config.target! = target
+    ) {
+        if (is.str(target))
+            config.device = target
+        else config.target = target
         this._ctrl = new Controller(props)
         this._ctrl.apply(props, config, ...keys)
         this._ctrl.effect()
@@ -26,41 +24,41 @@ export class Recognizer {
     }
 }
 
-export class Midi extends Recognizer {
+export class Midi<P extends Props=Props, C extends Config=Config> extends Recognizer<P, C> {
     constructor (
-        target: EventTarget | string | ((e: any) => string),
-        props: Props | {} = {},
-        config: Config | {} = {}
+        target: Config['target'],
+        props: Partial<P>={},
+        config: Partial<C>={}
     ) {
         super(target, props, config, 'fade', 'turn', 'note')
     }
 }
 
-export class Fade <E = Events<'fade'>> extends Recognizer {
+export class Fade<C=Config<'fade'>> extends Recognizer {
     constructor (
-        target: EventTarget | string | ((e: any) => string),
-        fade: Prop<'fade', E>,
-        config: Config<'fade'> | {} = {}
+        target: Config['target'],
+        fade: Props<'fade'>,
+        config: Partial<C>={}
     ) {
         super(target, { fade }, config, 'fade')
     }
 }
 
-export class Turn <E = Events<'turn'>> extends Recognizer {
+export class Turn<C=Config<'turn'>> extends Recognizer {
     constructor (
-        target: EventTarget | string | ((e: any) => string),
-        turn: Prop<'turn', E>,
-        config: Config<'turn'> | {} = {}
+        target: Config['target'],
+        turn: Props<'turn'>,
+        config: Partial<C>={}
     ) {
         super(target, { turn }, config, 'turn')
     }
 }
 
-export class Note <E = Events<'note'>> extends Recognizer {
+export class Note<C=Config<'note'>> extends Recognizer {
     constructor (
-        target: EventTarget | string | ((e: any) => string),
-        note: Prop<'note', E>,
-        config: Config<'note'> | {} = {}
+        target: Config['target'],
+        note: Props<'note'>,
+        config: Partial<C>={}
     ) {
         super(target, { note }, config, 'note')
     }

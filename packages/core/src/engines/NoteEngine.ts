@@ -1,9 +1,10 @@
-import { Engine } from '../Engine'
+import { Engine, BindFun } from '../Engine'
+import { Events } from '../types'
 
 export class NoteEngine extends Engine<'note'> {
-    _ingKey = 'noting' as const
+    readonly _ingKey = 'noting' as const
 
-    bind (fun: any) {
+    bind (fun: BindFun<'note'>) {
         const { device } = this.$config
         fun(this.midimessage.bind(this), 'midimessage')
         fun(this.devicestart.bind(this), device, 'start')
@@ -11,14 +12,14 @@ export class NoteEngine extends Engine<'note'> {
         fun(this.deviceend.bind(this), device, 'out')
     }
 
-    midimessage (event: any) {
+    midimessage (event: Events<'note'>) {
         const { state: $ } = this
         if (!$.active)
             this.start(event)
         this.compute(event)
     }
 
-    devicestart (event: PointerEvent) {
+    devicestart (event: Events<'note'>) {
         const { state: $ } = this
         this.start(event)
         $._value = 0xff
@@ -28,7 +29,7 @@ export class NoteEngine extends Engine<'note'> {
         this.emit()
     }
 
-    deviceend (event: PointerEvent) {
+    deviceend (event: Events<'note'>) {
         const { state: $ } = this
         if (!$._active) return
         $._value = 0

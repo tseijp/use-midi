@@ -4,11 +4,13 @@
 
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
+import { GroupProps } from '@react-three/fiber'
 
-export default function (props: any) {
+export default function (props: GroupProps & {src: string}) {
   const group = useRef()
   const { src, ...other } = props
-  const { nodes, materials } = useGLTF(src) as any
+  // @ts-ignore
+  const { nodes, materials } = useGLTF(src)
   return (
     <group ref={group} {...other} dispose={null}>
       <mesh geometry={nodes.node10.geometry} material={nodes.node10.material} />

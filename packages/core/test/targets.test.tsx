@@ -26,7 +26,8 @@ describe('targets', () => {
         ${'Turn'} | ${'touch'} | ${fn} | ${{}}
         ${'Midi'} | ${window}  | ${fns}| ${{}}
     `('class: $index', ({index, target, props, config}) => {
-        const Class = (SRC as any)[index]
+      // @ts-ignore
+        const Class = SRC[index]
         const instance = new Class(target, props, config)
         expect(instance).toBeTruthy()
         expect(fn.mock.calls.length).toBe(0) // TODO
@@ -40,8 +41,10 @@ describe('targets', () => {
         ${'Turn'} | ${{turn: fn, target}}
         ${'Midi'} | ${{...fns, target: window}}
     `('react: $index', ({index, props}) => {
-        const use = (SRC as any)['use' + index]
-        const Use = (SRC as any)['Use' + index]
+        // @ts-ignore
+        const use = SRC['use' + index]
+        // @ts-ignore
+        const Use = SRC['Use' + index]
         const { current } = renderHook(() => use(props)).result
         const element = renderer.create(<Use {...{...props, children}}/>)
         expect(current && element).toBeTruthy()
