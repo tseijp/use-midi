@@ -9,8 +9,6 @@ module.exports = {
     clearMocks: true,
     transform: {'^.+\\.(js|jsx|ts|tsx)$': 'ts-jest'},
     testRegex: ['(/test/.*|\\.(test|spec))\\.(js|jsx|ts|tsx)$'],
-    testPathIgnorePatterns: ['<rootDir>/node_modules/'],
-    transformIgnorePatterns: ['<rootDir>/node_modules/(?!(xxxx.*?\\.js$))'],
     modulePaths: [],
     moduleNameMapper: {'src/(.*)$': '<rootDir>/src/$1'},
     moduleFileExtensions: ['ts','tsx','js','jsx','json','node'],

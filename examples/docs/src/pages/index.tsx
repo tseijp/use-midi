@@ -7,12 +7,12 @@ import React from 'react'
 import { useGesture } from '@use-gesture/react'
 import * as FIBER from '@react-three/fiber'
 import * as DREI from '@react-three/drei'
-import { Home } from '../../components/Home'
-import { Flex } from '../../components/Flex'
-import { Nano } from '../../models'
+import { Home } from '@site/components/Home'
+import { Flex } from '@site/components/Flex'
+import { Nano } from '@site/models'
 import { useFade, useNote, useTurn, useMidi } from 'use-midi/src'
 
-const SRC = "img/assets/Nano.gltf"
+const NANO_GLTF = '/use-midi/img/assets/Nano.gltf'
 
 export default function App () {
     const bind = useGesture({
@@ -47,8 +47,9 @@ export default function App () {
           <FIBER.Canvas style={{height: "50vh",  userSelect: 'none'}} camera={{position: [0, 0.3, 0]}} {...bind()}>
             <color attach="background" args={["#f2f2ff"]}/>
             <React.Suspense fallback={null}>
-              <Nano src={SRC} binds={{fade, note, turn, midi}}/>
+              <Nano src={NANO_GLTF} binds={{fade, note, turn, midi}}/>
             </React.Suspense>
+            {/* @ts-ignore */}
             <DREI.OrbitControls {...{enableRotate: false, minZoom: .1}}/>
             <ambientLight position={[0, 0, 0]} intensity={0.5} />
             <spotLight position={[10, 10, 10]} intensity={2} penumbra={1} />

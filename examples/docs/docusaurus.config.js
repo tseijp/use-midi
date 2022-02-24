@@ -1,4 +1,8 @@
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
+
+const lightCodeTheme = require('prism-react-renderer/themes/github');
+const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+
 module.exports = {
   title: 'use-midi 🖖',
   tagline: 'use-midi are cool',
@@ -9,6 +13,29 @@ module.exports = {
   favicon: 'img/favicon.png',
   organizationName: 'tseijp',
   projectName: 'use-midi',
+  presets: [
+    [
+      '@docusaurus/preset-classic',
+      {
+        docs: {
+          path: 'documents',
+          routeBasePath: 'documents',
+          // sidebarPath: require.resolve('./sidebars.js'),
+          editUrl: 'https://github.com/tseijp/use-midi/edit/master/examples/',
+        },
+      },
+    ],
+  ],
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'examples',
+        path: 'examples',
+        routeBasePath: 'examples',
+      },
+    ],
+  ],
   themeConfig: {
     prism: {
       theme: require('prism-react-renderer/themes/vsDark'),
@@ -50,28 +77,9 @@ module.exports = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
     },
+    prism: {
+      theme: lightCodeTheme,
+      darkTheme: darkCodeTheme,
+    },
   },
-  presets: [
-    [
-      '@docusaurus/preset-classic',
-      {
-        docs: {
-          path: 'documents',
-          routeBasePath: 'documents',
-          // sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/tseijp/use-midi/edit/master/examples/',
-        },
-      },
-    ],
-  ],
-  plugins: [
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'examples',
-        path: 'examples',
-        routeBasePath: 'examples',
-      },
-    ],
-  ],
 };

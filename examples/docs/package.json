@@ -22,8 +22,7 @@
         "prism-react-renderer": "^1.2.1",
         "react": "17.0.2",
         "react-dom": "17.0.2",
-        "url-loader": "^4.1.1",
-        "use-midi": "^0.1.0"
+        "url-loader": "^4.1.1"
     },
     "browserslist": {
         "production": [
@@ -38,16 +37,18 @@
         ]
     },
     "devDependencies": {
-        "@docusaurus/core": "^2.0.0-beta.4",
-        "@docusaurus/module-type-aliases": "^2.0.0-beta.0",
-        "@docusaurus/preset-classic": "^2.0.0-beta.4",
-        "@react-three/drei": "7.16.8",
-        "@react-three/fiber": "7.0.16",
+        "@docusaurus/core": "^2.0.0-beta.16",
+        "@docusaurus/module-type-aliases": "^2.0.0-beta.16",
+        "@docusaurus/preset-classic": "^2.0.0-beta.16",
+        "@react-three/drei": "8.10.6",
+        "@react-three/fiber": "7.0.26",
         "@tsconfig/docusaurus": "^1.0.2",
         "@types/react": "^17.0.8",
         "@types/react-helmet": "^6.1.1",
         "@types/react-router-dom": "^5.1.7",
         "@types/styled-components": "^5.1.9",
+        "@types/three": "^0.137.0",
+        "@use-gesture/react": "^10.2.6",
         "parsed-path": "^0.1.14",
         "polished": "^4.1.2",
         "react-live": "^2.2.3",
@@ -55,7 +56,7 @@
         "react-spring": "^9.2.2",
         "react-use-refs": "^1.0.0",
         "styled-components": "^5.3.0",
-        "three": "^0.132.2",
+        "three": "^0.138.0",
         "typescript": "^4.3.2"
     }
 }

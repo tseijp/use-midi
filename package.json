@@ -15,9 +15,8 @@
         "examples/*"
     ],
     "scripts": {
-        "core@latest": "lerna add @docusaurus/core@latest --dev --scope @use-midi/docs",
-        "preset@latest": "lerna add  @docusaurus/preset-classic@latest --dev --scope @use-midi/docs",
-        "latest": "yarn run core@latest & yarn run preset@latest",
+        "bootstrap": "lerna bootstrap",
+        "clean": "lerna clean -y",
         "init": "npm i -g yarn lerna && npx lerna bootstrap",
         "start": "cd examples && cd docs && yarn start",
         "build": "cd examples && cd docs && yarn build",
