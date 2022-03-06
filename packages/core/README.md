@@ -47,7 +47,7 @@ Examples and tutorials can be found [here](https://tsei.jp/rmix/examples/intro.m
 
 <br/>
 <hr/>
-</br/>
+<br/>
 
 
 ### What does it look like?

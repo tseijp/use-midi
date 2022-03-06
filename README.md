@@ -66,7 +66,7 @@ Examples and tutorials can be found [here][exam]
 
 <br/>
 <hr/>
-</br/>
+<br/>
 
 
 ### What does it look like?
