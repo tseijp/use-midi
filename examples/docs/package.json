@@ -1,4 +1,15 @@
 {
+    "bugs": "https://github.com/tseijp/use-midi/issues/",
+    "homepage": "https://tseijp.github.io/use-midi/",
+    "repository": "https://github.com/tseijp/use-midi/",
+    "description": "use midi for React🖖",
+    "keywords": [
+        "react",
+        "hooks",
+        "audio",
+        "midi",
+        "typescript"
+    ],
     "name": "@use-midi/docs",
     "version": "1.0.0",
     "license": "MIT",

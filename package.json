@@ -1,12 +1,20 @@
 {
+    "bugs": "https://github.com/tseijp/use-midi/issues/",
+    "homepage": "https://tseijp.github.io/use-midi/",
+    "repository": "https://github.com/tseijp/use-midi/",
+    "description": "use midi for React🖖",
+    "keywords": [
+        "react",
+        "hooks",
+        "audio",
+        "midi",
+        "typescript"
+    ],
     "name": "@use-midi/root",
     "version": "1.0.0",
     "author": "tsei",
     "license": "MIT",
     "private": true,
-    "description": "🖖Cross-platform midi engine for React",
-    "repository": "tseijp/use-midi",
-    "homepage": "https://github.com/tseijp/use-midi#readme",
     "maintainers": [
         "tseijp (https://github.com/tseijp)"
     ],
@@ -18,14 +26,14 @@
         "bootstrap": "lerna bootstrap",
         "clean": "lerna clean -y",
         "init": "npm i -g yarn lerna && npx lerna bootstrap",
-        "start": "cd examples && cd docs && yarn start",
-        "build": "cd examples && cd docs && yarn build",
-        "deploy": "cd examples && cd docs && yarn deploy",
-        "rollup": "cd packages && cd core && yarn rollup -c",
-        "watch": "cd packages && cd core && yarn jest --watch --runInBand",
-        "cov": "cd packages && cd core && yarn jest --coverage",
-        "npm": "cd packages && cd core && yarn publish",
-        "ls": "cd packages && cd core && npm pack --dry-run"
+        "start": "cd examples/docs && yarn start",
+        "build": "cd examples/docs && yarn build",
+        "deploy": "cd examples/docs && yarn deploy",
+        "rollup": "cd packages/core && yarn rollup -c",
+        "watch": "cd packages/core && yarn jest --watch --runInBand",
+        "cov": "cd packages/core && yarn jest --coverage",
+        "npm": "cd packages/core && yarn publish",
+        "ls": "cd packages/core && npm pack --dry-run"
     },
     "devDependencies": {
         "lerna": "^4.0.0"

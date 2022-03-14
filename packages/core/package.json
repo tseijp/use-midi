@@ -1,9 +1,18 @@
 {
+    "bugs": "https://github.com/tseijp/use-midi/issues/",
+    "homepage": "https://tseijp.github.io/use-midi/",
+    "repository": "https://github.com/tseijp/use-midi/",
+    "description": "use midi for React🖖",
+    "keywords": [
+        "react",
+        "hooks",
+        "audio",
+        "midi",
+        "typescript"
+    ],
     "name": "use-midi",
     "author": "tsei",
     "license": "MIT",
-    "private": false,
-    "sideEffect": false,
     "version": "0.2.0",
     "module": "index.js",
     "types": "index.d.ts",
@@ -14,25 +23,12 @@
         "index.d.ts",
         "index.cjs.js"
     ],
+    "private": false,
+    "sideEffect": false,
     "publishConfig": {
         "access": "public"
     },
-    "description": "use midi for React🖖",
-    "homepage": "https://github.com/tseijp/use-midi#readme",
-    "bugs": {
-        "url": "https://github.com/tseijp/use-midi/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/tseijp/use-midi.git"
-    },
-    "keywords": [
-        "react",
-        "hooks",
-        "audio",
-        "midi",
-        "typescript"
-    ],
+    "dependencies": {},
     "peerDependencies": {
         "react": ">=16.8"
     },
