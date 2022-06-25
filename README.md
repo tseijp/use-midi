@@ -1,6 +1,6 @@
-# @use-midi
+# 🖖use-midi
 
-@use-midi is a library that let you bind midi events to any component.
+use-midi is a library that let you bind midi events to any component.
 
 [![ version ](
     https://img.shields.io/npm/v/use-midi)](
@@ -24,7 +24,7 @@
     https://badgen.net/npm/license/use-midi)](
     https://www.npmjs.com/package/use-midi)
 
-### Installation
+## Installation
 To install the entire `use-midi` lib:
 
 ```shell
@@ -35,7 +35,7 @@ yarn add use-midi
 npm i use-midi
 ```
 
-### Getting started
+## Getting started
 
 ```shell
 git clone https://github.com/tseijp/use-midi
@@ -52,8 +52,7 @@ yarn start
 - open browser and visit [localhost:3000][host]
 - Now you can go to our [demo][demo], and try its usage.
 
-
-### Documentation and Examples
+## Documentation and Examples
 
 More info about the project can be found [here][docs].
 
@@ -69,7 +68,7 @@ Examples and tutorials can be found [here][exam]
 <br/>
 
 
-### What does it look like?
+## What does it look like?
 
 <details>
   <summary>React javascript</summary>
@@ -102,7 +101,7 @@ noteMidi.destroy()
 
 </details>
 
-### Available hooks
+## Available hooks
 
 use-midi exports several hooks that can handle different midi:
 
@@ -113,4 +112,4 @@ use-midi exports several hooks that can handle different midi:
 | `useTurn`    | Handles the turn midi                      |
 | `useMidi`    | Handles multiple midi in the one hooks     |
 
-#### [More on the full documentation website...](https://tseijp.github.io/use-midi/)
+### [More on the full documentation website...](https://tseijp.github.io/use-midi/)
