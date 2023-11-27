@@ -1,6 +1,13 @@
 # 🖖use-midi
 
+
+<p align="center">
+
 use-midi is a library that let you bind midi events to any component.
+
+<a href="https://tseijp.github.io/use-midi">
+  <img alt="🖖" height="128px" src="https://i.imgur.com/VtQdK8z.gif" />
+</a>
 
 [![ version ](
     https://img.shields.io/npm/v/use-midi)](
@@ -23,6 +30,8 @@ use-midi is a library that let you bind midi events to any component.
 [![ license ](
     https://badgen.net/npm/license/use-midi)](
     https://www.npmjs.com/package/use-midi)
+
+</p>
 
 ## Installation
 To install the entire `use-midi` lib:
